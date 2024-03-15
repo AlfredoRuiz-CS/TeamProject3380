@@ -1,10 +1,15 @@
 import React from "react";
+import Header from "../components/Header";
 
 const Home = () => {
   return (
-    <div className="font-sans h-10 w-10 bg-black">
-      <p className="text-pink-500">HELLO WORLD</p>
-    </div>
+    <>
+      <div className="">
+        <Header />
+
+        <div className=""></div>
+      </div>
+    </>
   );
 };
 
