@@ -3,6 +3,10 @@ const { fontFamily } = require("tailwindcss/defaultTheme");
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
+    fontFamily: {
+      inter: ["Inter", ...fontFamily.sans],
+      pincoya: ["Pincoyablack", ...fontFamily.sans],
+    },
     container: {
       center: true,
       padding: "2rem",
