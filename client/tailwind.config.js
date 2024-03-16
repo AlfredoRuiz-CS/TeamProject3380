@@ -12,6 +12,7 @@ module.exports = {
     fontFamily: {
       pincoya: ["Pincoyablack", "sans-serif"],
       inter: ["Inter", "sans-serif"],
+      jua: ["Jua", "sans-serif"],
     },
     container: {
       center: true,
