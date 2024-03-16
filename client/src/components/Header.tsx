@@ -1,34 +1,46 @@
 import { Button } from "./ui/button.tsx";
 
-const Header = () => {
+interface HeaderProps {
+  loggedIn?: boolean;
+  user?: string;
+  cart?: number;
+}
+
+const Header = (props: HeaderProps) => {
   return (
     <>
-      <div className="flex h-16 w-full justify-between bg-bgwhite font-poppins">
+      <div className="flex h-16 w-full justify-between bg-transparent font-poppins text-white">
         {/* Logo */}
         <div className="pl-10 pt-5">
           <a href="/home">
-            <img src="./logos/logo_full_blue.svg" alt="ShastaMart Logo" />
+            <img src="./logos/logo_full_white.svg" alt="ShastaMart Logo" />
           </a>
         </div>
 
         {/* Links */}
-        <div className="flex h-16 w-[20rem] items-center justify-between pr-10">
-          <ul className="flex flex-row justify-center gap-5 text-center">
-            <li>
+        <div className="flex h-full w-[22rem] items-center justify-between text-center">
+          <ul className="flex min-h-full flex-row justify-center gap-6 text-center">
+            <li className="flex items-center justify-center">
               <a href="/">Home</a>
             </li>
 
-            <li>
+            <li className="flex items-center justify-center">
               <a href="/products">Products</a>
             </li>
 
-            <li>
-              <a href="/login">Login</a>
+            <li className="flex items-center justify-center">
+              <Button
+                asChild
+                variant="outline"
+                className="bg-transparent text-white"
+              >
+                <a href="/login">Login</a>
+              </Button>
             </li>
 
-            <li>
-              <Button asChild>
-                <a>Register</a>
+            <li className="flex items-center justify-center">
+              <Button asChild className="">
+                <a href="/register">Register</a>
               </Button>
             </li>
           </ul>
