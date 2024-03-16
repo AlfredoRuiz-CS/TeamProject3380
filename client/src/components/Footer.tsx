@@ -8,6 +8,7 @@ const Footer = () => {
             <img src="./logos/logo_full_blue.svg" alt="ShastaMart Logo" />
           </a>
         </div>
+        {/* TODO: Add GitHub Links for each member */}
         <div className="font-inter">
           Built and Designed by{" "}
           <span className="font-medium underline">Sage Turner</span>

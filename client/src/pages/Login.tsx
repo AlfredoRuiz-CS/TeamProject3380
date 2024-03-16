@@ -1,60 +1,70 @@
-import React from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { useTypewriter, Cursor } from 'react-simple-typewriter';
-import { useState } from 'react';
+import { useTypewriter, Cursor } from "react-simple-typewriter";
+import { useState } from "react";
 import { Button } from "../components/ui/button.tsx";
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const [message] = useTypewriter({
-    words: ['Always Fresh, just for you'],
-    loop: true
+    words: ["Always Fresh, just for you"],
+    loop: true,
   });
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-poppins text-black">
+    <div className="font-poppins flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite text-black">
       <Header />
-      <form className="flex flex-col items-center w-full gap-5 py-5">
-          <h1 className="text-8xl font-jua mb-10">Login</h1>
-          <p className="font-jua text-5xl mb-10">Don't have an account? <a href="/register" className="text-darkblue">Create One</a></p>
-          <input className="w-full max-w-md h-10 px-4 mx-4 rounded-md border border-gray-300 focus:border-logoblue focus:ring-logoblue"
-            type="text"
-            placeholder="Email"
-            onChange={(e) => setEmail(e.target.value)}
-            value={email}
+      <form className="flex w-full flex-col items-center gap-5 py-5">
+        <h1 className="mb-10 font-jua text-8xl">Login</h1>
+        <p className="mb-10 font-jua text-5xl">
+          Don't have an account?{" "}
+          <a href="/register" className="text-darkblue">
+            Create One
+          </a>
+        </p>
+        <input
+          className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+          type="text"
+          placeholder="Email"
+          onChange={(e) => setEmail(e.target.value)}
+          value={email}
+        />
+        <input
+          className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+          type={isPasswordVisible ? "text" : "password"}
+          placeholder="Password"
+          onChange={(e) => setPassword(e.target.value)}
+          value={password}
+        />
+        <div className="mr-[310px] mt-[-14px] flex items-center">
+          <input
+            id="show-password"
+            type="checkbox"
+            className="mr-2"
+            onChange={(e) => setIsPasswordVisible(e.target.checked)}
+            checked={isPasswordVisible}
           />
-          <input className="w-full max-w-md h-10 px-4 mx-4 rounded-md border border-gray-300 focus:border-logoblue focus:ring-logoblue"
-            type={isPasswordVisible ? "text" : "password"}
-            placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-            value={password}
-          />
-          <div className="flex items-center mt-[-14px] mr-[310px]">
-            <input
-              id="show-password"
-              type="checkbox"
-              className="mr-2"
-              onChange={(e) => setIsPasswordVisible(e.target.checked)}
-              checked={isPasswordVisible}
-            />
-            <label htmlFor="show-password" className="select-none text-[16px]">Show Password</label>
-          </div>
-          <Button asChild className="my-6" size="lg">
-            <p>Log in</p>
-          </Button>
+          <label htmlFor="show-password" className="select-none text-[16px]">
+            Show Password
+          </label>
+        </div>
+        <Button asChild className="my-6" size="lg">
+          <p>Log in</p>
+        </Button>
       </form>
-      <h2 className="flex items-center justify-center font-jua text-[64px] mb-32"> {message}
-          <span className="">
-              <Cursor />
-          </span>
+      <h2 className="mb-32 flex items-center justify-center font-jua text-[64px]">
+        {" "}
+        {message}
+        <span className="">
+          <Cursor />
+        </span>
       </h2>
       <Footer />
     </div>
-  )
+  );
 };
 
 export default Login;
