@@ -1,7 +1,7 @@
 const Footer = () => {
   return (
     <>
-      <div className="flex min-h-20 w-screen flex-col items-center gap-5 overflow-y-hidden border-t bg-bgwhite pb-5">
+      <div className="flex min-h-20  flex-col items-center gap-5 overflow-x-hidden border-t bg-bgwhite pb-5">
         {/* Logo */}
         <div className="pl-10 pt-5">
           <a href="/home">

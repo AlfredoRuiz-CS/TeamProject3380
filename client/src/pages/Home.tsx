@@ -5,8 +5,8 @@ import { Button } from "../components/ui/button.tsx";
 const Home = () => {
   return (
     <>
-      <div className="font-poppins flex min-h-screen flex-col overflow-y-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite text-black">
-        <Header />
+      <div className="font-poppins flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite text-black">
+        <Header user="John Smith" loggedIn />
         {/* Page Content */}
         <div className=" flex h-screen flex-col items-center text-pretty bg-transparent pt-5 text-center lg:pt-[10rem]">
           <h1 className="flex w-[80rem] flex-row text-pretty text-center font-jua text-[5rem] ">
