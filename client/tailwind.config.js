@@ -10,8 +10,8 @@ module.exports = {
   prefix: "",
   theme: {
     fontFamily: {
-      poppins: ["Poppins", "sans-serif"],
-      firacode: ["Fira Code", "monospace"],
+      pincoya: ["Pincoyablack", "sans-serif"],
+      inter: ["Inter", "sans-serif"],
     },
     container: {
       center: true,

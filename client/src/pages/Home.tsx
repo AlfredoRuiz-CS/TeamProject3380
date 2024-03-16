@@ -4,10 +4,12 @@ import Footer from "../components/Footer";
 const Home = () => {
   return (
     <>
-      <div className="flex h-screen flex-col bg-bgwhite bg-gradient-to-b from-logoblue to-bgwhite font-poppins text-black">
+      <div className="flex h-screen flex-col overflow-y-hidden bg-bgwhite bg-gradient-to-b from-logoblue to-bgwhite font-poppins text-black">
         <Header />
         {/* Page Content */}
-        <div className="h-screen bg-transparent text-center">PLACEHOLDER</div>
+        <div className="h-screen bg-transparent text-center text-[10rem]">
+          PLACEHOLDER
+        </div>
       </div>
       <Footer />
     </>
