@@ -1,4 +1,5 @@
 import { Button } from "./ui/button.tsx";
+import { IoMdCart } from "react-icons/io";
 // Imports for state management
 import { create } from "zustand";
 import { devtools, persist } from "zustand/middleware";
@@ -36,7 +37,12 @@ const Header = (props: HeaderProps) => {
             <li className="flex items-center justify-center">
               <a href="/products">Products</a>
             </li>
-            {props.loggedIn ? null : (
+            {/* If logged in display name and cart */}
+            {props.loggedIn ? (
+              <li className="flex items-center justify-center">
+                <IoMdCart size={20} />
+              </li>
+            ) : (
               <li className="flex items-center justify-center">
                 <Button
                   asChild
