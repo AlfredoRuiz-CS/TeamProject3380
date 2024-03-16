@@ -20,13 +20,13 @@ const Login = () => {
       <form className="flex flex-col items-center w-full gap-5 py-5">
           <h1 className="text-8xl font-jua mb-8">Login</h1>
           <p className="font-jua text-5xl mb-8">Don't have an account? <a href="/register" className="text-darkblue">Create One</a></p>
-          <input className="w-full max-w-lg h-10 px-4 mx-4 rounded-md border border-gray-300 focus:border-logoblue focus:ring-logoblue"
+          <input className="w-full max-w-md h-10 px-4 mx-4 rounded-md border border-gray-300 focus:border-logoblue focus:ring-logoblue"
             type="text"
             placeholder="Email"
             onChange={(e) => setEmail(e.target.value)}
             value={email}
           />
-          <input className="w-full max-w-lg h-10 px-4 mx-4 rounded-md border border-gray-300 focus:border-logoblue focus:ring-logoblue"
+          <input className="w-full max-w-md h-10 px-4 mx-4 rounded-md border border-gray-300 focus:border-logoblue focus:ring-logoblue"
             type="text"
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
