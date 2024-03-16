@@ -1,21 +1,45 @@
 import { Button } from "./ui/button.tsx";
 import { IoMdCart } from "react-icons/io";
-// Imports for state management
-import { create } from "zustand";
-import { devtools, persist } from "zustand/middleware";
-import type {} from "@redux-devtools/extension"; // required for devtools typing
+import { IoIosArrowDown } from "react-icons/io";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu.tsx";
 
-interface HeaderProps {
+// Imports for state management
+// import { create } from "zustand";
+// import { devtools, persist } from "zustand/middleware";
+// import type {} from "@redux-devtools/extension"; // required for devtools typing
+
+type HeaderProps = {
   loggedIn?: boolean;
   user?: string;
   cart?: number;
   color?: "blue" | "white";
-}
+};
 
 const Header = (props: HeaderProps) => {
+  let textColor = "text-white";
+  let borderColor = "border-white";
+  if (props.color === "blue") {
+    textColor = "text-primary";
+    borderColor = "border-primary";
+  }
+
   return (
     <>
-      <div className="font-poppins flex h-16 w-full justify-between overflow-x-hidden bg-transparent text-white">
+      <div
+        className={
+          "font-poppins flex h-16 w-full justify-between overflow-x-hidden bg-transparent " +
+          textColor
+        }
+      >
         {/* Logo */}
         <div className="pl-10 pt-5">
           <a href="/home">
@@ -37,17 +61,26 @@ const Header = (props: HeaderProps) => {
             <li className="flex items-center justify-center">
               <a href="/products">Products</a>
             </li>
-            {/* If logged in display name and cart */}
+
+            {/* If logged in display name and cart along with dropdown for dashboard*/}
             {props.loggedIn ? (
               <li className="flex items-center justify-center">
-                <IoMdCart size={20} />
+                {textColor === "text-white" ? (
+                  <a href="/cart">
+                    <IoMdCart size={20} color="white" />
+                  </a>
+                ) : (
+                  <a href="/cart">
+                    <IoMdCart size={20} color="primary" />
+                  </a>
+                )}
               </li>
             ) : (
               <li className="flex items-center justify-center">
                 <Button
                   asChild
                   variant="outline"
-                  className="bg-transparent text-white"
+                  className={"bg-transparent " + textColor + " " + borderColor}
                 >
                   <a href="/login">Login</a>
                 </Button>
@@ -55,7 +88,41 @@ const Header = (props: HeaderProps) => {
             )}
             {props.loggedIn ? (
               <li className="flex items-center justify-center">
-                Hi, {props.user}!
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild className="focus-visible:ring-0">
+                    <Button
+                      variant="link"
+                      size="sm"
+                      className={
+                        "p-0 text-[16px] font-normal focus-visible:ring-0 " +
+                        textColor
+                      }
+                    >
+                      {props.user}
+                      <IoIosArrowDown />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem>
+                        <a href="/orders">Orders</a>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <a href="/payments">Payment History</a>
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem>
+                        <a href="/profile">Profile</a>
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                      <a href="/logout">Logout</a>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </li>
             ) : (
               <li className="flex items-center justify-center">
