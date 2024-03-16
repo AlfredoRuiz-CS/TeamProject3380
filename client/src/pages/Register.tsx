@@ -11,6 +11,7 @@ const Register = () => {
   const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const [message] = useTypewriter({
     words: ['Great finds, Great buys'],
@@ -58,12 +59,22 @@ const Register = () => {
             value={phone}
           />
           <input className="w-full max-w-md h-10 px-4 mx-4 rounded-md border border-gray-300 focus:border-logoblue focus:ring-logoblue"
-            type="text"
+            type="password"
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
             value={password}
           />
-          <Button asChild className="my-4" size="lg">
+          <div className="flex items-center mt-[-14px] mr-[310px]">
+            <input
+              id="show-password"
+              type="checkbox"
+              className="mr-2"
+              onChange={(e) => setIsPasswordVisible(e.target.checked)}
+              checked={isPasswordVisible}
+            />
+            <label htmlFor="show-password" className="select-none">Show Password</label>
+          </div>
+          <Button asChild className="" size="lg">
             <p>Register</p>
           </Button>
       </form>

@@ -8,6 +8,7 @@ import { Button } from "../components/ui/button.tsx";
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const [message] = useTypewriter({
     words: ['Always Fresh, just for you'],
@@ -27,12 +28,22 @@ const Login = () => {
             value={email}
           />
           <input className="w-full max-w-md h-10 px-4 mx-4 rounded-md border border-gray-300 focus:border-logoblue focus:ring-logoblue"
-            type="text"
+            type={isPasswordVisible ? "text" : "password"}
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
             value={password}
           />
-          <Button asChild className="my-8" size="lg">
+          <div className="flex items-center mt-[-14px] mr-[310px]">
+            <input
+              id="show-password"
+              type="checkbox"
+              className="mr-2"
+              onChange={(e) => setIsPasswordVisible(e.target.checked)}
+              checked={isPasswordVisible}
+            />
+            <label htmlFor="show-password" className="select-none text-[16px]">Show Password</label>
+          </div>
+          <Button asChild className="my-6" size="lg">
             <p>Log in</p>
           </Button>
       </form>
