@@ -18,8 +18,8 @@ const Login = () => {
     <div className="flex h-screen flex-col overflow-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-poppins text-black">
       <Header />
       <form className="flex flex-col items-center w-full gap-5 py-5">
-          <h1 className="text-8xl font-jua mb-8">Login</h1>
-          <p className="font-jua text-5xl mb-8">Don't have an account? <a href="/register" className="text-darkblue">Create One</a></p>
+          <h1 className="text-8xl font-jua mb-10">Login</h1>
+          <p className="font-jua text-5xl mb-10">Don't have an account? <a href="/register" className="text-darkblue">Create One</a></p>
           <input className="w-full max-w-md h-10 px-4 mx-4 rounded-md border border-gray-300 focus:border-logoblue focus:ring-logoblue"
             type="text"
             placeholder="Email"
@@ -32,11 +32,11 @@ const Login = () => {
             onChange={(e) => setPassword(e.target.value)}
             value={password}
           />
-          <Button asChild className="my-4" size="lg">
+          <Button asChild className="my-8" size="lg">
             <p>Log in</p>
           </Button>
       </form>
-      <h2 className="flex items-center justify-center font-jua text-[64px]"> {message}
+      <h2 className="flex items-center justify-center font-jua text-[64px] mb-32"> {message}
           <span className="">
               <Cursor />
           </span>

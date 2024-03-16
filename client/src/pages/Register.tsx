@@ -21,8 +21,8 @@ const Register = () => {
     <div className="flex h-screen flex-col overflow-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-poppins text-black">
       <Header />
       <form className="flex flex-col items-center w-full gap-5 py-5">
-          <h1 className="text-8xl font-jua mb-6">Register</h1>
-          <a href="/login" className="font-jua text-5xl mb-6 text-darkblue">Already have an account?</a>
+          <h1 className="text-8xl font-jua mb-5">Register</h1>
+          <a href="/login" className="font-jua text-5xl mb-5 text-darkblue">Already have an account?</a>
           <input className="w-full max-w-md h-10 px-4 mx-4 rounded-md border border-gray-300 focus:border-logoblue focus:ring-logoblue"
             type="text"
             placeholder="First name"
