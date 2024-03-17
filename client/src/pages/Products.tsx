@@ -1,8 +1,8 @@
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import { productItem } from "../components/ProductCard.tsx";
-import ProductCard from "../components/ProductCard.tsx";
-import { Button } from "../components/ui/button.tsx";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { productItem } from "@/components/ProductCard.tsx";
+import ProductCard from "@/components/ProductCard.tsx";
+import { Button } from "@/components/ui/button.tsx";
 import { useState } from "react";
 
 interface productProps {
@@ -18,6 +18,7 @@ let dummyProduct: productItem = {
   ],
   image: "/assets/strawberries.jpg",
   stock: 10,
+  portion: "lb.",
 };
 
 const Products = () => {
