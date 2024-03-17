@@ -31,6 +31,14 @@ const ProductCard = (props: ProductCardProps) => {
     setQuantityEnabled(!QuantityEnabled);
   }
 
+  function handleAddToList() {
+    console.log('Added ', quantity, ' ', props.product.name, 'to List');
+  }
+
+  function handleAddToCart() {
+    console.log('Added ', quantity, ' ', props.product.name, 'to Cart');
+  }
+
   return (
     <>
       <div className="flex h-[30rem] w-[25rem] flex-col rounded-2xl bg-cardwhite">
@@ -61,7 +69,7 @@ const ProductCard = (props: ProductCardProps) => {
             props.product.portion}
         </h1>
         {/* Quantity Button */}
-        <div className="mt-2 flex flex-row justify-center gap-3 px-3">
+        <div className="mt-10 flex flex-row justify-center gap-3 px-3">
           {QuantityEnabled ? (
             <div className="flex flex-row gap-2">
               <Button
@@ -96,11 +104,17 @@ const ProductCard = (props: ProductCardProps) => {
           )}
 
           {/* Add To List Button */}
-          <Button className="text-md flex-grow rounded-lg bg-[#4874E5] py-5 font-jua text-black hover:bg-[#4874E5]/90">
+          <Button
+            className="text-md flex-grow rounded-lg bg-[#4874E5] py-5 font-jua text-black hover:bg-[#4874E5]/90"
+            onClick={handleAddToList}
+          >
             Add to List
           </Button>
           {/* Add to Cart Button */}
-          <Button className="text-md flex-grow rounded-lg bg-[#F53E3E] py-5 font-jua text-black hover:bg-[#F53E3E]/85">
+          <Button
+            className="text-md flex-grow rounded-lg bg-[#F53E3E] py-5 font-jua text-black hover:bg-[#F53E3E]/85"
+            onClick={handleAddToCart}
+          >
             Add to Cart
           </Button>
         </div>
