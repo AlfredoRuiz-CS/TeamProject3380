@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Button } from "./ui/button.tsx";
 import { IoMdCart } from "react-icons/io";
 import { IoIosArrowDown } from "react-icons/io";
@@ -13,20 +14,18 @@ import {
 } from "./ui/dropdown-menu.tsx";
 
 // Imports for state management
-import { useStore, StoreApi } from "zustand";
-import { UserState } from "./store.ts";
-import { userStore } from "./store.ts";
+import userStore from "@/components/store";
 // import { devtools, persist } from "zustand/middleware";
 import type {} from "@redux-devtools/extension"; // required for devtools typing
 
 interface HeaderProps {
-  loggedIn?: boolean;
-  user?: string;
-  cart?: number;
   color?: "blue" | "white";
 }
 
 const Header = (props: HeaderProps) => {
+  const store = userStore();
+  useEffect(() => {}, [store.loggedIn]);
+
   let textColor = "text-white";
   let borderColor = "border-white";
   // Sets the default to white, unless the color props is set to blue
@@ -35,14 +34,8 @@ const Header = (props: HeaderProps) => {
     borderColor = "border-primary";
   }
 
-  if (userStore((state) => state.name) != "") {
-    props.loggedIn = true;
-    props.user = userStore((state) => state.name);
-    props.cart = userStore((state) => state.cartItemsNumber);
-  }
-
   function logoutHandler() {
-    userStore((state) => state.logout);
+    store.logout();
   }
 
   return (
@@ -76,7 +69,7 @@ const Header = (props: HeaderProps) => {
             </li>
 
             {/* If logged in display name and cart along with dropdown for dashboard*/}
-            {props.loggedIn ? (
+            {store.loggedIn ? (
               <li className="flex items-center justify-center">
                 {textColor === "text-white" ? (
                   <a href="/cart">
@@ -99,7 +92,8 @@ const Header = (props: HeaderProps) => {
                 </Button>
               </li>
             )}
-            {props.loggedIn ? (
+            {/* If User is logged in, display dropdown menu */}
+            {store.loggedIn ? (
               <li className="flex items-center justify-center">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild className="focus-visible:ring-0">
@@ -111,7 +105,7 @@ const Header = (props: HeaderProps) => {
                         textColor
                       }
                     >
-                      {props.user}
+                      {store.name}
                       <IoIosArrowDown />
                     </Button>
                   </DropdownMenuTrigger>
@@ -131,8 +125,8 @@ const Header = (props: HeaderProps) => {
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                      <a onClick={logoutHandler}>Logout</a>
+                    <DropdownMenuItem onClick={logoutHandler}>
+                      <a>Logout</a>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>

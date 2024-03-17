@@ -67,7 +67,7 @@ const Register = () => {
         />
         <input
           className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
-          type={isPasswordVisible ? "text" : "password"}
+          type="password"
           placeholder="Password"
           onChange={(e) => setPassword(e.target.value)}
           value={password}

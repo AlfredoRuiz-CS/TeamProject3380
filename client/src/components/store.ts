@@ -4,7 +4,7 @@ import { productItem } from "../components/ProductCard.tsx";
 import { create } from "zustand";
 import type {} from "@redux-devtools/extension"; // required for devtools typing
 
-export type UserState = {
+type UserState = {
   // States for user login
   loggedIn: boolean;
   name: string;
@@ -12,20 +12,22 @@ export type UserState = {
   cartItems: productItem[];
 
   // Actions for user login
-  login: (username: string) => void;
+  setUserName: (username: string) => void;
+  login: () => void;
   logout: () => void;
   addToCart: (product: productItem) => void;
   removeFromCart: (product: productItem) => void;
   resetCart: () => void;
 };
 
-export const userStore = create<UserState>()((set) => ({
+const userStore = create<UserState>((set) => ({
   loggedIn: false,
   name: "",
   cartItemsNumber: 0,
   cartItems: [],
-  login: (username: string) => set({ loggedIn: true, name: username }),
+  setUserName: (username: string) => set({ loggedIn: true, name: username }),
   logout: () => set({ loggedIn: false, name: "" }),
+  login: () => set({ loggedIn: true }),
   addToCart: (product) =>
     set((state) => ({
       cartItemsNumber: state.cartItemsNumber + 1,
@@ -39,3 +41,5 @@ export const userStore = create<UserState>()((set) => ({
     })),
   resetCart: () => set({ cartItemsNumber: 0, cartItems: [] }),
 }));
+
+export default userStore;
