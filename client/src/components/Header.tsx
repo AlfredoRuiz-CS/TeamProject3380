@@ -13,16 +13,18 @@ import {
 } from "./ui/dropdown-menu.tsx";
 
 // Imports for state management
-// import { create } from "zustand";
+import { useStore, StoreApi } from "zustand";
+import { UserState } from "./store.ts";
+import { userStore } from "./store.ts";
 // import { devtools, persist } from "zustand/middleware";
-// import type {} from "@redux-devtools/extension"; // required for devtools typing
+import type {} from "@redux-devtools/extension"; // required for devtools typing
 
-type HeaderProps = {
+interface HeaderProps {
   loggedIn?: boolean;
   user?: string;
   cart?: number;
   color?: "blue" | "white";
-};
+}
 
 const Header = (props: HeaderProps) => {
   let textColor = "text-white";
@@ -31,6 +33,16 @@ const Header = (props: HeaderProps) => {
   if (props.color === "blue") {
     textColor = "text-primary";
     borderColor = "border-primary";
+  }
+
+  if (userStore((state) => state.name) != "") {
+    props.loggedIn = true;
+    props.user = userStore((state) => state.name);
+    props.cart = userStore((state) => state.cartItemsNumber);
+  }
+
+  function logoutHandler() {
+    userStore((state) => state.logout);
   }
 
   return (
@@ -120,7 +132,7 @@ const Header = (props: HeaderProps) => {
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem>
-                      <a href="/logout">Logout</a>
+                      <a onClick={logoutHandler}>Logout</a>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
