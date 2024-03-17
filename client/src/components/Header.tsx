@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
+  // DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu.tsx";
 
@@ -27,6 +27,7 @@ type HeaderProps = {
 const Header = (props: HeaderProps) => {
   let textColor = "text-white";
   let borderColor = "border-white";
+  // Sets the default to white, unless the color props is set to blue
   if (props.color === "blue") {
     textColor = "text-primary";
     borderColor = "border-primary";
@@ -110,7 +111,7 @@ const Header = (props: HeaderProps) => {
                         <a href="/orders">Orders</a>
                       </DropdownMenuItem>
                       <DropdownMenuItem>
-                        <a href="/payments">Payment History</a>
+                        <a href="/list">My List</a>
                       </DropdownMenuItem>
 
                       <DropdownMenuItem>
