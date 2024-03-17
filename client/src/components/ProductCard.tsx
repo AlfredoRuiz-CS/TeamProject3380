@@ -7,17 +7,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-
-import { SelectGroup } from '@radix-ui/react-select';
 
 export type productItem = {
   name: string;
