@@ -1,8 +1,8 @@
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
 import { useState } from 'react';
-import { Button } from "../components/ui/button.tsx";
+import { Button } from '../components/ui/button.tsx';
 
 const Register = () => {
   const [firstName, setFirstName] = useState('');
@@ -15,56 +15,65 @@ const Register = () => {
 
   const [message] = useTypewriter({
     words: ['Great finds, Great buys'],
-    loop: true
+    loop: true,
   });
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-poppins text-black">
-      <Header />
-      <form className="flex flex-col items-center w-full gap-5 py-5">
-          <h1 className="text-8xl font-jua mb-5">Register</h1>
-          <a href="/login" className="font-jua text-5xl mb-5 text-darkblue">Already have an account?</a>
-          <input className="w-full max-w-md h-10 px-4 mx-4 rounded-md border border-gray-300 focus:border-logoblue focus:ring-logoblue"
+    <>
+      <div className="font-poppins flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite text-black">
+        <Header />
+        <form className="flex w-full flex-col items-center gap-5 py-5">
+          <h1 className="mb-5 font-jua text-8xl">Register</h1>
+          <a href="/login" className="mb-5 font-jua text-5xl text-darkblue">
+            Already have an account?
+          </a>
+          <input
+            className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="text"
             placeholder="First name"
             onChange={(e) => setFirstName(e.target.value)}
             value={firstName}
           />
-          <input className="w-full max-w-md h-10 px-4 mx-4 rounded-md border border-gray-300 focus:border-logoblue focus:ring-logoblue"
+          <input
+            className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="text"
             placeholder="Last name"
             onChange={(e) => setLastName(e.target.value)}
             value={lastName}
           />
-          <input className="w-full max-w-md h-10 px-4 mx-4 rounded-md border border-gray-300 focus:border-logoblue focus:ring-logoblue"
+          <input
+            className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="text"
             placeholder="Email"
             onChange={(e) => setEmail(e.target.value)}
             value={email}
           />
-          <input className="w-full max-w-md h-10 px-4 mx-4 rounded-md border border-gray-300 focus:border-logoblue focus:ring-logoblue"
+          <input
+            className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="text"
             placeholder="Address"
             onChange={(e) => setAddress(e.target.value)}
             value={address}
           />
-          <input className="w-full max-w-md h-10 px-4 mx-4 rounded-md border border-gray-300 focus:border-logoblue focus:ring-logoblue"
+          <input
+            className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="tel"
             placeholder="Phone number"
             onChange={(e) => {
-              if(e.target.value.match(/^\d*$/)){
-                setPhone(e.target.value)
+              if (e.target.value.match(/^\d*$/)) {
+                setPhone(e.target.value);
               }
             }}
             value={phone}
           />
-          <input className="w-full max-w-md h-10 px-4 mx-4 rounded-md border border-gray-300 focus:border-logoblue focus:ring-logoblue"
+          <input
+            className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="password"
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
             value={password}
           />
-          <div className="flex items-center mt-[-14px] mr-[310px]">
+          <div className="mr-[310px] mt-[-14px] flex items-center">
             <input
               id="show-password"
               type="checkbox"
@@ -72,20 +81,25 @@ const Register = () => {
               onChange={(e) => setIsPasswordVisible(e.target.checked)}
               checked={isPasswordVisible}
             />
-            <label htmlFor="show-password" className="select-none">Show Password</label>
+            <label htmlFor="show-password" className="select-none">
+              Show Password
+            </label>
           </div>
           <Button asChild className="" size="lg">
             <p>Register</p>
           </Button>
-      </form>
-      <h2 className="flex items-center justify-center font-jua text-[64px]"> {message}
+        </form>
+        <h2 className="flex items-center justify-center font-jua text-[64px]">
+          {' '}
+          {message}
           <span className="">
-              <Cursor />
+            <Cursor />
           </span>
-      </h2>
+        </h2>
+      </div>
       <Footer />
-    </div>
-  )
+    </>
+  );
 };
 
 export default Register;

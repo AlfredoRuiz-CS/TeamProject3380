@@ -1,9 +1,13 @@
-import React from "react";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
 import { useState } from 'react';
-import { Button } from "../components/ui/button.tsx";
+import { Button } from '../components/ui/button.tsx';
+
+// Imports for state management
+import userStore from '@/components/store.ts';
+import type {} from '@redux-devtools/extension'; // required for devtools typing
+// import { devtools, persist } from "zustand/middleware";
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -12,28 +16,61 @@ const Login = () => {
 
   const [message] = useTypewriter({
     words: ['Always Fresh, just for you'],
-    loop: true
+    loop: true,
   });
 
+  // ? State management for login with Zustand
+  // const { login } = useStore(userStore);
+  // function loginHandler(e: any) {
+  //   login(email);
+  //   setEmail(e.target.value);
+  // }
+  const store = userStore();
+
+  function updateUserInfo() {
+    store.setUserName(email);
+    store.login();
+    // console.log(store.name, store.loggedIn);
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    // TODO: Add calls to backend to check if user exists
+    // TODO: If user exists, then update the userStore
+    updateUserInfo();
+  }
+
+  // console.log(store.name);
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-poppins text-black">
-      <Header />
-      <form className="flex flex-col items-center w-full gap-5 py-5">
-          <h1 className="text-8xl font-jua mb-10">Login</h1>
-          <p className="font-jua text-5xl mb-10">Don't have an account? <a href="/register" className="text-darkblue">Create One</a></p>
-          <input className="w-full max-w-md h-10 px-4 mx-4 rounded-md border border-gray-300 focus:border-logoblue focus:ring-logoblue"
+    <>
+      <div className="font-poppins flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite text-black">
+        <Header />
+        <form
+          className="flex w-full flex-col items-center gap-5 py-5"
+          onSubmit={handleSubmit}
+        >
+          <h1 className="mb-10 font-jua text-8xl">Login</h1>
+          <p className="mb-10 font-jua text-5xl">
+            Don't have an account?{' '}
+            <a href="/register" className="text-darkblue">
+              Create One
+            </a>
+          </p>
+          <input
+            className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="text"
             placeholder="Email"
             onChange={(e) => setEmail(e.target.value)}
             value={email}
           />
-          <input className="w-full max-w-md h-10 px-4 mx-4 rounded-md border border-gray-300 focus:border-logoblue focus:ring-logoblue"
-            type={isPasswordVisible ? "text" : "password"}
+          <input
+            className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+            type={isPasswordVisible ? 'text' : 'password'}
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
             value={password}
           />
-          <div className="flex items-center mt-[-14px] mr-[310px]">
+          <div className="mr-[310px] mt-[-14px] flex items-center">
             <input
               id="show-password"
               type="checkbox"
@@ -41,20 +78,26 @@ const Login = () => {
               onChange={(e) => setIsPasswordVisible(e.target.checked)}
               checked={isPasswordVisible}
             />
-            <label htmlFor="show-password" className="select-none text-[16px]">Show Password</label>
+            <label htmlFor="show-password" className="select-none text-[16px]">
+              Show Password
+            </label>
           </div>
-          <Button asChild className="my-6" size="lg">
-            <p>Log in</p>
+          <Button className="my-6" size="lg" type="submit">
+            Log in
           </Button>
-      </form>
-      <h2 className="flex items-center justify-center font-jua text-[64px] mb-32"> {message}
+        </form>
+
+        <h2 className="mb-32 flex items-center justify-center font-jua text-[64px]">
+          {' '}
+          {message}
           <span className="">
-              <Cursor />
+            <Cursor />
           </span>
-      </h2>
+        </h2>
+      </div>
       <Footer />
-    </div>
-  )
+    </>
+  );
 };
 
 export default Login;
