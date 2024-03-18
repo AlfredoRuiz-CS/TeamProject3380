@@ -51,7 +51,6 @@ const Orders = () => {
 
   function orderSelectHandler(order: number) {
     console.log('Order selected: ', order);
-
     sheetOpenHandler(order);
   }
 

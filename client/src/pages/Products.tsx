@@ -1,6 +1,6 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { productItem } from '@/components/ProductCard.tsx';
+import { productItem } from '@/components/store';
 import ProductCard from '@/components/ProductCard.tsx';
 import { useState } from 'react';
 

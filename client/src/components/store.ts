@@ -1,8 +1,37 @@
-import { productItem } from "../components/ProductCard.tsx";
-
 // Imports for state management
-import { create } from "zustand";
-import type {} from "@redux-devtools/extension"; // required for devtools typing
+import { create } from 'zustand';
+import type {} from '@redux-devtools/extension'; // required for devtools typing
+
+export type productItem = {
+  name: string;
+  price: number;
+  description: string[];
+  nutritionFacts?: {
+    servingSize: string;
+    servingsPerContainer: string;
+    calories: number;
+    totalFat: string;
+    sodium: string;
+    totalCarbohydrates: string;
+    dietaryFiber: string;
+    sugars: string;
+    protein: string;
+    potassium: string;
+    vitaminA: string;
+    vitaminC: string;
+    calcium: string;
+    iron: string;
+  };
+  shippingDetails?: {
+    dimensions: { length: string; width: string; height: string };
+    weight: string;
+  };
+
+  // * I have no idea how to grab an image from the backend...
+  image: string;
+  stock: number;
+  portion: 'lb.' | 'oz.' | 'item';
+};
 
 type UserState = {
   // States for user login
@@ -22,11 +51,11 @@ type UserState = {
 
 const userStore = create<UserState>((set) => ({
   loggedIn: false,
-  name: "",
+  name: '',
   cartItemsNumber: 0,
   cartItems: [],
   setUserName: (username: string) => set({ loggedIn: true, name: username }),
-  logout: () => set({ loggedIn: false, name: "" }),
+  logout: () => set({ loggedIn: false, name: '' }),
   login: () => set({ loggedIn: true }),
   addToCart: (product) =>
     set((state) => ({

@@ -27,15 +27,15 @@ const Footer = () => {
           </span>
           {', '}
           <span className="font-medium underline">
-            <a href={GITHUB.JAMIE}>Jamie Yanga</a>
+            <a href={GITHUB.THINH}>Thinh Pham</a>
           </span>
           {', '}
           <span className="font-medium underline">
-            <a href={GITHUB.THINH}>Thinh Pham</a>
+            <a href={GITHUB.CHINEDU}>Chinedu Okafor</a>
           </span>
           {', and '}
           <span className="font-medium underline">
-            <a href={GITHUB.CHINEDU}>Chinedu Okafor</a>
+            <a href={GITHUB.JAMIE}>Jamie Yanga</a>
           </span>
         </div>
       </div>

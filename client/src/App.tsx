@@ -22,10 +22,7 @@ function App() {
         <Route path="/orders" element={<Orders />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/products" element={<Products />} />
-        <Route
-          path="/product/Fresh Strawberries, 1 lb."
-          element={<Product />}
-        />
+        <Route path="/product/test" element={<Product />} />
         {/* Any non-valid URL returns to home */}
         <Route path="*" element={<Home />} />
       </Routes>

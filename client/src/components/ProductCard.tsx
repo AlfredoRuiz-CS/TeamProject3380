@@ -8,16 +8,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-export type productItem = {
-  name: string;
-  price: number;
-  description: string[];
-  // * I have no idea how to grab an image from the backend...
-  image: string;
-  stock: number;
-  portion: 'lb.' | 'oz.' | 'item';
-};
-
+import { productItem } from '@/components/store';
 interface ProductCardProps {
   product: productItem;
 }
