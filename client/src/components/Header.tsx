@@ -1,7 +1,7 @@
-import { useEffect } from "react";
-import { Button } from "./ui/button.tsx";
-import { IoMdCart } from "react-icons/io";
-import { IoIosArrowDown } from "react-icons/io";
+import { useEffect } from 'react';
+import { Button } from './ui/button.tsx';
+import { IoMdCart } from 'react-icons/io';
+import { IoIosArrowDown } from 'react-icons/io';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,27 +11,27 @@ import {
   DropdownMenuSeparator,
   // DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from "./ui/dropdown-menu.tsx";
+} from '@/components/ui/dropdown-menu.tsx';
 
 // Imports for state management
-import userStore from "@/components/store";
+import userStore from '@/components/store';
 // import { devtools, persist } from "zustand/middleware";
-import type {} from "@redux-devtools/extension"; // required for devtools typing
+import type {} from '@redux-devtools/extension'; // required for devtools typing
 
 interface HeaderProps {
-  color?: "blue" | "white";
+  color?: 'blue' | 'white';
 }
 
 const Header = (props: HeaderProps) => {
   const store = userStore();
   useEffect(() => {}, [store.loggedIn]);
 
-  let textColor = "text-white";
-  let borderColor = "border-white";
+  let textColor = 'text-white';
+  let borderColor = 'border-white';
   // Sets the default to white, unless the color props is set to blue
-  if (props.color === "blue") {
-    textColor = "text-primary";
-    borderColor = "border-primary";
+  if (props.color === 'blue') {
+    textColor = 'text-primary';
+    borderColor = 'border-primary';
   }
 
   function logoutHandler() {
@@ -42,17 +42,17 @@ const Header = (props: HeaderProps) => {
     <>
       <div
         className={
-          "font-poppins flex h-16 w-full justify-between overflow-x-hidden bg-transparent " +
+          'font-poppins flex h-16 w-full justify-between overflow-x-hidden bg-transparent ' +
           textColor
         }
       >
         {/* Logo */}
         <div className="pl-10 pt-5">
           <a href="/home">
-            {props.color === "blue" ? (
-              <img src="./logos/logo_full_blue.svg" alt="ShastaMart Logo" />
+            {props.color === 'blue' ? (
+              <img src="/logos/logo_full_blue.svg" alt="ShastaMart Logo" />
             ) : (
-              <img src="./logos/logo_full_white.svg" alt="ShastaMart Logo" />
+              <img src="/logos/logo_full_white.svg" alt="ShastaMart Logo" />
             )}
           </a>
         </div>
@@ -71,7 +71,7 @@ const Header = (props: HeaderProps) => {
             {/* If logged in display name and cart along with dropdown for dashboard*/}
             {store.loggedIn ? (
               <li className="flex items-center justify-center">
-                {textColor === "text-white" ? (
+                {textColor === 'text-white' ? (
                   <a href="/cart">
                     <IoMdCart size={20} color="white" />
                   </a>
@@ -86,7 +86,7 @@ const Header = (props: HeaderProps) => {
                 <Button
                   asChild
                   variant="outline"
-                  className={"bg-transparent " + textColor + " " + borderColor}
+                  className={'bg-transparent ' + textColor + ' ' + borderColor}
                 >
                   <a href="/login">Login</a>
                 </Button>
@@ -101,7 +101,7 @@ const Header = (props: HeaderProps) => {
                       variant="link"
                       size="sm"
                       className={
-                        "p-0 text-[16px] font-normal focus-visible:ring-0 " +
+                        'p-0 text-[16px] font-normal focus-visible:ring-0 ' +
                         textColor
                       }
                     >
