@@ -89,7 +89,7 @@ const ProductCard = (props: ProductCardProps) => {
             </div>
           ) : (
             <Button
-              className="text-md w-14 rounded-lg bg-[#48C9E5] py-5 font-jua text-black hover:bg-[#48C9E5]/85"
+              className="text-md bg-quantityblue hover:bg-quantityblue/85 w-14 rounded-lg py-5 font-jua text-black"
               onClick={quantityDropdownToggle}
             >
               Qty.
@@ -98,14 +98,14 @@ const ProductCard = (props: ProductCardProps) => {
 
           {/* Add To List Button */}
           <Button
-            className="text-md flex-grow rounded-lg bg-[#4874E5] py-5 font-jua text-black hover:bg-[#4874E5]/90"
+            className="text-md flex-grow rounded-lg bg-blue-500 py-5 font-jua text-black hover:bg-blue-500/90"
             onClick={handleAddToList}
           >
             Add to List
           </Button>
           {/* Add to Cart Button */}
           <Button
-            className="text-md flex-grow rounded-lg bg-[#F53E3E] py-5 font-jua text-black hover:bg-[#F53E3E]/85"
+            className="text-md flex-grow rounded-lg bg-red-500 py-5 font-jua text-black hover:bg-red-500/85"
             onClick={handleAddToCart}
           >
             Add to Cart

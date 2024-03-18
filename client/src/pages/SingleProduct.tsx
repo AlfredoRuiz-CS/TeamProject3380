@@ -94,11 +94,11 @@ const SingleProduct = (props: productProps) => {
                 })}{' '}
                 per {product.portion}
               </div>
-              <div className="mt-10 flex flex-row justify-center gap-3 px-3">
+              <div className="mt-10 flex flex-row justify-center gap-3">
                 {QuantityEnabled ? (
                   <div className="flex gap-2">
                     <Button
-                      className="text-md w-14 rounded-lg bg-[#48C9E5] py-7 font-jua text-black hover:bg-[#48C9E5]/85"
+                      className="bg-quantityblue hover:bg-quantityblue/85 flex h-12 flex-grow rounded-lg px-3 py-2 font-jua text-3xl text-black"
                       onClick={quantityDropdownToggle}
                     >
                       Qty.
@@ -107,7 +107,7 @@ const SingleProduct = (props: productProps) => {
                       defaultValue="1"
                       onValueChange={(e) => setQuantity(parseInt(e))}
                     >
-                      <SelectTrigger className="h-10 w-[3rem] flex-grow border border-black bg-gray-200">
+                      <SelectTrigger className="h-12 w-[3rem] flex-grow border border-black bg-gray-200">
                         <SelectValue placeholder="1" />
                       </SelectTrigger>
                       <SelectContent side="bottom">
@@ -121,18 +121,18 @@ const SingleProduct = (props: productProps) => {
                   </div>
                 ) : (
                   <Button
-                    className="text-md w-14 rounded-lg bg-[#48C9E5] py-6 font-jua text-black hover:bg-[#48C9E5]/85"
+                    className="bg-quantityblue hover:bg-quantityblue/85 flex h-12 flex-grow rounded-lg px-3 py-2 font-jua text-3xl text-black"
                     onClick={quantityDropdownToggle}
                   >
                     Qty.
                   </Button>
                 )}
 
-                <button className="flex h-[46px] w-[323px] items-center justify-center rounded-[10px] bg-red-500 px-[25px]">
+                <button className="flex h-12 flex-shrink items-center justify-center rounded-lg bg-red-500 px-2 py-3">
                   <div className="text-[32px]">Add to cart</div>
                 </button>
               </div>
-              <button className="mt-2 flex h-[46px] w-[428px] items-center justify-center rounded-[10px] bg-blue-500 px-[25px]">
+              <button className="flex h-12 flex-grow items-center justify-center place-self-end rounded-lg bg-blue-500 px-2 py-3">
                 <div className="text-[32px]">Add to list</div>
               </button>
             </div>
@@ -254,11 +254,11 @@ const SingleProduct = (props: productProps) => {
               <div className="font-junge text-xl">
                 Estimated ship dimensions:{' '}
                 {'Length ' +
-                  product.shippingDetails.dimensions.length +
+                  product.shippingDetails?.dimensions.length +
                   ' x Width ' +
-                  product.shippingDetails.dimensions.width +
+                  product.shippingDetails?.dimensions.width +
                   ' x Height ' +
-                  product.shippingDetails.dimensions.height}
+                  product.shippingDetails?.dimensions.height}
               </div>
             </div>
             {/* This should be the same for all items, so hardcoding is fine */}
