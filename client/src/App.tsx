@@ -1,11 +1,12 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-import Home from "./pages/Home";
-import Products from "./pages/Products";
-import Register from "./pages/Register";
-import Login from "./pages/Login";
-import Cart from "./pages/Cart";
-import "./index.css";
+import Home from './pages/Home';
+import Products from './pages/Products';
+import Register from './pages/Register';
+import Login from './pages/Login';
+import Cart from './pages/Cart';
+import Orders from './pages/Orders';
+import './index.css';
 
 function App() {
   return (
@@ -16,8 +17,9 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/home" element={<Home />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/products" element={<Products />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/orders" element={<Orders />} />
         <Route path="/cart" element={<Cart />} />
         {/* Any non-valid URL returns to home */}
         <Route path="*" element={<Home />} />

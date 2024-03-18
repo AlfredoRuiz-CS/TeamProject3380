@@ -13,10 +13,11 @@ import {
 } from '@/components/ui/select';
 
 interface productProps {
-  products: productItem[];
+  // ! REMOVE ? FOR FINAL VERSION
+  products?: productItem[];
 }
 
-let dummyProduct: productItem = {
+const dummyProduct: productItem = {
   name: 'Fresh Strawberries, 1 lb.',
   price: 10.99,
   description: [
@@ -28,12 +29,13 @@ let dummyProduct: productItem = {
   portion: 'lb.',
 };
 
-let dummyProducts: productItem[] = Array(10)
+export const dummyProducts: productItem[] = Array(10)
   .fill({})
   .map(() => ({ ...dummyProduct }));
 
 const Products = (props: productProps) => {
-  let [sortOrder, setSortOrder] = useState('Price Desc.');
+  let [valueSortOrder, setValueSortOrder] = useState('Price Desc.');
+  let [catSortOrder, setCatSortOrder] = useState('All');
 
   return (
     <>
@@ -47,21 +49,45 @@ const Products = (props: productProps) => {
           {/* Dropdown for sorting */}
           <div className="flex gap-2 place-self-start pb-5">
             <h3 className="items-center place-self-center pl-10 font-inter text-lg font-medium">
+              Category:{' '}
+            </h3>
+
+            {/* Sort Dropdown for category */}
+            <Select
+              defaultValue="All"
+              onValueChange={(e) => setCatSortOrder(e)}
+            >
+              <SelectTrigger className="h-10 w-[8rem] bg-white text-black ">
+                <SelectValue placeholder="All" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All">All</SelectItem>
+                <SelectItem value="Produce">Produce</SelectItem>
+                <SelectItem value="Meat">Meat</SelectItem>
+                <SelectItem value="Fish">Fish</SelectItem>
+                <SelectItem value="Dairy">Dairy</SelectItem>
+                <SelectItem value="Snacks">Snacks</SelectItem>
+              </SelectContent>
+            </Select>
+
+            <h3 className="items-center place-self-center pl-2 font-inter text-lg font-medium">
               Sort by:{' '}
             </h3>
 
             {/* Select Dropdown for sorting products by value */}
             <Select
               defaultValue="Price Desc."
-              onValueChange={(e) => setSortOrder(e)}
+              onValueChange={(e) => setValueSortOrder(e)}
             >
-              <SelectTrigger className="h-10 w-[8rem] bg-white text-black ">
+              <SelectTrigger className="h-10 w-[10rem] bg-white text-black ">
                 <SelectValue placeholder="Price Desc." />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Price Desc.">Price Desc.</SelectItem>
                 <SelectItem value="Price Asc.">Price Asc.</SelectItem>
-                <SelectItem value="Alpha">Alphabetical</SelectItem>
+                <SelectItem value="Alpha Desc.">Alphabetical Desc.</SelectItem>
+                <SelectItem value="Alpha Asc.">Alphabetical Asc.</SelectItem>
+                <SelectItem value="In List">In List</SelectItem>
               </SelectContent>
             </Select>
           </div>
