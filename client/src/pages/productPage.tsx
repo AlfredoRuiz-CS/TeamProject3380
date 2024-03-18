@@ -1,6 +1,6 @@
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-const Products = () => {
+const Product = () => {
     const product = {
       name: 'Fresh Strawberries',
       price: 3.97,
@@ -35,7 +35,7 @@ const Products = () => {
           
             <div className='flex flex-col p-[0px] gap-[5px] items-center overflow-auto'>
               <div className="flex items-center gap-5 ">
-              <img className="w-22 h-auto" src={"./assets/strawberry.png"} alt="Strawberry"/>
+              <img className="w-22 h-auto" src={"../assets/strawberry.png"} alt="Strawberry"/>
                 <div className="flex flex-col items-start gap-2">
                   <div className="text-[32px] font-jua">{product.name}</div>
                   <div className='text-[32px] font-jua'>1 lb</div>
@@ -141,4 +141,4 @@ const Products = () => {
       </>
     )
   };
-  export default Products;
+  export default Product;
