@@ -42,14 +42,16 @@ const ProductCard = (props: ProductCardProps) => {
   return (
     <>
       <div className="flex h-[30rem] w-[25rem] flex-col rounded-2xl bg-cardwhite">
-        {/* Product Image */}
-        <img
-          src={props.product.image}
-          className="mx-auto mt-8 h-[15rem] w-[20rem] rounded-xl object-cover"
-        ></img>
+        {/* Product Image / Link to individual Item Page */}
+        <a href={`/product/${props.product.name}`}>
+          <img
+            src={props.product.image}
+            className="mx-auto mt-8 h-[15rem] w-[20rem] rounded-xl object-cover"
+          ></img>
+        </a>
         {/* Product Name */}
-        <h2 className="ml-6 pt-4 text-left font-jua text-xl">
-          {props.product.name}
+        <h2 className="ml-6 mr-auto pt-4 text-left font-jua text-xl hover:underline hover:underline-offset-4">
+          <a href={`/product/${props.product.name}`}>{props.product.name}</a>
         </h2>
         {/* Short Product Info */}
         <ul className="ml-10 list-disc text-left text-sm">

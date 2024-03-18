@@ -1,23 +1,21 @@
-import Header from "../components/Header";
-import Footer from "../components/Footer";
-import { useTypewriter, Cursor } from "react-simple-typewriter";
-import { useState } from "react";
-import { Button } from "../components/ui/button.tsx";
-import { useEffect } from "react";
-import { productItem } from "../components/ProductCard.tsx";
+import Header from '../components/Header';
+import Footer from '../components/Footer';
+import { useTypewriter, Cursor } from 'react-simple-typewriter';
+import { useState } from 'react';
+import { Button } from '../components/ui/button.tsx';
 
 // Imports for state management
-import userStore from "@/components/store.ts";
-import type {} from "@redux-devtools/extension"; // required for devtools typing
+import userStore from '@/components/store.ts';
+import type {} from '@redux-devtools/extension'; // required for devtools typing
 // import { devtools, persist } from "zustand/middleware";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const [message] = useTypewriter({
-    words: ["Always Fresh, just for you"],
+    words: ['Always Fresh, just for you'],
     loop: true,
   });
 
@@ -53,7 +51,7 @@ const Login = () => {
         >
           <h1 className="mb-10 font-jua text-8xl">Login</h1>
           <p className="mb-10 font-jua text-5xl">
-            Don't have an account?{" "}
+            Don't have an account?{' '}
             <a href="/register" className="text-darkblue">
               Create One
             </a>
@@ -67,7 +65,7 @@ const Login = () => {
           />
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
-            type={isPasswordVisible ? "text" : "password"}
+            type={isPasswordVisible ? 'text' : 'password'}
             placeholder="Password"
             onChange={(e) => setPassword(e.target.value)}
             value={password}
@@ -90,7 +88,7 @@ const Login = () => {
         </form>
 
         <h2 className="mb-32 flex items-center justify-center font-jua text-[64px]">
-          {" "}
+          {' '}
           {message}
           <span className="">
             <Cursor />

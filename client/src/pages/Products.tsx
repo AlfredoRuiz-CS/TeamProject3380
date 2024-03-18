@@ -16,7 +16,7 @@ interface productProps {
   products: productItem[];
 }
 
-let dummyProduct: productItem = {
+const dummyProduct: productItem = {
   name: 'Fresh Strawberries, 1 lb.',
   price: 10.99,
   description: [
@@ -28,7 +28,7 @@ let dummyProduct: productItem = {
   portion: 'lb.',
 };
 
-let dummyProducts: productItem[] = Array(10)
+const dummyProducts: productItem[] = Array(10)
   .fill({})
   .map(() => ({ ...dummyProduct }));
 
