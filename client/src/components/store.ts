@@ -3,6 +3,7 @@ import { create } from 'zustand';
 import type {} from '@redux-devtools/extension'; // required for devtools typing
 
 export type productItem = {
+  productId: number;
   name: string;
   price: number;
   description: string[];

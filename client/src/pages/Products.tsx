@@ -18,6 +18,7 @@ interface productProps {
 }
 
 const dummyProduct: productItem = {
+  productId: 12345,
   name: 'Fresh Strawberries, 1 lb.',
   price: 10.99,
   description: [

@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -11,13 +12,13 @@ import {
 } from '@/components/ui/select';
 
 import { productItem } from '@/components/store';
-
+import { dummyProducts } from './Products';
 interface productProps {
-  // ! REMOVE ? FOR FINAL VERSION
   product: productItem;
 }
 
 const dummyProduct: productItem = {
+  productId: 12345,
   name: 'Fresh Strawberries',
   price: 3.97,
   image: '/assets/strawberries.jpg',

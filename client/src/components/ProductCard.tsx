@@ -9,11 +9,17 @@ import {
 } from '@/components/ui/select';
 
 import { productItem } from '@/components/store';
+import { Link, useParams } from 'react-router-dom';
 interface ProductCardProps {
   product: productItem;
 }
 
 const ProductCard = (props: ProductCardProps) => {
+  // Impoting the product from dynamic URL
+  let product: productItem = useParams();
+
+  console.log(product.productId);
+
   // Funcitonality to toggle the quantity dropdown
   const [QuantityEnabled, setQuantityEnabled] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -34,12 +40,12 @@ const ProductCard = (props: ProductCardProps) => {
     <>
       <div className="flex h-[30rem] w-[25rem] flex-col rounded-2xl bg-cardwhite">
         {/* Product Image / Link to individual Item Page */}
-        <a href={`/product/${props.product.name}`}>
+        <Link to={`/product/${props.product.productId}`}>
           <img
             src={props.product.image}
             className="mx-auto mt-8 h-[15rem] w-[20rem] rounded-xl object-cover"
           ></img>
-        </a>
+        </Link>
         {/* Product Name */}
         <h2 className="ml-6 mr-auto pt-4 text-left font-jua text-xl hover:underline hover:underline-offset-4">
           <a href={`/product/${props.product.name}`}>{props.product.name}</a>
