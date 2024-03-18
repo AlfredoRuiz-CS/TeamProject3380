@@ -1,17 +1,46 @@
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import ErrorText from '../components/ErrorText';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
-import { useState } from 'react';
+import React, { ReactEventHandler, useState } from 'react';
 import { Button } from '../components/ui/button.tsx';
+import { useFormik, ErrorMessage } from "formik";
+import * as Yup from "yup";
+
+
+const validationSchema = Yup.object({
+  firstName: Yup.string().required("First name is required"),
+  lastName: Yup.string().required("Last name is required"),
+  email: Yup.string().email("Invalid email address").required("Email is required"),
+  address: Yup.string().required("Address is required"),
+  phone: Yup.string().required("Phone number is required"),
+  password: Yup.string().matches(/^\d*$/, "Phone number is not valid").required("Password is required").max(10),
+});
 
 const Register = () => {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [address, setAddress] = useState('');
-  const [phone, setPhone] = useState('');
-  const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+  const formik = useFormik({
+    initialValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      address: "",
+      phone: "",
+      password: "",
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      console.log(values);
+    },
+  });
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    if (value.match(/^\d*$/)) {
+      formik.setFieldValue('phone', value);
+    }
+  };
 
   const [message] = useTypewriter({
     words: ['Great finds, Great buys'],
@@ -31,47 +60,50 @@ const Register = () => {
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="text"
             placeholder="First name"
-            onChange={(e) => setFirstName(e.target.value)}
-            value={firstName}
+            name="firstName"
+            onChange={formik.handleChange}
+            value={formik.values.firstName}
           />
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="text"
             placeholder="Last name"
-            onChange={(e) => setLastName(e.target.value)}
-            value={lastName}
+            name="lastName"
+            onChange={formik.handleChange}
+            value={formik.values.lastName}
           />
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="text"
             placeholder="Email"
-            onChange={(e) => setEmail(e.target.value)}
-            value={email}
+            name="email"
+            onChange={formik.handleChange}
+            value={formik.values.email}
           />
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="text"
             placeholder="Address"
-            onChange={(e) => setAddress(e.target.value)}
-            value={address}
+            name="address"
+            onChange={formik.handleChange}
+            value={formik.values.address}
           />
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="tel"
             placeholder="Phone number"
-            onChange={(e) => {
-              if (e.target.value.match(/^\d*$/)) {
-                setPhone(e.target.value);
-              }
-            }}
-            value={phone}
+            name="phone"
+            onChange={handlePhoneChange}
+            value={formik.values.phone}
           />
+          {/* <ErrorMessage name="phone" component={ErrorText} /> */}
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
-            type="password"
+            type={isPasswordVisible ? "text" : "password"}
             placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-            value={password}
+            name="password"
+            onChange={formik.handleChange}
+            value={formik.values.password}
           />
           <div className="mr-[310px] mt-[-14px] flex items-center">
             <input
