@@ -18,7 +18,6 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/products" element={<Products />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/cart" element={<Cart />} />
         {/* Any non-valid URL returns to home */}
