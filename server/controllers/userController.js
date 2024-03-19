@@ -1,5 +1,4 @@
-// userController.js
-const { signup, login } = require('../models/userModel');
+const { register, login } = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 
 const createToken = (id) => {
