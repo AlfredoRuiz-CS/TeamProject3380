@@ -41,17 +41,17 @@ const dummyProduct: productItem = {
     servingSize: '8 medium strawberries',
     servingsPerContainer: '1.5',
     calories: 50,
-    totalFat: '0g',
-    sodium: '0mg',
-    totalCarbohydrates: '11g',
-    dietaryFiber: '2g',
-    sugars: '8g',
-    protein: '1g',
-    potassium: '170mg',
-    vitaminA: '100mg',
-    vitaminC: '50mg',
-    calcium: '10mg',
-    iron: '10mg',
+    totalFat: 0,
+    sodium: 0,
+    totalCarbohydrates: 11,
+    dietaryFiber: 2,
+    sugars: 8,
+    protein: 1,
+    potassium: 170,
+    vitaminA: 1,
+    vitaminC: 144,
+    calcium: 24,
+    iron: 0.6,
   },
 };
 
@@ -69,6 +69,23 @@ const SingleProduct = () => {
     setQuantityEnabled(!QuantityEnabled);
   }
 
+  //for calculating %DV
+  const dV = {
+    tFat: 78, //gram
+    sod: 2300, //mg
+    tCarbohydrate: 275, //gram
+    dietFiber: 28, //gram
+    potassium: 4700, //mg
+    vitA: 900, //mcg
+    vitC: 90, //mg
+    calcium: 1300, //mg
+    iron: 18, //mg
+  };
+
+  //calculate %DV
+  const calDV = (value:number, dailyValue:number) => {
+    return (Math.round((value/dailyValue)*100))+'%';
+  };
   // function handleAddToList() {
   //   console.log('Added ', quantity, ' ', product.name, 'to List');
   // }
@@ -181,68 +198,68 @@ const SingleProduct = () => {
               <div className="text-[28px]">
                 Total Fat {product.nutritionFacts?.totalFat}
               </div>
-              <div className="text-[28px]">0%</div>
+              <div className="text-[28px]">{calDV(product.nutritionFacts?.totalFat||0,dV.tFat)}</div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Sodium {product.nutritionFacts?.sodium}
               </div>
-              <div className="text-[28px]">0%</div>
+              <div className="text-[28px]">{calDV(product.nutritionFacts?.sodium||0,dV.sod)}</div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Total Cabohydrate {product.nutritionFacts?.totalCarbohydrates}
               </div>
-              <div className="text-[28px]">4%</div>
+              <div className="text-[28px]">{calDV(product.nutritionFacts?.totalCarbohydrates || 0,dV.tCarbohydrate)}</div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Dietary Fiber {product.nutritionFacts?.dietaryFiber}
               </div>
-              <div className="text-[28px]">8%</div>
+              <div className="text-[28px]">{calDV(product.nutritionFacts?.dietaryFiber || 0,dV.dietFiber)}</div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Sugar {product.nutritionFacts?.sugars}
               </div>
-              <div className="text-[28px]">8%</div>
+              <div className="text-[28px]"></div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Protein {product.nutritionFacts?.protein}
               </div>
-              <div className="text-[28px]">8%</div>
+              <div className="text-[28px]"></div>
             </div>
 
             <div className="flex justify-between ">
               <div className="text-[28px]">
                 Potassium {product.nutritionFacts?.potassium}
               </div>
-              <div className="text-[28px]">5%</div>
+              <div className="text-[28px]">{calDV(product.nutritionFacts?.potassium || 0,dV.potassium)}</div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Vitamin A {product.nutritionFacts?.vitaminA}
               </div>
-              <div className="text-[28px]">0%</div>
+              <div className="text-[28px]">{calDV(product.nutritionFacts?.vitaminA || 0,dV.vitA)}</div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Calcium {product.nutritionFacts?.calcium}
               </div>
-              <div className="text-[28px]">2%</div>
+              <div className="text-[28px]">{calDV(product.nutritionFacts?.calcium || 0,dV.calcium)}</div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Vitamin C {product.nutritionFacts?.vitaminC}
               </div>
-              <div className="text-[28px]">160%</div>
+              <div className="text-[28px]">{calDV(product.nutritionFacts?.vitaminC || 0,dV.vitC)}</div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Iron {product.nutritionFacts?.iron}
               </div>
-              <div className="text-[28px]">2%</div>
+              <div className="text-[28px]">{calDV(product.nutritionFacts?.iron || 0,dV.iron)}</div>
             </div>
             <div className="text-base font-normal">
               *The %Daily Value (DV) tells you how much a nutrient in a serving
