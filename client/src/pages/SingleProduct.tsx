@@ -41,17 +41,17 @@ const dummyProduct: productItem = {
     servingSize: '8 medium strawberries',
     servingsPerContainer: '1.5',
     calories: 50,
-    totalFat: 0,
-    sodium: 0,
-    totalCarbohydrates: 11,
-    dietaryFiber: 2,
-    sugars: 8,
-    protein: 1,
-    potassium: 170,
-    vitaminA: 1,
-    vitaminC: 144,
-    calcium: 24,
-    iron: 0.6,
+    totalFat: '0',
+    sodium: '0',
+    totalCarbohydrates: '11 g',
+    dietaryFiber: '2 g',
+    sugars: '8 g',
+    protein: '1 g',
+    potassium: '170 mg',
+    vitaminA: '1 mg',
+    vitaminC: '144 mg',
+    calcium: '24 mg',
+    iron: '0.6 mg',
   },
 };
 
@@ -83,8 +83,8 @@ const SingleProduct = () => {
   };
 
   //calculate %DV
-  const calDV = (value:number, dailyValue:number) => {
-    return (Math.round((value/dailyValue)*100))+'%';
+  const calDV = (value: number, dailyValue: number) => {
+    return Math.round((value / dailyValue) * 100) + '%';
   };
   // function handleAddToList() {
   //   console.log('Added ', quantity, ' ', product.name, 'to List');
@@ -197,25 +197,55 @@ const SingleProduct = () => {
               <div className="text-[28px]">
                 Total Fat {product.nutritionFacts?.totalFat}
               </div>
-              <div className="text-[28px]">{calDV(product.nutritionFacts?.totalFat||0,dV.tFat)}</div>
+              <div className="text-[28px]">
+                {calDV(
+                  Number(
+                    product.nutritionFacts?.totalFat?.replace(/\D/g, '')
+                  ) || 0,
+                  dV.tFat
+                )}
+              </div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Sodium {product.nutritionFacts?.sodium}
               </div>
-              <div className="text-[28px]">{calDV(product.nutritionFacts?.sodium||0,dV.sod)}</div>
+              <div className="text-[28px]">
+                {calDV(
+                  Number(product.nutritionFacts?.sodium?.replace(/\D/g, '')) ||
+                    0,
+                  dV.sod
+                )}
+              </div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Total Cabohydrate {product.nutritionFacts?.totalCarbohydrates}
               </div>
-              <div className="text-[28px]">{calDV(product.nutritionFacts?.totalCarbohydrates || 0,dV.tCarbohydrate)}</div>
+              <div className="text-[28px]">
+                {calDV(
+                  Number(
+                    product.nutritionFacts?.totalCarbohydrates?.replace(
+                      /\D/g,
+                      ''
+                    )
+                  ) || 0,
+                  dV.tCarbohydrate
+                )}
+              </div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Dietary Fiber {product.nutritionFacts?.dietaryFiber}
               </div>
-              <div className="text-[28px]">{calDV(product.nutritionFacts?.dietaryFiber || 0,dV.dietFiber)}</div>
+              <div className="text-[28px]">
+                {calDV(
+                  Number(
+                    product.nutritionFacts?.dietaryFiber?.replace(/\D/g, '')
+                  ) || 0,
+                  dV.dietFiber
+                )}
+              </div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
@@ -234,31 +264,63 @@ const SingleProduct = () => {
               <div className="text-[28px]">
                 Potassium {product.nutritionFacts?.potassium}
               </div>
-              <div className="text-[28px]">{calDV(product.nutritionFacts?.potassium || 0,dV.potassium)}</div>
+              <div className="text-[28px]">
+                {calDV(
+                  Number(
+                    product.nutritionFacts?.potassium?.replace(/\D/g, '')
+                  ) || 0,
+                  dV.potassium
+                )}
+              </div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Vitamin A {product.nutritionFacts?.vitaminA}
               </div>
-              <div className="text-[28px]">{calDV(product.nutritionFacts?.vitaminA || 0,dV.vitA)}</div>
+              <div className="text-[28px]">
+                {calDV(
+                  Number(
+                    product.nutritionFacts?.vitaminA?.replace(/\D/g, '')
+                  ) || 0,
+                  dV.vitA
+                )}
+              </div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Calcium {product.nutritionFacts?.calcium}
               </div>
-              <div className="text-[28px]">{calDV(product.nutritionFacts?.calcium || 0,dV.calcium)}</div>
+              <div className="text-[28px]">
+                {calDV(
+                  Number(product.nutritionFacts?.calcium?.replace(/\D/g, '')) ||
+                    0,
+                  dV.calcium
+                )}
+              </div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Vitamin C {product.nutritionFacts?.vitaminC}
               </div>
-              <div className="text-[28px]">{calDV(product.nutritionFacts?.vitaminC || 0,dV.vitC)}</div>
+              <div className="text-[28px]">
+                {calDV(
+                  Number(
+                    product.nutritionFacts?.vitaminC?.replace(/\D/g, '')
+                  ) || 0,
+                  dV.vitC
+                )}
+              </div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Iron {product.nutritionFacts?.iron}
               </div>
-              <div className="text-[28px]">{calDV(product.nutritionFacts?.iron || 0,dV.iron)}</div>
+              <div className="text-[28px]">
+                {calDV(
+                  Number(product.nutritionFacts?.iron?.replace(/\D/g, '')) || 0,
+                  dV.iron
+                )}
+              </div>
             </div>
             <div className="text-base font-normal">
               *The %Daily Value (DV) tells you how much a nutrient in a serving

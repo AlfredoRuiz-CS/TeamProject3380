@@ -12,17 +12,17 @@ export type productItem = {
     servingSize: string;
     servingsPerContainer: string;
     calories: number;
-    totalFat: string;
-    sodium: string;
-    totalCarbohydrates: string;
-    dietaryFiber: string;
-    sugars: string;
-    protein: string;
-    potassium: string;
-    vitaminA: string;
-    vitaminC: string;
-    calcium: string;
-    iron: string;
+    totalFat?: string;
+    sodium?: string;
+    totalCarbohydrates?: string;
+    dietaryFiber?: string;
+    sugars?: string;
+    protein?: string;
+    potassium?: string;
+    vitaminA?: string;
+    vitaminC?: string;
+    calcium?: string;
+    iron?: string;
   };
   shippingDetails?: {
     dimensions: { length: string; width: string; height: string };
