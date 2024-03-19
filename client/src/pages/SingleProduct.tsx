@@ -91,7 +91,6 @@ const SingleProduct = () => {
             />
             <div className="flex flex-col items-start gap-2 font-jua">
               <div className="text-[32px]">{product.name}</div>
-              <div className="text-[32px]"></div>
               <div className="text-[32px]">
                 {product.price.toLocaleString('en-US', {
                   style: 'currency',
@@ -133,7 +132,7 @@ const SingleProduct = () => {
                   </Button>
                 )}
 
-                <button className="flex h-12 flex-grow items-center justify-center place-self-end rounded-lg bg-blue-500 px-2 py-3">
+                <button className="flex h-12 min-w-24 flex-shrink items-center justify-center place-self-end rounded-lg bg-blue-500 px-2 py-3">
                   <div className="text-[32px]">Add to list</div>
                 </button>
               </div>

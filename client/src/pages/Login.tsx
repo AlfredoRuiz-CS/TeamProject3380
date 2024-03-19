@@ -20,17 +20,12 @@ const Login = () => {
   });
 
   // ? State management for login with Zustand
-  // const { login } = useStore(userStore);
-  // function loginHandler(e: any) {
-  //   login(email);
-  //   setEmail(e.target.value);
-  // }
   const store = userStore();
 
   function updateUserInfo() {
     store.setUserName(email);
     store.login();
-    // console.log(store.name, store.loggedIn);
+    console.log(store);
   }
 
   function handleSubmit(e: React.FormEvent) {

@@ -1,5 +1,6 @@
 // Imports for state management
-import { create } from 'zustand';
+import { create, StateCreator } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
 import type {} from '@redux-devtools/extension'; // required for devtools typing
 
 export type productItem = {
@@ -50,7 +51,9 @@ type UserState = {
   resetCart: () => void;
 };
 
-const userStore = create<UserState>((set) => ({
+const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
+  set
+) => ({
   loggedIn: false,
   name: '',
   cartItemsNumber: 0,
@@ -70,6 +73,13 @@ const userStore = create<UserState>((set) => ({
       cartItemsNumber: state.cartItemsNumber - 1,
     })),
   resetCart: () => set({ cartItemsNumber: 0, cartItems: [] }),
-}));
+});
 
-export default userStore;
+const useUserStore = create(
+  persist(userStore, {
+    name: 'user-store',
+    storage: createJSONStorage(() => localStorage),
+  })
+);
+
+export default useUserStore;
