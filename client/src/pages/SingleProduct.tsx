@@ -57,10 +57,17 @@ const dummyProduct: productItem = {
 
 const SingleProduct = (props: productProps) => {
   // ! REMOVE DUMMYPRODUCT FOR FINAL VERSION
-  const product = dummyProduct;
+  const product = props.product;
+  const test = useParams().productId;
+  console.log(test);
   // Funcitonality to toggle the quantity dropdown
+  const [isLoading, setIsLoading] = useState(true);
   const [QuantityEnabled, setQuantityEnabled] = useState(false);
   const [quantity, setQuantity] = useState(1);
+
+  if (test != undefined) {
+    setIsLoading(false);
+  }
 
   function quantityDropdownToggle() {
     setQuantityEnabled(!QuantityEnabled);
@@ -73,8 +80,10 @@ const SingleProduct = (props: productProps) => {
   function handleAddToCart() {
     console.log('Added ', quantity, ' ', props.product.name, 'to Cart');
   }
+
   return (
     <>
+      {isLoading ? <div>Loading...</div> : <div></div>}
       <div className="font-poppins flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite pb-10 text-black">
         <Header />
 
