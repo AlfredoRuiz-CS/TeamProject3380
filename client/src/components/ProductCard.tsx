@@ -9,16 +9,15 @@ import {
 } from '@/components/ui/select';
 
 import { productItem } from '@/components/store';
+import { dummyProducts } from '@/pages/Products';
 import { Link, useParams } from 'react-router-dom';
+
 interface ProductCardProps {
   product: productItem;
 }
 
 const ProductCard = (props: ProductCardProps) => {
   // Impoting the product from dynamic URL
-  let product: productItem = useParams();
-
-  console.log(product.productId);
 
   // Funcitonality to toggle the quantity dropdown
   const [QuantityEnabled, setQuantityEnabled] = useState(false);
@@ -95,7 +94,7 @@ const ProductCard = (props: ProductCardProps) => {
             </div>
           ) : (
             <Button
-              className="text-md bg-quantityblue hover:bg-quantityblue/85 w-14 rounded-lg py-5 font-jua text-black"
+              className="text-md w-14 rounded-lg bg-quantityblue py-5 font-jua text-black hover:bg-quantityblue/85"
               onClick={quantityDropdownToggle}
             >
               Qty.

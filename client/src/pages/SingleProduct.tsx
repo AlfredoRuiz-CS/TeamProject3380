@@ -13,9 +13,9 @@ import {
 
 import { productItem } from '@/components/store';
 import { dummyProducts } from './Products';
-interface productProps {
-  product: productItem;
-}
+// interface productProps {
+//   product: productItem;
+// }
 
 const dummyProduct: productItem = {
   productId: 12345,
@@ -55,35 +55,30 @@ const dummyProduct: productItem = {
   },
 };
 
-const SingleProduct = (props: productProps) => {
-  // ! REMOVE DUMMYPRODUCT FOR FINAL VERSION
-  const product = props.product;
-  const test = useParams().productId;
+const SingleProduct = () => {
+  // ! REMOVE DUMMYPRODUCT FOR FINAL VERSION !!
+  const product = dummyProduct;
+  const test = useParams();
+
   console.log(test);
   // Funcitonality to toggle the quantity dropdown
-  const [isLoading, setIsLoading] = useState(true);
   const [QuantityEnabled, setQuantityEnabled] = useState(false);
   const [quantity, setQuantity] = useState(1);
-
-  if (test != undefined) {
-    setIsLoading(false);
-  }
 
   function quantityDropdownToggle() {
     setQuantityEnabled(!QuantityEnabled);
   }
 
-  function handleAddToList() {
-    console.log('Added ', quantity, ' ', props.product.name, 'to List');
-  }
+  // function handleAddToList() {
+  //   console.log('Added ', quantity, ' ', product.name, 'to List');
+  // }
 
-  function handleAddToCart() {
-    console.log('Added ', quantity, ' ', props.product.name, 'to Cart');
-  }
+  // function handleAddToCart() {
+  //   console.log('Added ', quantity, ' ', product.name, 'to Cart');
+  // }
 
   return (
     <>
-      {isLoading ? <div>Loading...</div> : <div></div>}
       <div className="font-poppins flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite pb-10 text-black">
         <Header />
 
@@ -108,7 +103,7 @@ const SingleProduct = (props: productProps) => {
                 {QuantityEnabled ? (
                   <div className="flex gap-2">
                     <Button
-                      className="bg-quantityblue hover:bg-quantityblue/85 flex h-12 flex-grow rounded-lg px-3 py-2 font-jua text-3xl text-black"
+                      className="flex h-12 flex-grow rounded-lg bg-quantityblue px-3 py-2 font-jua text-3xl text-black hover:bg-quantityblue/85"
                       onClick={quantityDropdownToggle}
                     >
                       Qty.
@@ -131,19 +126,19 @@ const SingleProduct = (props: productProps) => {
                   </div>
                 ) : (
                   <Button
-                    className="bg-quantityblue hover:bg-quantityblue/85 flex h-12 flex-grow rounded-lg px-3 py-2 font-jua text-3xl text-black"
+                    className="flex h-12 rounded-lg bg-quantityblue px-3 py-2 font-jua text-3xl text-black hover:bg-quantityblue/85"
                     onClick={quantityDropdownToggle}
                   >
                     Qty.
                   </Button>
                 )}
 
-                <button className="flex h-12 flex-shrink items-center justify-center rounded-lg bg-red-500 px-2 py-3">
-                  <div className="text-[32px]">Add to cart</div>
+                <button className="flex h-12 flex-grow items-center justify-center place-self-end rounded-lg bg-blue-500 px-2 py-3">
+                  <div className="text-[32px]">Add to list</div>
                 </button>
               </div>
-              <button className="flex h-12 flex-grow items-center justify-center place-self-end rounded-lg bg-blue-500 px-2 py-3">
-                <div className="text-[32px]">Add to list</div>
+              <button className="flex h-12 w-full flex-grow items-center justify-center rounded-lg bg-red-500 px-2 py-3">
+                <div className="text-[32px]">Add to cart</div>
               </button>
             </div>
           </div>
