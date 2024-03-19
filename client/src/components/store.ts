@@ -39,6 +39,17 @@ type UserState = {
   // States for user login
   loggedIn: boolean;
   name: string;
+  email: string;
+  password: string;
+  phone: string;
+  address: {
+    street: string;
+    city: string;
+    state: string;
+    zip: string;
+  };
+  accountCreatedDate: Date;
+  accountType: 'customer' | 'admin';
   cartItemsNumber: number;
   cartItems: productItem[];
 
@@ -56,6 +67,17 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
 ) => ({
   loggedIn: false,
   name: '',
+  accountCreatedDate: new Date(),
+  accountType: 'customer',
+  email: 'test@nothing.com',
+  password: 'greatgooglymoogly123',
+  phone: '123-456-7890',
+  address: {
+    street: '1234 Main St.',
+    city: 'Nowhere',
+    state: 'CA',
+    zip: '12345',
+  },
   cartItemsNumber: 0,
   cartItems: [],
   setUserName: (username: string) => set({ loggedIn: true, name: username }),
