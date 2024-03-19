@@ -1,6 +1,6 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { productItem } from '@/components/ProductCard';
+import { productItem } from '@/components/store';
 import { dummyProducts } from './Products';
 
 import { useEffect, useState } from 'react';
