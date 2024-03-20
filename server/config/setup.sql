@@ -1,52 +1,75 @@
--- Use POS;
+DROP TABLE IF EXISTS category;
+DROP TABLE IF EXISTS product;
+DROP TABLE IF EXISTS employee;
+DROP TABLE IF EXISTS customer;
+DROP TABLE IF EXISTS membership;
+DROP TABLE IF EXISTS mbshipPayment;
+DROP TABLE IF EXISTS purchaseOrder;
+DROP TABLE IF EXISTS payment;
+DROP TABLE IF EXISTS orderLine;
+DROP TABLE IF EXISTS shipping;
+DROP TABLE IF EXISTS refund;
+DROP TABLE IF EXISTS supplier;
+DROP TABLE IF EXISTS inventory;
+DROP TABLE IF EXISTS totalInventory;
+
+-- @block
 CREATE TABLE category(
-	categoryID int PRIMARY KEY,
+	categoryID int PRIMARY KEY AUTO_INCREMENT,
     categName varchar(50)
 );
 
+-- @block
 CREATE TABLE product(
-	productID int,
+	productID int PRIMARY KEY AUTO_INCREMENT,
     productName varchar(50),
     productDesc varchar(100),
-    productPrice int,
+    productPrice decimal(10,2),
     stockQuantity int,
     categoryID int,
-    PRIMARY KEY (productID),
     FOREIGN KEY (categoryID) REFERENCES category(categoryID)
 	ON DELETE SET NULL
 );
 
+-- @block
 CREATE TABLE employee(
-	empID int primary key,
-    empName varchar(100),
+	empID int PRIMARY KEY AUTO_INCREMENT,
+    fname varchar(100) NOT NULL,
+    lName varchar(100) NOT NULL,
     jobTitle varchar(50),
-    phoneNumber int,
+    phoneNumber varchar(10),
     empEmail varchar(100),
-    empPassword binary(5)
+    empPassword binary(64)
 );
 
+-- @block
 CREATE TABLE customer(
-	customerID int PRIMARY KEY autoincrement,
-    cusName varchar(200),
-    cusEmail varchar(100),
-    cusPhone int,
-    cusAddress varchar(200)
+	customerID int PRIMARY KEY AUTO_INCREMENT,
+    fName varchar(100) NOT NULL,
+    lName varchar(100) NOT NULL,
+    email varchar(100),
+    phoneNumber varchar(10),
+    streetAddress varchar(100),
+    city varchar(50),
+    state varchar(50),
+    zipcode varchar(20)
 );
-
+-- @block
 CREATE TABLE membership(
-	membershipID int PRIMARY KEY,
+	membershipID int PRIMARY KEY AUTO_INCREMENT,
     customerID int,
     membershipType varchar(50),
     membershipStatus varchar(50),
     startDate date,
     endDate date,
     renewalDate date,
-    FOREIGN KEY (customerID) REFERENCES customerProfile(customerID)
+    FOREIGN KEY (customerID) REFERENCES customer(customerID)
     ON DELETE CASCADE
 );
 
+-- @block
 CREATE TABLE mbshipPayment(
-	mbPaymentID int PRIMARY KEY,
+	mbPaymentID int PRIMARY KEY AUTO_INCREMENT,
     membershipID int,
     amount decimal(10,2),
     paymentDate date,
@@ -60,8 +83,9 @@ CREATE TABLE mbshipPayment(
     ON DELETE SET NULL
 );
 
+-- @block
 CREATE TABLE purchaseOrder (
-	orderID int PRIMARY KEY,
+	orderID int PRIMARY KEY AUTO_INCREMENT,
     customerID int,
     orderDate date,
     tax decimal(10,2),
@@ -70,8 +94,9 @@ CREATE TABLE purchaseOrder (
     ON DELETE SET NULL
 );
 
+-- @block
 CREATE TABLE payment(
-	paymentID int PRIMARY KEY,
+	paymentID int PRIMARY KEY AUTO_INCREMENT,
     orderID int,
     paymentDate date,
     expeditedShipping boolean,
@@ -82,8 +107,9 @@ CREATE TABLE payment(
     ON DELETE SET NULL
 );
 
+-- @block
 CREATE TABLE orderLine(
-	orderLineID int PRIMARY KEY,
+	orderLineID int PRIMARY KEY AUTO_INCREMENT,
     orderID int,
     productID int,
     quantity int,
@@ -97,8 +123,9 @@ CREATE TABLE orderLine(
     ON UPDATE CASCADE
 );
 
+-- @block
 CREATE TABLE shipping(
-	shippingID int PRIMARY KEY,
+	shippingID int PRIMARY KEY AUTO_INCREMENT,
     membershipID int,
     orderID int,
     paymentID int,
@@ -118,8 +145,9 @@ CREATE TABLE shipping(
     ON DELETE CASCADE
 );
 
+-- @block
 CREATE TABLE refund(
-	refundID int PRIMARY KEY,
+	refundID int PRIMARY KEY AUTO_INCREMENT,
     paymentID int,
     refundDate date,
     amount decimal(10,2),
@@ -129,15 +157,21 @@ CREATE TABLE refund(
     ON DELETE CASCADE
 );
 
+-- @block
 CREATE TABLE supplier(
-	supplierID int PRIMARY KEY,
-    name varchar(100),
-    phoneNum int,
-    address varchar(200)
+	supplierID int PRIMARY KEY AUTO_INCREMENT,
+    fName varchar(100) NOT NULL,
+    lName varchar(100) NOT NULL,
+    phoneNumber varchar(10),
+    streetAddress varchar(100),
+    city varchar(50),
+    state varchar(50),
+    zipcode varchar(20)
 );
 
+-- @block
 CREATE TABLE inventory(
-	inventoryID int PRIMARY KEY,
+	inventoryID int PRIMARY KEY AUTO_INCREMENT,
     productID int,
     supplierID int,
     quantity int,
@@ -151,11 +185,11 @@ CREATE TABLE inventory(
     ON UPDATE CASCADE
 );
 
+-- @block
 CREATE TABLE totalInventory(
-	totalInventoryID int,
+	totalInventoryID int PRIMARY KEY AUTO_INCREMENT,
     inventoryValue decimal(10,2),
     inventoryQuantity int,
     totalValueChange decimal(10,2),
-    totalQuantityChange int,
-    PRIMARY KEY(totalInventoryID)
+    totalQuantityChange int
 );
