@@ -65,11 +65,53 @@ const getAllCustomers = async (req, res) => {
     res.writeHead(200, { 'Content-Type' : 'application/json' })
     res.end(JSON.stringify(customers));
   } catch (error) {
-    console.log(error);
     res.writeHead(400, { 'Content-Type' : 'application/json' })
     res.end(JSON.stringify({ error: error.message}))
   }
 };
+
+const getUserPaymentInfo = async (req, res) => {
+  try {
+    const body = await getRequestBody(req);
+    const { email } = body;
+
+    const paymentInfoQuery = await userModel.getUserPaymentInfo(email);
+    if (!paymentInfoQuery){
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.end("none");
+    }
+
+    let paymentInfo = paymentInfo[0];
+    let expirationDate = `${paymentInfo.expiration.getMonth() + 1}-${paymentInfo.expiration.getDate()}-${paymentInfo.expiration.getFullYear()}`;
+    paymentInfo.expiration = expirationDate;
+
+    res.writeHead(200, { 'Content-Type' : 'application/json' });
+    res.end(JSON.stringify(paymentInfo));
+
+  } catch (error) {
+    res.writeHead(500, {' Content-Type': 'application/json' });
+    res.end(JSON.stringify({"status": "Could not retrieve payment information", "error" : error.message }));
+  }
+};
+
+const createUserPaymentInfo = async (req, res) => {
+  try {
+    const body = await getRequestBody(req);
+    const { customerEmail, cardtype, cardnumber, cvv, expiration } = body;
+
+    let dateComponents = expiration.split('-');
+    [dateComponents[0], dateComponents[1]] = [dateComponents[1], dateComponents[0]];
+    dateComponents.reverse();
+    expiration = dateComponents.join("-");
+
+    let addInfo = await userModel.createUserPaymentInfo(customerEmail, cardtype, cardnumber, cvv, expiration);
+    res.writeHead(201, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ "message": `Successfully added payment information for ${customerEmail}` }));
+  } catch(error) {
+    res.writeHead(500, {' Content-Type': 'application/json' });
+    res.end(JSON.stringify({ "status": "Failed to update user information", "error": error.message }));
+  }
+}
 
 const updateUserPaymentInfo = async (req, res) => {
   try {
@@ -82,11 +124,11 @@ const updateUserPaymentInfo = async (req, res) => {
     if (!infoExists) {
         let newInfo = await userModel.createUserPaymentInfo(customerEmail, cardtype, cardnumber, cvv, expiration);
         res.writeHead(201, { 'Content-Type' : 'application/json' })
-        res.end(JSON.stringify({ "message": 'Successfully updated payment information for ${customerEmail}'}));
+        res.end(JSON.stringify({ "message": `Successfully updated payment information for ${customerEmail}`}));
     }
     let newInfo = await userModel.updateUserPaymentInfo(customerEmail, cardtype, cardnumber, cvv, expiration);
     res.writeHead(201, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ "message": 'Successfully updated payment information for ${customerEmail}' }));
+    res.end(JSON.stringify({ "message": `Successfully updated payment information for ${customerEmail}` }));
   } catch (error) {
     console.log(error);
     res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -99,5 +141,7 @@ module.exports = {
   registerAuth, 
   loginAuth, 
   getAllCustomers,
+  getUserPaymentInfo,
+  createUserPaymentInfo,
   updateUserPaymentInfo 
 };
