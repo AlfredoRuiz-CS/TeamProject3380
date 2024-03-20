@@ -1,39 +1,64 @@
 const userModel = require('../models/userModel');
 const jwt = require('jsonwebtoken');
+const { parse } = require('querystring');
 
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.SECRET, { expiresIn: '3d' });
 };
 
-const loginAuth = async (req, res) => {
-  const { email, password } = req.body;
+const getRequestBody = (req) => {
+  return new Promise((resolve, reject) => {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk.toString();
+    });
+    req.on('end', () => {
+      resolve(parse(body));
+    });
+    req.on('error', (err) => {
+      reject(err);
+    });
+  });
+};
 
+const loginAuth = async (req, res) => {
+  
   try {
+    const body = await getRequestBody(req);
+    const { email, password } = body;
+
     const user = await userModel.login(email, password);
 
-    const token = createToken(user.id);
+    const token = createToken(user.customerID);
 
-    res.status(200).json({ email, token });
+    res.writeHead(200, { 'Content-Type': 'application/json'});
+    res.end(JSON.stringify({ email, token }));
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.writeHead(400, {' Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: error.message }));
   }
 };
 
 const registerAuth = async (req, res) => {
-  const { fName, lName, email, address, phoneNumber, password } = req.body;
-
+  
   try {
+    const body = await getRequestBody(req);
+    const { fName, lName, email, address, phoneNumber, password } = body;
+
     const user = await userModel.register(fName, lName, email, address, phoneNumber, password);
 
     const token = createToken(user.id);
 
-    res.status(200).json({ email, token });
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ email, token }));
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: error.message }));
   }
 };
 
 const getAllCustomers = async (req, res) => {
+
   try {
     const customers = await userModel.findAllCustomers();
 
@@ -44,8 +69,35 @@ const getAllCustomers = async (req, res) => {
     res.writeHead(400, { 'Content-Type' : 'application/json' })
     res.end(JSON.stringify({ error: error.message}))
   }
-}
+};
+
+const updateUserPaymentInfo = async (req, res) => {
+  try {
+    const body = await getRequestBody(req);
+    const { customerEmail, cardtype, cardnumber, cvv, expiration } = body;
+
+    cvv = parseInt(cvv, 10);
+
+    let infoExists = await userModel.updateUserPaymentInfo(customerEmail, cardtype, cardnumber, cvv, expiration);
+    if (!infoExists) {
+        let newInfo = await userModel.createUserPaymentInfo(customerEmail, cardtype, cardnumber, cvv, expiration);
+        res.writeHead(201, { 'Content-Type' : 'application/json' })
+        res.end(JSON.stringify({ "message": 'Successfully updated payment information for ${customerEmail}'}));
+    }
+    let newInfo = await userModel.updateUserPaymentInfo(customerEmail, cardtype, cardnumber, cvv, expiration);
+    res.writeHead(201, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ "message": 'Successfully updated payment information for ${customerEmail}' }));
+  } catch (error) {
+    console.log(error);
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ "status": "Failed to update user information", "error": error.message }));
+  }
+};
 
 
-
-module.exports = { registerAuth, loginAuth, getAllCustomers };
+module.exports = { 
+  registerAuth, 
+  loginAuth, 
+  getAllCustomers,
+  updateUserPaymentInfo 
+};

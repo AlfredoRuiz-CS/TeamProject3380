@@ -63,6 +63,7 @@ type UserState = {
   login: () => void;
   logout: () => void;
   addToCart: (product: productItem) => void;
+  addToList: (product: productItem) => void;
   removeFromCart: (product: productItem) => void;
   resetCart: () => void;
 };
@@ -94,6 +95,10 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
     set((state) => ({
       cartItemsNumber: state.cartItemsNumber + 1,
       cartItems: state.cartItems.concat(product),
+    })),
+  addToList: (product) =>
+    set((state) => ({
+      List: state.List.concat(product),
     })),
   removeFromCart: (product) =>
     set((state) => ({
