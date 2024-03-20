@@ -14,7 +14,7 @@ async function register (fName, lName, email, address, phoneNumber, password){
     // }
 
     // Check if user exists
-    const [users] = await pool.query('SELECT * FROM customerProfile WHERE email = ?', [email]);
+    const [users] = await pool.query('SELECT * FROM customer WHERE email = ?', [email]);
     if (users.length > 0) {
         throw Error('Email already in use');
     }
@@ -24,14 +24,14 @@ async function register (fName, lName, email, address, phoneNumber, password){
     const hash = await bcrypt.hash(password, salt);
     
     // Insert the new user
-    const result = await pool.query('INSERT INTO customerProfile (email, password) VALUES (?, ?)', [email, hash]);
+    const result = await pool.query('INSERT INTO customer(email, password) VALUES (?, ?)', [email, hash]);
 
     return { id: result[0].insertId, email };
 }
 
 async function login(email, password) {
     // Check if user exists
-    const [users] = await pool.query('SELECT * FROM customerProfile WHERE email = ?', [email]);
+    const [users] = await pool.query('SELECT * FROM customer WHERE email = ?', [email]);
     const user = users[0];
     if (!user) {
       throw Error('Incorrect email');
@@ -45,8 +45,23 @@ async function login(email, password) {
   
     return user;
   }
+
+  async function findAllCustomers() {
+
+    try {
+      const [rows] = await pool.query('SELECT * FROM customer');
+      return rows;
+    }
+    catch (error){
+      console.log(error.message);
+      throw error;
+    }
+  }
+
   
+
 module.exports = {
     register,
-    login
+    login,
+    findAllCustomers
 }

@@ -25,8 +25,8 @@ CREATE TABLE employee(
     empPassword binary(5)
 );
 
-CREATE TABLE customerProfile(
-	customerID int PRIMARY KEY,
+CREATE TABLE customer(
+	customerID int PRIMARY KEY autoincrement,
     cusName varchar(200),
     cusEmail varchar(100),
     cusPhone int,
@@ -66,7 +66,7 @@ CREATE TABLE purchaseOrder (
     orderDate date,
     tax decimal(10,2),
     totalAmount decimal(10,2),
-    FOREIGN KEY (customerID) REFERENCES customerProfile(customerID)
+    FOREIGN KEY (customerID) REFERENCES customer(customerID)
     ON DELETE SET NULL
 );
 
