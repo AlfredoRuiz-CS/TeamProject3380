@@ -32,12 +32,15 @@ export type productItem = {
   // * I have no idea how to grab an image from the backend...
   image: string;
   stock: number;
+  supplier: string;
+  supplierStock: number;
   portion: 'lb.' | 'oz.' | 'item';
 };
 
 type UserState = {
   // States for user login
   loggedIn: boolean;
+  isAdmin: boolean;
   name: string;
   email: string;
   password: string;
@@ -51,6 +54,7 @@ type UserState = {
   accountCreatedDate: Date;
   accountType: 'customer' | 'admin';
   cartItemsNumber: number;
+  List: productItem[];
   cartItems: productItem[];
 
   // Actions for user login
@@ -67,6 +71,7 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
 ) => ({
   loggedIn: false,
   name: '',
+  isAdmin: false,
   accountCreatedDate: new Date(),
   accountType: 'customer',
   email: 'test@nothing.com',
@@ -80,6 +85,7 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
   },
   cartItemsNumber: 0,
   cartItems: [],
+  List: [],
   setUserName: (username: string) => set({ loggedIn: true, name: username }),
   logout: () => set({ loggedIn: false, name: '' }),
   login: () => set({ loggedIn: true }),
