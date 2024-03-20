@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/select';
 
 import { productItem } from '@/components/store';
-import { dummyProducts } from './Products';
 // interface productProps {
 //   product: productItem;
 // }
@@ -23,6 +22,8 @@ const dummyProduct: productItem = {
   price: 3.97,
   image: '/assets/strawberries.jpg',
   stock: 10,
+  supplier: 'Berry Farms',
+  supplierStock: 100,
   portion: 'lb.',
   description: [
     'Organic, locally-sourced strawberries',

@@ -21,12 +21,14 @@ const dummyProduct: productItem = {
   productId: 12345,
   name: 'Fresh Strawberries, 1 lb.',
   price: 10.99,
+  stock: 10,
+  supplier: 'Berry Farms',
+  supplierStock: 100,
   description: [
     'Organic, locally-sourced strawberries',
     'Grown in Gary, Indiana',
   ],
   image: '/assets/strawberries.jpg',
-  stock: 10,
   portion: 'lb.',
 };
 
