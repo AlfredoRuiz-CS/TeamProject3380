@@ -198,6 +198,36 @@ async function updateUserPassword(email, currentPassword, newPassword){
     }
 }
 
+async function updateUserPhone(email, newPhone){
+  try{
+    const [rows] = pool.query(`
+      UPDATE customer
+      SET phoneNumber = ?
+      where email = ?`, [newPhone, email]);
+
+      return rows;
+
+  } catch(error){
+    console.log(error.message);
+    throw error;
+  }
+}
+
+async function updateUserAddress(email, streetAddress, city, state, zipcode){
+  try{
+    const [rows] = await pool.query(`
+    UPDATE customer
+    SET streetAddress = ?, city = ?, state = ?, zipcode = ?
+    WHERE email = ?`, [streetAddress, city, state, zipcode, email]);
+
+    return rows;
+
+  } catch (error) {
+    console.log(error.message);
+    throw error;
+  }
+}
+
 module.exports = {
     register,
     login,
@@ -206,5 +236,7 @@ module.exports = {
     createUserPaymentInfo,
     updateUserPaymentInfo,
     updateUserEmail,
-    updateUserPassword
+    updateUserPassword,
+    updateUserPhone,
+    updateUserAddress
 }

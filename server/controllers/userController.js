@@ -162,6 +162,39 @@ const updateUserPassword = async (req, res) => {
   }
 }
 
+const updateUserPhone = async (req, res) => {
+  try {
+    const body = getRequestBody(req);
+    const { email, newPhone } = body;
+    
+    const updatePhone = await userModel.updateUserPhone(email, newPhone);
+
+    res.writeHead(201, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ "message": `Successfully updated phone for - ${email}` }));
+
+  } catch (error) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringyf({ "status": "Failed to update phone number", "error" : error.message }));
+  }
+}
+
+const updateUserAddress = async (req, res) => {
+  try {
+    const body = getRequestBody(req);
+    const { email, streetAddress, city, state, zipcode } = body;
+
+    const updateUserAddress = await userModel.updateUserAddress(email, streetAddress, city, state, zipcode);
+
+    res.writeHead(201, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ "message": `Successfully updated phone for - ${email}` }));
+
+  } catch (error) {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringyf({ "status": "Failed to update address", "error" : error.message }));
+  }
+
+}
+
 module.exports = { 
   registerAuth, 
   loginAuth, 
@@ -170,5 +203,7 @@ module.exports = {
   createUserPaymentInfo,
   updateUserPaymentInfo,
   updateUserEmail,
-  updateUserPassword 
+  updateUserPassword,
+  updateUserPhone,
+  updateUserAddress 
 };

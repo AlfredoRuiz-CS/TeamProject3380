@@ -30,6 +30,12 @@ const server = http.createServer((req, res) => {
     else if (req.url === '/api/update_password' && req.method === 'POST'){
         userController.updateUserPassword(req, res);
     }
+    else if (req.url === '/api/update_phone' && req.method === 'POST'){
+        userController.updateUserPhone(req, res);
+    }
+    else if (req.url === '/api/update_address' && req.method === 'POST'){
+        userController.updateUserAddress(req, res);
+    }
     else{
         res.writeHead(404, { 'Content-Type' : 'application/json' })
         res.end(JSON.stringify({ message: 'Route Not Found'}))
