@@ -81,11 +81,14 @@ async function findAllCustomers() {
 
 async function getUserPaymentInfo(email){
   try {
+
     const [rows] = await pool.query(`
     SELECT p.cardtype, p.cardnumber, p.cvv, p.expiration 
     FROM paymentInfo p
     where p.customerEmail = ?`, [email]);
+
     return rows;
+
   } catch (error) {
     console.log(error.message);
     throw error;
@@ -94,6 +97,7 @@ async function getUserPaymentInfo(email){
 
 async function createUserPaymentInfo(customerEmail, cardtype, cardnumber, cvv, expiration) {
   const connection = await pool.getConnection();
+
   try {
     await connection.beginTransaction();
 
@@ -104,6 +108,7 @@ async function createUserPaymentInfo(customerEmail, cardtype, cardnumber, cvv, e
     `, [customerEmail, cardtype, cardnumber, cvv, expiration]);
 
     await connection.commit();
+
     return rows;
 
   } catch (error){
@@ -117,28 +122,80 @@ async function createUserPaymentInfo(customerEmail, cardtype, cardnumber, cvv, e
 
 async function updateUserPaymentInfo(customerEmail, cardtype, cardnumber, cvv, expiration){
   const connection = await pool.getConnection();
+
   try {
     await connection.beginTransaction();
 
     const [rows] = await connection.execute(`
     UPDATE paymentInfo 
     SET cardtype = ?, cardnumber = ?, cvv = ?, expiration = ? 
-    WHERE customerEmail`, [cardtype, cardnumber, cvv, expiration, customerEmail]);
+    WHERE customerEmail = ?`, [cardtype, cardnumber, cvv, expiration, customerEmail]);
 
     await connection.commit();
 
     return rows;
+
   } catch (error) {
 
     await connection.rollback();
 
     console.log(error.message);
-
     throw error;
+
   } finally {
 
     await connection.release();
   }
+}
+
+async function updateUserEmail(currentEmail, newEmail){
+  try {
+    const [rows] = await pool.query(`
+      UPDATE customer
+      SET email = ? 
+      WHERE email = ?`, [newEmail, currentEmail]);
+
+    return rows;
+  } catch (error) {
+    console.log(error.message);
+    throw error; 
+  }
+}
+
+async function updateUserPassword(email, currentPassword, newPassword){
+    // password validation
+    // TODO
+
+    try {
+      const [users] = await pool.query(`
+      SELECT password
+      FROM customer
+      WHERE email = ?`, [email]);
+
+      const user = users[0];
+      if (!user){
+        throw Error('User not found');
+      }
+
+      const match = await bcrypt.compare(oldPassword, user.password);
+      if (!match){
+        throw Error('Your current password is incorrect');
+      }
+
+      const salt = await bcrypt.genSalt(10);
+      const hash = await bcrypt.hash(newPassword, salt);
+
+      const [rows] = await pool.query(`
+      UPDATE customer
+      SET password = ?
+      WHERE email = ?`, [hash, email]);
+
+      return rows;
+
+    } catch (error) {
+      console.log(error.message);
+      throw error;
+    }
 }
 
 module.exports = {
@@ -147,5 +204,7 @@ module.exports = {
     findAllCustomers,
     getUserPaymentInfo,
     createUserPaymentInfo,
-    updateUserPaymentInfo
+    updateUserPaymentInfo,
+    updateUserEmail,
+    updateUserPassword
 }

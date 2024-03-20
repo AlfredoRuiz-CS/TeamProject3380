@@ -99,14 +99,10 @@ const createUserPaymentInfo = async (req, res) => {
     const body = await getRequestBody(req);
     const { customerEmail, cardtype, cardnumber, cvv, expiration } = body;
 
-    let dateComponents = expiration.split('-');
-    [dateComponents[0], dateComponents[1]] = [dateComponents[1], dateComponents[0]];
-    dateComponents.reverse();
-    expiration = dateComponents.join("-");
-
     let addInfo = await userModel.createUserPaymentInfo(customerEmail, cardtype, cardnumber, cvv, expiration);
     res.writeHead(201, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ "message": `Successfully added payment information for ${customerEmail}` }));
+
   } catch(error) {
     res.writeHead(500, {' Content-Type': 'application/json' });
     res.end(JSON.stringify({ "status": "Failed to update user information", "error": error.message }));
@@ -136,6 +132,35 @@ const updateUserPaymentInfo = async (req, res) => {
   }
 };
 
+const updateUserEmail = async (req, res) => {
+  try {
+    const body = await getRequestBody(req);
+    const { currentEmail, newEmail } = body;
+
+    const emailQuery = await userModel.updateUserEmail(currentEmail, newEmail);
+
+    res.writeHead(201, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ "message": `Successfully updated email - ${newEmail}` }));
+  } catch (error){
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringyf({ "status": "Failed to update user email", "error" : error.message }));
+  }
+};
+
+const updateUserPassword = async (req, res) => {
+  try{
+    const body = await getRequestBody(req);
+    const { email, oldPassword, newPassword } = body;
+
+    const updatePassword = await userModel.updateUserPassword(email, oldPassword, newPassword);
+    
+    res.writeHead(201, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ "message": `Successfully updated password for - ${email}` }));
+  } catch (error){
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringyf({ "status": "Failed to update password", "error" : error.message }));
+  }
+}
 
 module.exports = { 
   registerAuth, 
@@ -143,5 +168,7 @@ module.exports = {
   getAllCustomers,
   getUserPaymentInfo,
   createUserPaymentInfo,
-  updateUserPaymentInfo 
+  updateUserPaymentInfo,
+  updateUserEmail,
+  updateUserPassword 
 };
