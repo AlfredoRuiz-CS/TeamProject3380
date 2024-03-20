@@ -1,9 +1,9 @@
 const http = require('http');
+const userController = require('./controllers/userController');
 
 const server = http.createServer((req, res) => {
     if(req.url === '/api/users' && req.method === 'GET'){
-        res.writeHead(200, { 'Content-Type' : 'application/json' })
-        res.end(JSON.stringify());
+        userController.getAllCustomers();
     }
     else{
         res.writeHead(404, { 'Content-Type' : 'application/json' })
