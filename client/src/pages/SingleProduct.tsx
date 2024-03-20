@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/select';
 
 import { productItem } from '@/components/store';
-import { dummyProducts } from './Products';
 // interface productProps {
 //   product: productItem;
 // }
@@ -23,6 +22,8 @@ const dummyProduct: productItem = {
   price: 3.97,
   image: '/assets/strawberries.jpg',
   stock: 10,
+  supplier: 'Berry Farms',
+  supplierStock: 100,
   portion: 'lb.',
   description: [
     'Organic, locally-sourced strawberries',
@@ -96,7 +97,7 @@ const SingleProduct = () => {
 
   return (
     <>
-      <div className="font-poppins flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite pb-10 text-black">
+      <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite pb-10 font-inter text-black">
         <Header />
 
         <div className="flex flex-col items-center gap-[5px]">

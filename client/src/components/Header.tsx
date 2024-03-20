@@ -45,7 +45,7 @@ const Header = (props: HeaderProps) => {
     <>
       <div
         className={
-          'font-poppins flex h-16 w-full justify-between overflow-x-hidden bg-transparent ' +
+          'flex h-16 w-full justify-between overflow-x-hidden bg-transparent font-inter ' +
           textColor
         }
       >

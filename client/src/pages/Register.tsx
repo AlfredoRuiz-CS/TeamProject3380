@@ -4,17 +4,21 @@ import ErrorText from '../components/ErrorText';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
 import React, { ReactEventHandler, useState } from 'react';
 import { Button } from '../components/ui/button.tsx';
-import { useFormik, ErrorMessage } from "formik";
-import * as Yup from "yup";
-
+import { useFormik, ErrorMessage } from 'formik';
+import * as Yup from 'yup';
 
 const validationSchema = Yup.object({
-  firstName: Yup.string().required("First name is required"),
-  lastName: Yup.string().required("Last name is required"),
-  email: Yup.string().email("Invalid email address").required("Email is required"),
-  address: Yup.string().required("Address is required"),
-  phone: Yup.string().required("Phone number is required"),
-  password: Yup.string().matches(/^\d*$/, "Phone number is not valid").required("Password is required").max(10),
+  firstName: Yup.string().required('First name is required'),
+  lastName: Yup.string().required('Last name is required'),
+  email: Yup.string()
+    .email('Invalid email address')
+    .required('Email is required'),
+  address: Yup.string().required('Address is required'),
+  phone: Yup.string().required('Phone number is required'),
+  password: Yup.string()
+    .matches(/^\d*$/, 'Phone number is not valid')
+    .required('Password is required')
+    .max(10),
 });
 
 const Register = () => {
@@ -22,12 +26,12 @@ const Register = () => {
 
   const formik = useFormik({
     initialValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      address: "",
-      phone: "",
-      password: "",
+      firstName: '',
+      lastName: '',
+      email: '',
+      address: '',
+      phone: '',
+      password: '',
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
@@ -49,7 +53,7 @@ const Register = () => {
 
   return (
     <>
-      <div className="font-poppins flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite text-black">
+      <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
         <Header />
         <form className="flex w-full flex-col items-center gap-5 py-5">
           <h1 className="mb-5 font-jua text-8xl">Register</h1>
@@ -99,7 +103,7 @@ const Register = () => {
           {/* <ErrorMessage name="phone" component={ErrorText} /> */}
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
-            type={isPasswordVisible ? "text" : "password"}
+            type={isPasswordVisible ? 'text' : 'password'}
             placeholder="Password"
             name="password"
             onChange={formik.handleChange}

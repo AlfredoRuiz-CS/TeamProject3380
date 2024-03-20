@@ -22,6 +22,7 @@ const Profile = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   console.log(store);
+
   const states = [
     'AL',
     'AK',
@@ -90,7 +91,7 @@ const Profile = () => {
 
   return (
     <>
-      <div className="font-poppins flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite text-black">
+      <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
         <Header />
         <div className="flex flex-grow flex-col items-center">
           <h1 className="flex flex-row self-center pt-28 font-jua text-6xl">
@@ -111,14 +112,14 @@ const Profile = () => {
             })}
           </div>
           {/* Forms for Updating User Information */}
-          <div className="z-10 mx-auto flex h-16 w-3/5 flex-row rounded-2xl bg-xanthousyellow">
+          <div className="z-10 mx-auto flex h-16 w-2/5 flex-row rounded-2xl bg-xanthousyellow">
             <MdOutlinePersonOutline className="ml-2 mt-1 flex h-14 w-14 self-start" />
             <h2 className="self-center pl-2 font-inter text-xl font-semibold">
               {store.email}
             </h2>
           </div>
-          <div className="z-0 mx-auto -mt-8 mb-[20rem] h-[45rem] w-3/5 rounded-3xl bg-darkblue">
-            <div className="flex flex-row gap-52 pt-4">
+          <div className="z-0 mx-auto -mt-8 mb-[20rem] h-[45rem] w-2/5 rounded-3xl bg-darkblue">
+            <div className="flex flex-row gap-32 pt-4">
               <section className="flex flex-col">
                 {/* Name, Phone Number, Address Fields */}
                 <div className="flex flex-row">
@@ -295,7 +296,7 @@ const Profile = () => {
                     size="lg"
                     type="submit"
                   >
-                    Save Changes
+                    Change Password
                   </Button>
                 </form>
               </section>

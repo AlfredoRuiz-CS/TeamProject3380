@@ -21,12 +21,14 @@ const dummyProduct: productItem = {
   productId: 12345,
   name: 'Fresh Strawberries, 1 lb.',
   price: 10.99,
+  stock: 10,
+  supplier: 'Berry Farms',
+  supplierStock: 100,
   description: [
     'Organic, locally-sourced strawberries',
     'Grown in Gary, Indiana',
   ],
   image: '/assets/strawberries.jpg',
-  stock: 10,
   portion: 'lb.',
 };
 
@@ -40,7 +42,7 @@ const Products = (props: productProps) => {
 
   return (
     <>
-      <div className="font-poppins flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite text-black">
+      <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
         <Header />
 
         <div className="flex flex-col items-center text-center">
