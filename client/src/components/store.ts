@@ -1,6 +1,6 @@
 // Imports for state management
 import { create } from 'zustand';
-import type {} from '@redux-devtools/extension'; // required for devtools typing
+import type { } from '@redux-devtools/extension'; // required for devtools typing
 
 export type productItem = {
   productId: number;

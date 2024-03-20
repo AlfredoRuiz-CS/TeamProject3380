@@ -7,6 +7,7 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import Cart from './pages/Cart';
 import Orders from './pages/Orders';
+import ProductList from "./pages/productList";
 import './index.css';
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/products" element={<Products />} />
         <Route path="/product/:productId" element={<Product />} />
+        <Route path="/test" element={<ProductList />} />
         {/* Any non-valid URL returns to home */}
         <Route path="*" element={<Home />} />
       </Routes>
