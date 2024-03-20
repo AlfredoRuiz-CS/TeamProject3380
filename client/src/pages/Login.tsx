@@ -2,10 +2,11 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
 import { useState } from 'react';
-import { Button } from '../components/ui/button.tsx';
+import { Button } from '../components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
 // Imports for state management
-import userStore from '@/components/store.ts';
+import useUserStore from '@/components/store';
 import type {} from '@redux-devtools/extension'; // required for devtools typing
 // import { devtools, persist } from "zustand/middleware";
 
@@ -20,17 +21,13 @@ const Login = () => {
   });
 
   // ? State management for login with Zustand
-  // const { login } = useStore(userStore);
-  // function loginHandler(e: any) {
-  //   login(email);
-  //   setEmail(e.target.value);
-  // }
-  const store = userStore();
+  const store = useUserStore();
+  const navigate = useNavigate();
 
   function updateUserInfo() {
     store.setUserName(email);
     store.login();
-    // console.log(store.name, store.loggedIn);
+    console.log(store);
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -38,12 +35,13 @@ const Login = () => {
     // TODO: Add calls to backend to check if user exists
     // TODO: If user exists, then update the userStore
     updateUserInfo();
+    navigate('/profile');
   }
 
   // console.log(store.name);
   return (
     <>
-      <div className="font-poppins flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite text-black">
+      <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
         <Header />
         <form
           className="flex w-full flex-col items-center gap-5 py-5"

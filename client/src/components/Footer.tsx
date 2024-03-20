@@ -16,7 +16,7 @@ const Footer = () => {
             <img src="/logos/logo_full_blue.svg" alt="ShastaMart Logo" />
           </a>
         </div>
-        <div className="font-inter ">
+        <div className="font-inter">
           Built and Designed by{' '}
           <span className="font-medium underline">
             <a href={GITHUB.SAGE}>Sage Turner</a>

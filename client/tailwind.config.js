@@ -30,6 +30,7 @@ module.exports = {
         cardwhite: '#E9EFF8',
         slategray: '#7A8B99',
         indianred: '#DA6e62',
+        xanthousyellow: '#F0BE59',
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
