@@ -22,6 +22,7 @@ const Profile = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   console.log(store);
+
   const states = [
     'AL',
     'AK',
