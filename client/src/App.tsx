@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import Profile from './pages/Profile';
 import Cart from './pages/Cart';
 import Orders from './pages/Orders';
+import ProductList from "./pages/productList";
 import AdminDashboard from './pages/AdminDashboard';
 import './index.css';
 
@@ -30,6 +31,7 @@ function App() {
         {/* Products */}
         <Route path="/products" element={<Products />} />
         <Route path="/product/:productId" element={<Product />} />
+        <Route path="/test" element={<ProductList />} />
         {/* Any non-valid URL returns to home */}
         <Route path="*" element={<Home />} />
       </Routes>

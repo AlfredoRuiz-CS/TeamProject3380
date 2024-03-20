@@ -1,7 +1,8 @@
 // Imports for state management
+import type { } from '@redux-devtools/extension'; // required for devtools typing
 import { create, StateCreator } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import type {} from '@redux-devtools/extension'; // required for devtools typing
+import type { } from '@redux-devtools/extension'; // required for devtools typing
 
 export type productItem = {
   productId: number;
