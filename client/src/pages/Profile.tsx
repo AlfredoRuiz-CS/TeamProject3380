@@ -90,7 +90,7 @@ const Profile = () => {
 
   return (
     <>
-      <div className="font-poppins flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite text-black">
+      <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
         <Header />
         <div className="flex flex-grow flex-col items-center">
           <h1 className="flex flex-row self-center pt-28 font-jua text-6xl">

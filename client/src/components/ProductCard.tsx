@@ -9,8 +9,7 @@ import {
 } from '@/components/ui/select';
 
 import { productItem } from '@/components/store';
-import { dummyProducts } from '@/pages/Products';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 interface ProductCardProps {
   product: productItem;

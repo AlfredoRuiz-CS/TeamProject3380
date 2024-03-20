@@ -66,7 +66,7 @@ const Orders = () => {
   }
   return (
     <>
-      <div className="font-poppins flex min-h-screen flex-col overflow-x-hidden bg-bgwhite text-black">
+      <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite font-inter text-black">
         <Header color="blue" />
         <div className="flex w-screen flex-col gap-10">
           <h1 className="ml-16 pt-14 font-inter text-5xl font-medium text-black">
