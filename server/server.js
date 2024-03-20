@@ -2,8 +2,17 @@ const http = require('http');
 const userController = require('./controllers/userController');
 
 const server = http.createServer((req, res) => {
-    if(req.url === '/api/users' && req.method === 'GET'){
-        userController.getAllCustomers();
+    if (req.url === '/login' && req.method === 'POST') {
+        userController.loginAuth(req, res);
+    }
+    else if (req.url === '/register' && req.method === 'POST') {
+        userController.registerAuth(req, res);
+    }
+    else if(req.url === '/api/users' && req.method === 'GET'){
+        userController.getAllCustomers(req, res);
+    }
+    else if (req.url === '/api/newcard' && req.method === 'POST'){
+        userController.updateUserPaymentInfo(req, res);
     }
     else{
         res.writeHead(404, { 'Content-Type' : 'application/json' })

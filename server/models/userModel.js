@@ -46,22 +46,54 @@ async function login(email, password) {
     return user;
   }
 
-  async function findAllCustomers() {
+async function findAllCustomers() {
 
-    try {
-      const [rows] = await pool.query('SELECT * FROM customer');
-      return rows;
-    }
-    catch (error){
-      console.log(error.message);
-      throw error;
-    }
+  try {
+    const [rows] = await pool.query('SELECT * FROM customer');
+    return rows;
+
+  } catch (error){
+    console.log(error.message);
+    throw error;
   }
+}
 
-  
+  // async function findUserbyEmail(email){
+  //   try { 
+  //       const [rows] = await pool.query('SELECT email FROM customer as c WHERE c.email = ?', [email]);
+  //       return rows[0];
+  //   } catch (error){
+  //     console.log(error.message);
+  //     throw error;
+  //   }
+  // }
+
+async function updateUserPaymentInfo(customerEmail, cardtype, cardnumber, cvv, expiration){
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    const [rows] = await connection.execute('UPDATE payment SET cardtype = ?, cardnumber = ?, cvv = ?, expiration = ? WHERE customerEmail', [cardtype, cardnumber, cvv, expiration, customerEmail]);
+
+    await connection.commit();
+
+    return rows;
+  } catch (error) {
+
+    await connection.rollback();
+
+    console.log(error.message);
+
+    throw error;
+  } finally {
+
+    await connection.release();
+  }
+}
 
 module.exports = {
     register,
     login,
-    findAllCustomers
+    findAllCustomers, 
+    updateUserPaymentInfo
 }
