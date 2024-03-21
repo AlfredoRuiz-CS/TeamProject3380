@@ -241,7 +241,7 @@ const AdminDashboard = () => {
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button type="submit">Save changes</Button>
+                    <Button type="submit">Submit Order</Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>

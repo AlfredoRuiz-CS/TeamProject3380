@@ -43,6 +43,7 @@ type UserState = {
   // States for user login
   loggedIn: boolean;
   isAdmin: boolean;
+  isMember: boolean;
   name: string;
   email: string;
   password: string;
@@ -75,6 +76,7 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
   loggedIn: false,
   name: '',
   isAdmin: false,
+  isMember: true,
   accountCreatedDate: new Date(),
   accountType: 'customer',
   email: 'test@nothing.com',
