@@ -38,6 +38,22 @@ const Products = (props: productProps) => {
   let [valueSortOrder, setValueSortOrder] = useState('Price Desc.');
   let [catSortOrder, setCatSortOrder] = useState('All');
 
+  const sortByPriceAsc = (products: productItem[]): productItem[] => {
+    return products.slice().sort((a, b) => a.price - b.price);
+  };
+
+  const sortByPriceDesc = (products: productItem[]) => {
+    return products.slice().sort((a,b) => b.price - a.price);
+  };
+
+  const sortByAlphaAsc = (products: productItem[]) => {
+    return products.slice().sort((a,b) => a.name.localeCompare(b.name));
+  };
+
+  const sortByAlphaDesc = (products: productItem[]) => {
+    return products.slice().sort((a,b) => b.name.localeCompare(a.name));
+  };
+
   return (
     <>
       <div className="font-poppins flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite text-black">
