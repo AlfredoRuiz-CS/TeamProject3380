@@ -32,7 +32,7 @@ const dummyProduct: productItem = {
   portion: 'lb.',
 };
 
-export const dummyProducts: productItem[] = Array(10)
+export const dummyProducts: productItem[] = Array(20)
   .fill({})
   .map(() => ({ ...dummyProduct }));
 
@@ -96,7 +96,7 @@ const Products = (props: productProps) => {
           </div>
 
           {/* List of Product Items */}
-          <div className="mx-[10rem] flex flex-row flex-wrap gap-10">
+          <div className="mx-[10rem] flex flex-row flex-wrap gap-7">
             {dummyProducts.map((product, index) => (
               <ProductCard key={index} product={product} />
             ))}

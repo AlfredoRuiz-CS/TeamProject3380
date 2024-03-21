@@ -2,14 +2,15 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Home from './pages/Home';
 import Products from './pages/Products';
-import Product from './pages/SingleProduct';
+import SingleProduct from './pages/SingleProduct';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
 import Cart from './pages/Cart';
 import Orders from './pages/Orders';
-import ProductList from "./pages/productList";
+import ProductList from './pages/productList';
 import AdminDashboard from './pages/AdminDashboard';
+import MemberPage from './pages/MemberPage';
 import './index.css';
 
 function App() {
@@ -26,11 +27,12 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/membership" element={<MemberPage />} />
         {/* Admin Dashboard */}
         <Route path="/admin" element={<AdminDashboard />} />
         {/* Products */}
         <Route path="/products" element={<Products />} />
-        <Route path="/product/:productId" element={<Product />} />
+        <Route path="/product/:productId" element={<SingleProduct />} />
         <Route path="/test" element={<ProductList />} />
         {/* Any non-valid URL returns to home */}
         <Route path="*" element={<Home />} />

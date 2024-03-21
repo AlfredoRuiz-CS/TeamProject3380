@@ -1,8 +1,8 @@
 // Imports for state management
-import type { } from '@redux-devtools/extension'; // required for devtools typing
+import type {} from '@redux-devtools/extension'; // required for devtools typing
 import { create, StateCreator } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import type { } from '@redux-devtools/extension'; // required for devtools typing
+import type {} from '@redux-devtools/extension'; // required for devtools typing
 
 export type productItem = {
   productId: number;
@@ -32,6 +32,7 @@ export type productItem = {
 
   // * I have no idea how to grab an image from the backend...
   image: string;
+
   stock: number;
   supplier: string;
   supplierStock: number;
@@ -42,6 +43,7 @@ type UserState = {
   // States for user login
   loggedIn: boolean;
   isAdmin: boolean;
+  isMember: boolean;
   name: string;
   email: string;
   password: string;
@@ -74,6 +76,7 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
   loggedIn: false,
   name: '',
   isAdmin: false,
+  isMember: true,
   accountCreatedDate: new Date(),
   accountType: 'customer',
   email: 'test@nothing.com',

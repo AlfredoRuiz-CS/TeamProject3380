@@ -1,6 +1,6 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-
+import { Button } from '@/components/ui/button.tsx';
 import {
   Table,
   TableBody,
@@ -9,7 +9,20 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+
 import { productItem } from '@/components/store';
+import useUserStore from '@/components/store';
 
 const dummyProduct: productItem = {
   productId: 12345,
@@ -50,7 +63,7 @@ const dummyProduct: productItem = {
     iron: '0.6 mg',
   },
 };
-const dummyProducts: productItem[] = Array(100)
+const dummyProducts: productItem[] = Array(20)
   .fill({})
   .map(() => ({
     ...dummyProduct,
@@ -61,6 +74,20 @@ dummyProducts[6].stock = 0;
 dummyProducts[6].supplierStock = 20;
 
 const AdminDashboard = () => {
+  const popularItem1 = dummyProducts.reduce((lowest, product) => {
+    return lowest.supplierStock < product.supplierStock ? lowest : product;
+  }, dummyProducts[0]);
+  const updatedProducts = dummyProducts.filter(
+    (product) => product !== popularItem1
+  );
+  const popularItem2 = updatedProducts.reduce((lowest, product) => {
+    return lowest.supplierStock < product.supplierStock ? lowest : product;
+  }, dummyProducts[0]);
+
+  function handleSubmitOrder(event: React.FormEvent<HTMLFormElement>) {
+    console.log('Order Submitted');
+  }
+
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
@@ -69,7 +96,7 @@ const AdminDashboard = () => {
           {/* Individual Item Stock Table */}
           <div className="ml-20 flex flex-grow flex-col pb-10">
             <h1 className="mb-4 text-4xl text-white">Individual Item Stock</h1>
-            <Table className="min-h-[20rem]  rounded-xl bg-cardwhite ">
+            <Table className="min-h-[20rem] rounded-xl bg-cardwhite ">
               <TableHeader>
                 <TableRow>
                   <TableHead className="max-w-6">Name</TableHead>
@@ -131,7 +158,7 @@ const AdminDashboard = () => {
             <div className="mr-10 flex h-[30rem] min-w-[40rem] max-w-[50rem] flex-col rounded-xl bg-cardwhite">
               <div className="flex flex-row">
                 <div className="ml-10 mt-10 flex flex-col gap-10">
-                  <div className="flex flex-row justify-between">
+                  <div className="flex w-full flex-row justify-between gap-[10rem]">
                     <h1 className="flex text-4xl text-darkblue">
                       Total Supply
                     </h1>
@@ -143,12 +170,128 @@ const AdminDashboard = () => {
                     </h1>
                   </div>
                   {/* BACKEND CALL TO CHECK IF THERE ARE < 5 OUT OF STOCK PRODUCTS IN THE DB */}
-
-                  <h1 className="text-4xl text-darkblue">Total Value</h1>
-                  <h1 className="text-4xl text-darkblue">Total Costs</h1>
+                  <div className="flex w-full flex-row justify-between gap-[10rem]">
+                    <h1 className="text-4xl text-darkblue">Total Value</h1>
+                    <h1 className="text-right text-4xl text-darkblue">
+                      {Object.values(dummyProducts)
+                        .reduce(
+                          (total, product) =>
+                            total + product.price * product.stock,
+                          0
+                        )
+                        .toLocaleString('en-US', {
+                          style: 'currency',
+                          currency: 'USD',
+                        })}
+                    </h1>
+                  </div>
+                  <div className="flex w-full flex-row justify-between gap-[10rem]">
+                    <h1 className="pb-14 text-4xl text-darkblue">
+                      Total Costs
+                    </h1>
+                    <h1 className="text-right text-4xl text-darkblue">
+                      {Object.values(dummyProducts)
+                        .reduce(
+                          (total, product) =>
+                            total + product.price * product.stock,
+                          0
+                        )
+                        .toLocaleString('en-US', {
+                          style: 'currency',
+                          currency: 'USD',
+                        })}
+                    </h1>
+                  </div>
                 </div>
               </div>
-              <div className="flex flex-col"></div>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className="flex h-[4rem] w-[8rem] flex-row self-center bg-darkblue text-lg">
+                    Order Stock?
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle className="text-3xl">Order Stock</DialogTitle>
+                    <DialogDescription className="text-lg">
+                      Enter Product Name and Quantity below to submit order.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="name" className="text-right">
+                        Product Name
+                      </Label>
+                      <Input
+                        id="productName"
+                        placeholder="e.g. Fresh Strawberries"
+                        className="col-span-3"
+                      />
+                    </div>
+                    <div className="grid grid-cols-4 items-center gap-4">
+                      <Label htmlFor="quantity" className="text-right">
+                        Quantity
+                      </Label>
+                      <Input
+                        id="quantity"
+                        placeholder="e.g. 10"
+                        className="col-span-3"
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button type="submit">Submit Order</Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            </div>
+            {/* Popular Items */}
+            <div className="">
+              <div className="mr-10 mt-10 flex min-h-[20rem] min-w-14 flex-col gap-5 rounded-lg bg-cardwhite pt-5">
+                <h1 className="text-center text-3xl font-medium">
+                  Popular Items
+                </h1>
+                <div className="flex flex-row gap-5 pl-28">
+                  <div>
+                    <img
+                      className="h-[5rem] w-[5rem]"
+                      src={popularItem1.image}
+                    ></img>
+                  </div>
+                  <div className="flex flex-col">
+                    <h1 className="flex flex-row self-center pt-5 text-3xl">
+                      {popularItem1.name}
+                    </h1>
+                    {popularItem1.price.toLocaleString('en-US', {
+                      style: 'currency',
+                      currency: 'USD',
+                    }) +
+                      ' per ' +
+                      popularItem1.portion}
+                  </div>
+                  <div className="flex flex-col"></div>
+                </div>
+                <div className="flex flex-row gap-5 pl-28">
+                  <div className="pt-5">
+                    <img
+                      className="h-[5rem] w-[5rem]"
+                      src={popularItem2.image}
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <h1 className="flex flex-row self-center pt-10 text-3xl">
+                      {popularItem2.name}
+                    </h1>
+                    {popularItem2.price.toLocaleString('en-US', {
+                      style: 'currency',
+                      currency: 'USD',
+                    }) +
+                      ' per ' +
+                      popularItem2.portion}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

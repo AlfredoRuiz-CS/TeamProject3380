@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu.tsx';
 
 // Imports for state management
-import userStore from '@/components/store';
+import useUserStore from '@/components/store';
 // import { devtools, persist } from "zustand/middleware";
 import type {} from '@redux-devtools/extension'; // required for devtools typing
 import { useNavigate } from 'react-router-dom';
@@ -24,7 +24,7 @@ interface HeaderProps {
 }
 
 const Header = (props: HeaderProps) => {
-  const store = userStore();
+  const store = useUserStore();
   const navigate = useNavigate();
   useEffect(() => {}, [store.loggedIn]);
 
@@ -61,11 +61,23 @@ const Header = (props: HeaderProps) => {
         </div>
 
         {/* Links */}
-        <div className="flex h-full w-[22rem] items-center justify-between text-center">
+        <div className="mr-10 flex h-full items-center justify-between text-center">
           <ul className="flex min-h-full flex-row justify-center gap-6 text-center">
             <li className="flex items-center justify-center">
               <a href="/">Home</a>
             </li>
+            {/* If NOT a member display Membership link */}
+            {!store.loggedIn ? (
+              <li className="flex items-center justify-center">
+                <a href="/membership">Membership</a>
+              </li>
+            ) : !store.isMember ? (
+              <li className="flex items-center justify-center">
+                <a href="/membership">Membership</a>
+              </li>
+            ) : (
+              <></>
+            )}
 
             <li className="flex items-center justify-center">
               <a href="/products">Products</a>
