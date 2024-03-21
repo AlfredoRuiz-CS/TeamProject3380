@@ -10,6 +10,7 @@ import Cart from './pages/Cart';
 import Orders from './pages/Orders';
 import ProductList from './pages/productList';
 import AdminDashboard from './pages/AdminDashboard';
+import MemberPage from './pages/MemberPage';
 import './index.css';
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/memberPage" element={<MemberPage/>}/>
         {/* Admin Dashboard */}
         <Route path="/admin" element={<AdminDashboard />} />
         {/* Products */}
