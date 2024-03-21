@@ -246,6 +246,7 @@ const AdminDashboard = () => {
                 </DialogContent>
               </Dialog>
             </div>
+
             {/* Popular Items */}
             <div className="">
               <div className="mr-10 mt-10 flex min-h-[20rem] min-w-14 flex-col gap-5 rounded-lg bg-cardwhite pt-5">
@@ -255,7 +256,7 @@ const AdminDashboard = () => {
                 <div className="flex flex-row gap-5 pl-28">
                   <div>
                     <img
-                      className="h-[5rem] w-[5rem]"
+                      className=" h-[5rem] w-[5rem] rounded-lg object-cover"
                       src={popularItem1.image}
                     ></img>
                   </div>
@@ -275,7 +276,7 @@ const AdminDashboard = () => {
                 <div className="flex flex-row gap-5 pl-28">
                   <div className="pt-5">
                     <img
-                      className="h-[5rem] w-[5rem]"
+                      className="h-[5rem] w-[5rem] rounded-lg object-cover"
                       src={popularItem2.image}
                     />
                   </div>

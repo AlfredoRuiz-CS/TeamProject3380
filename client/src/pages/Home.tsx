@@ -25,13 +25,6 @@ const Home = () => {
             <Button asChild className="" size="lg">
               <a href="/register">Register</a>
             </Button>
-
-            {/*I don't know where to put the MemberPage so I put it here temporarily*/}
-            <Button asChild className="" size="lg">
-              <a href="/memberpage">MemberPage</a>
-            </Button>
-            {/*I don't know where to put the MemberPage so I put it here temporarily*/}
-
           </div>
         </div>
         <div className="mx-[15rem] flex flex-row justify-around gap-10 pb-10">

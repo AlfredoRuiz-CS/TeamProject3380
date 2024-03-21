@@ -34,14 +34,14 @@ interface OrdersProps {
   orders: Order[];
 }
 
-const dummyOrders: Order[] = Array(20)
+const dummyOrders: Order[] = Array(10)
   .fill({ items: [] })
   .map((_, index) => ({
     orderNumber: index,
     date: new Date().toDateString(),
     paymentMethod: 'Credit Card',
     total: 100,
-    items: dummyProducts,
+    items: dummyProducts.slice(0, 10),
   }));
 
 const Orders = () => {
@@ -176,7 +176,7 @@ const Orders = () => {
               </Sheet>
             </div>
           ) : (
-            <div></div>
+            <></>
           )}
         </div>
       </div>

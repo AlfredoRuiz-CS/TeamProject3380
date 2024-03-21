@@ -19,17 +19,42 @@ interface productProps {
 
 const dummyProduct: productItem = {
   productId: 12345,
-  name: 'Fresh Strawberries, 1 lb.',
-  price: 10.99,
+  name: 'Fresh Strawberries',
+  price: 3.97,
+  image: '/assets/strawberries.jpg',
   stock: 10,
   supplier: 'Berry Farms',
   supplierStock: 100,
+  portion: 'lb.',
   description: [
     'Organic, locally-sourced strawberries',
     'Grown in Gary, Indiana',
+    'good source of Vitamin C, fiber and potassium',
   ],
-  image: '/assets/strawberries.jpg',
-  portion: 'lb.',
+  shippingDetails: {
+    dimensions: {
+      length: '7.38 inches',
+      width: '6.38 inches',
+      height: '2.3 inches',
+    },
+    weight: '14 ounces',
+  },
+  nutritionFacts: {
+    servingSize: '8 medium strawberries',
+    servingsPerContainer: '1.5',
+    calories: 50,
+    totalFat: '0',
+    sodium: '0',
+    totalCarbohydrates: '11 g',
+    dietaryFiber: '2 g',
+    sugars: '8 g',
+    protein: '1 g',
+    potassium: '170 mg',
+    vitaminA: '1 mg',
+    vitaminC: '144 mg',
+    calcium: '24 mg',
+    iron: '0.6 mg',
+  },
 };
 
 export const dummyProducts: productItem[] = Array(20)

@@ -11,6 +11,7 @@ import Orders from './pages/Orders';
 import ProductList from './pages/productList';
 import AdminDashboard from './pages/AdminDashboard';
 import MemberPage from './pages/MemberPage';
+import Payment from './pages/Payment';
 import './index.css';
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
         <Route path="/orders" element={<Orders />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/membership" element={<MemberPage />} />
+        <Route path="/payment" element={<Payment />} />
         {/* Admin Dashboard */}
         <Route path="/admin" element={<AdminDashboard />} />
         {/* Products */}

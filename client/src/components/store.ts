@@ -3,6 +3,7 @@ import type {} from '@redux-devtools/extension'; // required for devtools typing
 import { create, StateCreator } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import type {} from '@redux-devtools/extension'; // required for devtools typing
+import { dummyProducts } from '@/pages/Products';
 
 export type productItem = {
   productId: number;
@@ -89,7 +90,7 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
     zip: '12345',
   },
   cartItemsNumber: 0,
-  cartItems: [],
+  cartItems: [dummyProducts.slice(0, 3)],
   List: [],
   setUserName: (username: string) => set({ loggedIn: true, name: username }),
   logout: () => set({ loggedIn: false, name: '' }),
