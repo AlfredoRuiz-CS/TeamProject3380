@@ -34,7 +34,7 @@ interface OrdersProps {
   orders: Order[];
 }
 
-const dummyOrders: Order[] = Array(10)
+const dummyOrders: Order[] = Array(20)
   .fill({ items: [] })
   .map((_, index) => ({
     orderNumber: index,

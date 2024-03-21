@@ -63,7 +63,7 @@ const dummyProduct: productItem = {
     iron: '0.6 mg',
   },
 };
-const dummyProducts: productItem[] = Array(100)
+const dummyProducts: productItem[] = Array(20)
   .fill({})
   .map(() => ({
     ...dummyProduct,
