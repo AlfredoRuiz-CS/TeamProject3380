@@ -32,7 +32,7 @@ const dummyProduct: productItem = {
   portion: 'lb.',
 };
 
-export const dummyProducts: productItem[] = Array(10)
+export const dummyProducts: productItem[] = Array(20)
   .fill({})
   .map(() => ({ ...dummyProduct }));
 
