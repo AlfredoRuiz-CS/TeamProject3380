@@ -269,9 +269,7 @@ const Profile = () => {
                     className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                     type="text"
                     placeholder={
-                      isPasswordVisible
-                        ? store.password
-                        : '*'.repeat(store.password.length)
+                      '*'.repeat(10)
                     }
                     name="password"
                   />
