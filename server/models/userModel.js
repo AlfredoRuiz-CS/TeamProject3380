@@ -163,7 +163,7 @@ async function updateUserEmail(currentEmail, newEmail){
   }
 }
 
-async function updateUserPassword(email, currentPassword, newPassword){
+async function updateUserPassword(email, oldPassword, newPassword){
     // password validation
     // TODO
 
@@ -178,7 +178,8 @@ async function updateUserPassword(email, currentPassword, newPassword){
         throw Error('User not found');
       }
 
-      const match = await bcrypt.compare(oldPassword, user.password);
+      const hashedPassword = user.password.toString('utf8');
+      const match = await bcrypt.compare(oldPassword, hashedPassword);
       if (!match){
         throw Error('Your current password is incorrect');
       }
