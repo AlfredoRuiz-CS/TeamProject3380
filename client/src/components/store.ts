@@ -73,6 +73,7 @@ type UserState = {
   addToCart: (product: productItem) => void;
   addToList: (product: productItem) => void;
   removeFromCart: (product: productItem) => void;
+  changeQuantity: (product: productItem, quantity: number) => void;
   resetCart: () => void;
 };
 
@@ -95,11 +96,12 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
     zip: '12345',
   },
   cartItemsNumber: 0,
-  cartItems: new Map(
+  cartItems: new Map<productItem, number>(
     dummyProducts.slice(0, 3).map((product, i) => [product, i + 1])
   ),
   List: [],
-  setUserDetails: (details: Partial<UserState>) => set((state) => ({ ...state, ...details })),
+  setUserDetails: (details: Partial<UserState>) =>
+    set((state) => ({ ...state, ...details })),
   logout: () => set({ loggedIn: false, fname: '', lname: '' }),
   login: () => set({ loggedIn: true }),
   addToCart: (product) =>
@@ -124,6 +126,19 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
       }
       return {
         cartItemsNumber: state.cartItemsNumber - 1,
+        cartItems: state.cartItems,
+      };
+    }),
+  changeQuantity: (product, quantity) =>
+    set((state) => {
+      if (quantity <= 0) {
+        state.cartItems.delete(product);
+        state.cartItemsNumber -= 1;
+      } else {
+        state.cartItems.set(product, quantity);
+      }
+      return {
+        cartItemsNumber: state.cartItemsNumber,
         cartItems: state.cartItems,
       };
     }),

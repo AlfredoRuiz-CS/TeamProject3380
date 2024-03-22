@@ -30,9 +30,13 @@ import {
 
 import { productItem } from '@/components/store';
 import { dummyProducts } from './Products';
+import useUserStore from '@/components/store';
 
 const Cart = () => {
-  const tax = 0.0825;
+  const store = useUserStore();
+  const shipping = 10;
+  const parsedArray = Array.from(store.cartItems);
+
   function handleCheckout() {}
 
   return (
@@ -56,9 +60,9 @@ const Cart = () => {
             {/* CARD COMPONENT HERE * NUMBER OF ITEMS IN CART */}
             <div className="">
               <ul className="flex flex-col gap-2">
-                {dummyProducts.map((product: productItem, index: number) => (
+                {parsedArray.map(([product, quantity], index) => (
                   <li key={index} className="">
-                    <CartItem product={product} />
+                    <CartItem product={product} quantity={quantity} />
                   </li>
                 ))}
               </ul>
@@ -83,29 +87,29 @@ const Cart = () => {
                       </td>
                     </tr>
                     <tr className="border-b-2 border-darkblue">
-                      <td className="pb-3 text-left text-2xl">Estimated Tax</td>
+                      <td className="py-3 text-left text-2xl">
+                        Estimated Shipping
+                      </td>
                       <td className="pr-2 text-right text-xl">
-                        {(tax * dummyProducts[0].price).toLocaleString(
+                        {shipping.toLocaleString('en-US', {
+                          style: 'currency',
+                          currency: 'USD',
+                        })}
+                      </td>
+                    </tr>
+
+                    <tr className="">
+                      <td className="pb-3 pt-5 text-left text-2xl">
+                        Estimated Total
+                      </td>
+                      <td className="pr-2 text-right text-xl">
+                        {(dummyProducts[0].price + shipping).toLocaleString(
                           'en-US',
                           {
                             style: 'currency',
                             currency: 'USD',
                           }
                         )}
-                      </td>
-                    </tr>
-                    <tr className="">
-                      <td className="pb-3 pt-5 text-left text-2xl">
-                        Estimated Total
-                      </td>
-                      <td className="pr-2 text-right text-xl">
-                        {(
-                          dummyProducts[0].price +
-                          tax * dummyProducts[0].price
-                        ).toLocaleString('en-US', {
-                          style: 'currency',
-                          currency: 'USD',
-                        })}
                       </td>
                     </tr>
                   </tbody>
