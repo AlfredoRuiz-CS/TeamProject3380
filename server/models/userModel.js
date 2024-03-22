@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 
 async function register (email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, password){
     // validation
-    if (!fName || ! lName || !email || !address || !phoneNumber || !password) {
+    if (!fName || ! lName || !email || !phoneNumber || !streetAddress || !city || !state || !zipcode || !password) {
         throw Error('All fields must be filled')
     }
     // if (!validator.isEmail(email)) {
@@ -30,7 +30,7 @@ async function register (email, fName, lName, phoneNumber, streetAddress, city, 
     // Insert the new user
     const result = await pool.query(`
     INSERT INTO customer(email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, password) 
-    VALUES (?, ?)`, [email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, hash]);
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`, [email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, hash]);
 
     return { email };
 }

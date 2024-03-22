@@ -23,19 +23,19 @@ const validationSchema = Yup.object({
     .email('Invalid email address')
     .required('Email is required'),
   address: Yup.string().required('Address is required'),
-  phone: Yup.string().required('Phone number is required'),
+  phone: Yup.string().required('Phone number is required').max(10),
   password: Yup.string()
     .matches(/^\d*$/, 'Phone number is not valid')
     .required('Password is required')
-    .max(10),
 });
 
 const Register = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const store = useUserStore();
   const setUserDetails = useUserStore((state) => state.setUserDetails);
 
   const states = [
-    'AL',
+    "AL",
     'AK',
     'AS',
     'AZ',
@@ -96,21 +96,10 @@ const Register = () => {
     'WY',
   ];
 
-  const formik = useFormik({
-    initialValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      phone: '',
-      streetAddress: '',
-      city: '',
-      state: '',
-      zipcode: '',
-      password: '',
-    },
-    validationSchema: validationSchema,
-    onSubmit: (values) => {
-      axios.post('/register', values)
+  const onSubmit = async () => {
+    try{
+      // const userData = await axios.post('http://localhost:4000/register', values)
+      await axios.post('http://localhost:4000/register', formik.values)
       .then(response => {
         const userData = response.data;
         setUserDetails({
@@ -127,13 +116,53 @@ const Register = () => {
           }
         });
       });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const formik = useFormik({
+    initialValues: {
+      email: '',
+      fName: '',
+      lName: '',
+      phoneNumber: '',
+      streetAddress: '',
+      city: '',
+      state: '',
+      zipcode: '',
+      password: '',
     },
+    onSubmit: async (values, { setSubmitting }) => {
+      console.log('Form submitted:', values);
+      try {
+        const response = await axios.post('http://localhost:4000/register', values);
+        const userData = await response.data;
+        setUserDetails({
+          loggedIn: true,
+          fname: userData.fName,
+          lname: userData.lName,
+          email: userData.email,
+          phone: userData.phoneNumber,
+          address: { 
+            street: userData.streetAddress,
+            city: userData.city,
+            state: userData.state,
+            zip: userData.zipcode,
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
+      setSubmitting(false);
+    },
+    // },
   });
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     if (value.match(/^\d*$/)) {
-      formik.setFieldValue('phone', value);
+      formik.setFieldValue('phoneNumber', value);
     }
   };
 
@@ -146,7 +175,7 @@ const Register = () => {
     <>
       <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
         <Header />
-        <form className="flex w-full flex-col items-center gap-5 py-5">
+        <form className="flex w-full flex-col items-center gap-5 py-5" onSubmit={formik.handleSubmit}>
           <h1 className="mb-5 font-jua text-8xl">Register</h1>
           <a href="/login" className="mb-5 font-jua text-5xl text-darkblue">
             Already have an account?
@@ -155,17 +184,17 @@ const Register = () => {
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="text"
             placeholder="First name"
-            name="firstName"
+            name="fName"
             onChange={formik.handleChange}
-            value={formik.values.firstName}
+            value={formik.values.fName}
           />
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="text"
             placeholder="Last name"
-            name="lastName"
+            name="lName"
             onChange={formik.handleChange}
-            value={formik.values.lastName}
+            value={formik.values.lName}
           />
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
@@ -179,7 +208,7 @@ const Register = () => {
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="text"
             placeholder="Street address"
-            name="address"
+            name="streetAddress"
             onChange={formik.handleChange}
             value={formik.values.streetAddress}
           />
@@ -192,8 +221,9 @@ const Register = () => {
             value={formik.values.city}
           />
           <Select
-            onValueChange={formik.handleChange}
-            // defaultValue={store.address.state}
+            onValueChange={(value) => formik.setFieldValue('state', value)}
+            defaultValue={store.address.state}
+            name="state"
           >
             <SelectTrigger className="h-10 w-full max-w-md border bg-white border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue">
               <SelectValue
@@ -209,14 +239,6 @@ const Register = () => {
               ))}
             </SelectContent>
           </Select>
-          {/* <input
-            className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
-            type="text"
-            placeholder="State"
-            name="state"
-            onChange={formik.handleChange}
-            value={formik.values.state}
-          /> */}
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="text"
@@ -229,9 +251,9 @@ const Register = () => {
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="tel"
             placeholder="Phone number"
-            name="phone"
+            name="phoneNumber"
             onChange={handlePhoneChange}
-            value={formik.values.phone}
+            value={formik.values.phoneNumber}
           />
           {/* <ErrorMessage name="phone" component={ErrorText} /> */}
           <input
@@ -254,9 +276,9 @@ const Register = () => {
               Show Password
             </label>
           </div>
-          <Button asChild className="" size="lg">
+          <button className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-10 rounded-md px-8 select-none" type="submit">
             <p>Register</p>
-          </Button>
+          </button>
         </form>
         <h2 className="flex items-center justify-center font-jua text-[64px]">
           {' '}

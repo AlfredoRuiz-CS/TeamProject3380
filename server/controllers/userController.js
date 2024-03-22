@@ -1,6 +1,5 @@
 const userModel = require('../models/userModel');
 const jwt = require('jsonwebtoken');
-const { parse } = require('querystring');
 
 const createToken = (email) => {
   return jwt.sign({ email }, process.env.SECRET, { expiresIn: '1d' });
@@ -13,7 +12,13 @@ const getRequestBody = (req) => {
       body += chunk.toString();
     });
     req.on('end', () => {
-      resolve(parse(body));
+      try {
+        // Parse the body string as JSON
+        const parsedBody = JSON.parse(body);
+        resolve(parsedBody);
+      } catch (error) {
+        reject(error);
+      }
     });
     req.on('error', (err) => {
       reject(err);
@@ -25,9 +30,11 @@ const registerAuth = async (req, res) => {
   
   try {
     const body = await getRequestBody(req);
+    console.log(body);
     const { fName, lName, email, phoneNumber, streetAddress, city, state, zipcode, password } = body;
+    console.log(fName, lName, email, phoneNumber, streetAddress, city, state, zipcode, password);
 
-    const user = await userModel.register(fName, lName, email, phoneNumber, streetAddress, city, state, zipcode, password);
+    const user = await userModel.register(email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, password);
 
     const token = createToken(user.email);
 
