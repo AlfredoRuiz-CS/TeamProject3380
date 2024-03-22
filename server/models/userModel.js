@@ -1,7 +1,7 @@
 const { pool } = require("../config/db");
 const bcrypt = require("bcrypt");
 
-async function register (fName, lName, email, address, phoneNumber, password){
+async function register (email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, password){
     // validation
     if (!fName || ! lName || !email || !address || !phoneNumber || !password) {
         throw Error('All fields must be filled')
@@ -29,10 +29,10 @@ async function register (fName, lName, email, address, phoneNumber, password){
     
     // Insert the new user
     const result = await pool.query(`
-    INSERT INTO customer(email, password) 
-    VALUES (?, ?)`, [email, hash]);
+    INSERT INTO customer(email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, password) 
+    VALUES (?, ?)`, [email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, hash]);
 
-    return { id: result[0].insertId, email };
+    return { email };
 }
 
 async function login(email, password) {
@@ -52,7 +52,7 @@ async function login(email, password) {
       throw Error('Incorrect password');
     }
   
-    return { id: user.id, email: user.email };
+    return { email: user.email, fName: user.fName, lName: user.lName, phoneNumber: user.phoneNumber, streetAddress: user.streetAddress, city: user.city, state: user.state, zipcode: user.zipcode };
   }
 
 async function findAllCustomers() {

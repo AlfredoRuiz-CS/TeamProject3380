@@ -45,9 +45,9 @@ type UserState = {
   loggedIn: boolean;
   isAdmin: boolean;
   isMember: boolean;
-  name: string;
+  fname: string;
+  lname: string;
   email: string;
-  password: string;
   phone: string;
   address: {
     street: string;
@@ -62,7 +62,12 @@ type UserState = {
   cartItems: productItem[];
 
   // Actions for user login
-  setUserName: (username: string) => void;
+  setUserfName: (firstname: string) => void;
+  setUserlName: (lastname: string) => void;
+  setUserEmail: (email: string) => void;
+  setUserPhone: (phone: string) => void;
+  setUserAddress: (address: object) => void;
+  setUserDetails: (details: Partial<UserState>) => void;
   login: () => void;
   logout: () => void;
   addToCart: (product: productItem) => void;
@@ -81,7 +86,6 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
   accountCreatedDate: new Date(),
   accountType: 'customer',
   email: 'test@nothing.com',
-  password: 'greatgooglymoogly123',
   phone: '123-456-7890',
   address: {
     street: '1234 Main St.',
@@ -92,8 +96,8 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
   cartItemsNumber: 0,
   cartItems: [dummyProducts.slice(0, 3)],
   List: [],
-  setUserName: (username: string) => set({ loggedIn: true, name: username }),
-  logout: () => set({ loggedIn: false, name: '' }),
+  setUserDetails: (details: Partial<UserState>) => set((state) => ({ ...state, ...details })),
+  logout: () => set({ loggedIn: false, fname: '', lname: '',   }),
   login: () => set({ loggedIn: true }),
   addToCart: (product) =>
     set((state) => ({

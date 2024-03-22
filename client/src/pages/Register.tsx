@@ -6,6 +6,15 @@ import React, { ReactEventHandler, useState } from 'react';
 import { Button } from '../components/ui/button.tsx';
 import { useFormik, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
+import axios from 'axios';
+import useUserStore from '../components/store.ts';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const validationSchema = Yup.object({
   firstName: Yup.string().required('First name is required'),
@@ -23,19 +32,101 @@ const validationSchema = Yup.object({
 
 const Register = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const setUserDetails = useUserStore((state) => state.setUserDetails);
+
+  const states = [
+    'AL',
+    'AK',
+    'AS',
+    'AZ',
+    'AR',
+    'CA',
+    'CO',
+    'CT',
+    'DE',
+    'DC',
+    'FM',
+    'FL',
+    'GA',
+    'GU',
+    'HI',
+    'ID',
+    'IL',
+    'IN',
+    'IA',
+    'KS',
+    'KY',
+    'LA',
+    'ME',
+    'MH',
+    'MD',
+    'MA',
+    'MI',
+    'MN',
+    'MS',
+    'MO',
+    'MT',
+    'NE',
+    'NV',
+    'NH',
+    'NJ',
+    'NM',
+    'NY',
+    'NC',
+    'ND',
+    'MP',
+    'OH',
+    'OK',
+    'OR',
+    'PW',
+    'PA',
+    'PR',
+    'RI',
+    'SC',
+    'SD',
+    'TN',
+    'TX',
+    'UT',
+    'VT',
+    'VI',
+    'VA',
+    'WA',
+    'WV',
+    'WI',
+    'WY',
+  ];
 
   const formik = useFormik({
     initialValues: {
       firstName: '',
       lastName: '',
       email: '',
-      address: '',
       phone: '',
+      streetAddress: '',
+      city: '',
+      state: '',
+      zipcode: '',
       password: '',
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      console.log(values);
+      axios.post('/register', values)
+      .then(response => {
+        const userData = response.data;
+        setUserDetails({
+          loggedIn: true,
+          fname: `${userData.fName}`,
+          lname: `${userData.lName}`,
+          email: `${userData.email}`,
+          phone: `${userData.phoneNumber}`,
+          address: { 
+            street: `${userData.street}`,
+            city: `${userData.city}`,
+            state: `${userData.state}`,
+            zip: `${userData.zipcode}`,
+          }
+        });
+      });
     },
   });
 
@@ -87,10 +178,52 @@ const Register = () => {
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="text"
-            placeholder="Address"
+            placeholder="Street address"
             name="address"
             onChange={formik.handleChange}
-            value={formik.values.address}
+            value={formik.values.streetAddress}
+          />
+          <input
+            className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+            type="text"
+            placeholder="City"
+            name="city"
+            onChange={formik.handleChange}
+            value={formik.values.city}
+          />
+          <Select
+            onValueChange={formik.handleChange}
+            // defaultValue={store.address.state}
+          >
+            <SelectTrigger className="h-10 w-full max-w-md border bg-white border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue">
+              <SelectValue
+                // placeholder={store.address.state}
+                className="text-gray-200"
+              />
+            </SelectTrigger>
+            <SelectContent side="bottom">
+              {states.map((state, index) => (
+                <SelectItem key={index} value={state}>
+                  {state}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {/* <input
+            className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+            type="text"
+            placeholder="State"
+            name="state"
+            onChange={formik.handleChange}
+            value={formik.values.state}
+          /> */}
+          <input
+            className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+            type="text"
+            placeholder="Zipcode"
+            name="zipcode"
+            onChange={formik.handleChange}
+            value={formik.values.zipcode}
           />
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"

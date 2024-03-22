@@ -2,8 +2,8 @@ const userModel = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const { parse } = require('querystring');
 
-const createToken = (id) => {
-  return jwt.sign({ id }, process.env.SECRET, { expiresIn: '3d' });
+const createToken = (email) => {
+  return jwt.sign({ email }, process.env.SECRET, { expiresIn: '1d' });
 };
 
 const getRequestBody = (req) => {
@@ -21,6 +21,24 @@ const getRequestBody = (req) => {
   });
 };
 
+const registerAuth = async (req, res) => {
+  
+  try {
+    const body = await getRequestBody(req);
+    const { fName, lName, email, phoneNumber, streetAddress, city, state, zipcode, password } = body;
+
+    const user = await userModel.register(fName, lName, email, phoneNumber, streetAddress, city, state, zipcode, password);
+
+    const token = createToken(user.email);
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, token }));
+  } catch (error) {
+    res.writeHead(400, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: error.message }));
+  }
+};
+
 const loginAuth = async (req, res) => {
   
   try {
@@ -29,30 +47,22 @@ const loginAuth = async (req, res) => {
 
     const user = await userModel.login(email, password);
 
-    const token = createToken(user.customerID);
+    const token = createToken(user.email);
 
     res.writeHead(200, { 'Content-Type': 'application/json'});
-    res.end(JSON.stringify({ email, token }));
+    res.end(JSON.stringify({ 
+      email: user.email,
+      fName: user.fName,
+      lName: user.lName,
+      phoneNumber: user.phoneNumber,
+      streetAddress: user.streetAddress,
+      city: user.city,
+      state: user.state,
+      zipcode: user.zipcode,
+      token 
+    }));
   } catch (error) {
     res.writeHead(400, {' Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: error.message }));
-  }
-};
-
-const registerAuth = async (req, res) => {
-  
-  try {
-    const body = await getRequestBody(req);
-    const { fName, lName, email, address, phoneNumber, password } = body;
-
-    const user = await userModel.register(fName, lName, email, address, phoneNumber, password);
-
-    const token = createToken(user.id);
-
-    res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ email, token }));
-  } catch (error) {
-    res.writeHead(400, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: error.message }));
   }
 };
