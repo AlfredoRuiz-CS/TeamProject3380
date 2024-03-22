@@ -1,10 +1,11 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import cartItem from '@/components/CartItem';
+import CartItem from '@/components/CartItem';
 import { Toaster } from '@/components/ui/sonner';
 import { Button } from '@/components/ui/button';
 import { FaTrashCan } from 'react-icons/fa6';
 import { Link } from 'react-router-dom';
+import { Separator } from '@/components/ui/separator';
 
 import {
   Table,
@@ -27,7 +28,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 
-import productItem from '@/components/store';
+import { productItem } from '@/components/store';
 import { dummyProducts } from './Products';
 
 const Cart = () => {
@@ -53,6 +54,15 @@ const Cart = () => {
               </Button>
             </div>
             {/* CARD COMPONENT HERE * NUMBER OF ITEMS IN CART */}
+            <div className="">
+              <ul className="flex flex-col gap-2">
+                {dummyProducts.map((product: productItem, index: number) => (
+                  <li key={index} className="">
+                    <CartItem product={product} />
+                  </li>
+                ))}
+              </ul>
+            </div>
           </section>
 
           {/* Order Summary Section */}
@@ -65,16 +75,16 @@ const Cart = () => {
                   <tbody className="">
                     <tr className="">
                       <td className="py-3 text-left text-2xl">Subtotal</td>
-                      <td className="pr-2 text-right text-lg">
+                      <td className="pr-2 text-right text-xl">
                         {dummyProducts[0].price.toLocaleString('en-US', {
                           style: 'currency',
                           currency: 'USD',
                         })}
                       </td>
                     </tr>
-                    <tr className="">
+                    <tr className="border-b-2 border-darkblue">
                       <td className="pb-3 text-left text-2xl">Estimated Tax</td>
-                      <td className="pr-2 text-right text-lg">
+                      <td className="pr-2 text-right text-xl">
                         {(tax * dummyProducts[0].price).toLocaleString(
                           'en-US',
                           {
@@ -85,10 +95,10 @@ const Cart = () => {
                       </td>
                     </tr>
                     <tr className="">
-                      <td className="pb-3 text-left text-2xl">
+                      <td className="pb-3 pt-5 text-left text-2xl">
                         Estimated Total
                       </td>
-                      <td className="pr-2 text-right text-lg">
+                      <td className="pr-2 text-right text-xl">
                         {(
                           dummyProducts[0].price +
                           tax * dummyProducts[0].price
