@@ -2,7 +2,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ErrorText from '../components/ErrorText';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
-import React, { ReactEventHandler, useState } from 'react';
+import React, { ReactEventHandler, useState, useEffect } from 'react';
 import { Button } from '../components/ui/button.tsx';
 import { useFormik, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -15,24 +15,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useNavigate } from 'react-router-dom';
 
 const validationSchema = Yup.object({
-  firstName: Yup.string().required('First name is required'),
-  lastName: Yup.string().required('Last name is required'),
-  email: Yup.string()
-    .email('Invalid email address')
-    .required('Email is required'),
-  address: Yup.string().required('Address is required'),
-  phone: Yup.string().required('Phone number is required').max(10),
-  password: Yup.string()
-    .matches(/^\d*$/, 'Phone number is not valid')
-    .required('Password is required')
+  fName: Yup.string().required('First name is required'),
+  lName: Yup.string().required('Last name is required'),
+  email: Yup.string().email('Invalid email address').required('Email is required'),
+  streetAddress: Yup.string().required('Street is required'),
+  city: Yup.string().required('City is required'),
+  state: Yup.string().required('State is required'),
+  zipcode: Yup.string().required('Zipcode is required'),
+  phoneNumber: Yup.string().matches(/^\d*$/, 'Phone number is not valid').required('Phone number is required').max(10),
+  password: Yup.string().required('Password is required')
 });
 
 const Register = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const store = useUserStore();
   const setUserDetails = useUserStore((state) => state.setUserDetails);
+  const navigate = useNavigate();
+
 
   const states = [
     "AL",
@@ -96,31 +98,6 @@ const Register = () => {
     'WY',
   ];
 
-  const onSubmit = async () => {
-    try{
-      // const userData = await axios.post('http://localhost:4000/register', values)
-      await axios.post('http://localhost:4000/register', formik.values)
-      .then(response => {
-        const userData = response.data;
-        setUserDetails({
-          loggedIn: true,
-          fname: `${userData.fName}`,
-          lname: `${userData.lName}`,
-          email: `${userData.email}`,
-          phone: `${userData.phoneNumber}`,
-          address: { 
-            street: `${userData.street}`,
-            city: `${userData.city}`,
-            state: `${userData.state}`,
-            zip: `${userData.zipcode}`,
-          }
-        });
-      });
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
   const formik = useFormik({
     initialValues: {
       email: '',
@@ -133,6 +110,7 @@ const Register = () => {
       zipcode: '',
       password: '',
     },
+    validationSchema: validationSchema,
     onSubmit: async (values, { setSubmitting }) => {
       console.log('Form submitted:', values);
       try {
@@ -151,6 +129,7 @@ const Register = () => {
             zip: userData.zipcode,
           }
         });
+        // navigate('/profile');
       } catch (error) {
         console.log(error);
       }
@@ -158,6 +137,13 @@ const Register = () => {
     },
     // },
   });
+
+  useEffect(() => {
+    if (store.loggedIn) {
+        console.log('User is loggin in...redirecting')
+        navigate('/products');
+    }
+}, [store.loggedIn, navigate]);
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;

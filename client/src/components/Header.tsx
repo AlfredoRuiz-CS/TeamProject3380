@@ -121,7 +121,7 @@ const Header = (props: HeaderProps) => {
                         textColor
                       }
                     >
-                      {store.name}
+                      {store.fname}
                       <IoIosArrowDown />
                     </Button>
                   </DropdownMenuTrigger>

@@ -47,7 +47,8 @@ async function login(email, password) {
     }
   
     // Check if password matches
-    const match = await bcrypt.compare(password, user.password);
+    const hashedPassword = user.password.toString('utf8');
+    const match = await bcrypt.compare(password, hashedPassword);
     if (!match) {
       throw Error('Incorrect password');
     }

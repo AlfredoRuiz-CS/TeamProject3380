@@ -83,7 +83,7 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
   fname: '',
   lname: '',
   isAdmin: false,
-  isMember: true,
+  isMember: false,
   accountCreatedDate: new Date(),
   accountType: 'customer',
   email: 'test@nothing.com',
@@ -100,7 +100,7 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
   ),
   List: [],
   setUserDetails: (details: Partial<UserState>) => set((state) => ({ ...state, ...details })),
-  logout: () => set({ loggedIn: false, fname: '', lname: '' }),
+  logout: () => set({ loggedIn: false, fname: '', lname: '', email: '', phone: '', address: {street: '', city: '', state: 'CA', zip: '', }}),
   login: () => set({ loggedIn: true }),
   addToCart: (product) =>
     set((state) => {
