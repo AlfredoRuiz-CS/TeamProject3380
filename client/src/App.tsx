@@ -28,6 +28,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/list" element={<ProductList />} />
         <Route path="/membership" element={<MemberPage />} />
         <Route path="/payment" element={<Payment />} />
         {/* Admin Dashboard */}
@@ -35,7 +36,6 @@ function App() {
         {/* Products */}
         <Route path="/products" element={<Products />} />
         <Route path="/product/:productId" element={<SingleProduct />} />
-        <Route path="/test" element={<ProductList />} />
         {/* Any non-valid URL returns to home */}
         <Route path="*" element={<Home />} />
       </Routes>

@@ -12,11 +12,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-interface productProps {
-  // ! REMOVE ? FOR FINAL VERSION
-  products?: productItem[];
-}
-
 const dummyProduct: productItem = {
   productId: 12345,
   name: 'Fresh Strawberries',
@@ -61,7 +56,7 @@ export const dummyProducts: productItem[] = Array(20)
   .fill({})
   .map(() => ({ ...dummyProduct }));
 
-const Products = (props: productProps) => {
+const Products = () => {
   let [valueSortOrder, setValueSortOrder] = useState('Price Desc.');
   let [catSortOrder, setCatSortOrder] = useState('All');
 

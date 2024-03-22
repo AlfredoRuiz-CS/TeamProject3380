@@ -59,7 +59,7 @@ type UserState = {
   accountType: 'customer' | 'admin';
   cartItemsNumber: number;
   List: productItem[];
-  cartItems: productItem[];
+  cartItems: Map<productItem, number>;
 
   // Actions for user login
   setUserName: (username: string) => void;
@@ -90,27 +90,40 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
     zip: '12345',
   },
   cartItemsNumber: 0,
-  cartItems: [dummyProducts.slice(0, 3)],
+  cartItems: new Map(
+    dummyProducts.slice(0, 3).map((product, i) => [product, i + 1])
+  ),
   List: [],
   setUserName: (username: string) => set({ loggedIn: true, name: username }),
   logout: () => set({ loggedIn: false, name: '' }),
   login: () => set({ loggedIn: true }),
   addToCart: (product) =>
-    set((state) => ({
-      cartItemsNumber: state.cartItemsNumber + 1,
-      cartItems: state.cartItems.concat(product),
-    })),
+    set((state) => {
+      state.cartItems.set(product, (state.cartItems.get(product) || 0) + 1);
+      return {
+        cartItemsNumber: state.cartItemsNumber + 1,
+        cartItems: state.cartItems,
+      };
+    }),
   addToList: (product) =>
     set((state) => ({
       List: state.List.concat(product),
     })),
   removeFromCart: (product) =>
-    set((state) => ({
-      ...state,
-      cartItems: state.cartItems.filter((item) => item !== product),
-      cartItemsNumber: state.cartItemsNumber - 1,
-    })),
-  resetCart: () => set({ cartItemsNumber: 0, cartItems: [] }),
+    set((state) => {
+      const currentQuantity = state.cartItems.get(product);
+      if (currentQuantity && currentQuantity > 1) {
+        state.cartItems.set(product, currentQuantity - 1);
+      } else {
+        state.cartItems.delete(product);
+      }
+      return {
+        cartItemsNumber: state.cartItemsNumber - 1,
+        cartItems: state.cartItems,
+      };
+    }),
+  resetCart: () =>
+    set({ cartItemsNumber: 0, cartItems: new Map<productItem, number>() }),
 });
 
 const useUserStore = create(
