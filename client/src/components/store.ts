@@ -62,11 +62,11 @@ type UserState = {
   cartItems: Map<productItem, number>;
 
   // Actions for user login
-  setUserfName: (firstname: string) => void;
-  setUserlName: (lastname: string) => void;
-  setUserEmail: (email: string) => void;
-  setUserPhone: (phone: string) => void;
-  setUserAddress: (address: object) => void;
+  // setUserfName: (firstname: string) => void;
+  // setUserlName: (lastname: string) => void;
+  // setUserEmail: (email: string) => void;
+  // setUserPhone: (phone: string) => void;
+  // setUserAddress: (address: object) => void;
   setUserDetails: (details: Partial<UserState>) => void;
   login: () => void;
   logout: () => void;
@@ -80,7 +80,8 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
   set
 ) => ({
   loggedIn: false,
-  name: '',
+  fname: '',
+  lname: '',
   isAdmin: false,
   isMember: true,
   accountCreatedDate: new Date(),
@@ -99,7 +100,7 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
   ),
   List: [],
   setUserDetails: (details: Partial<UserState>) => set((state) => ({ ...state, ...details })),
-  logout: () => set({ loggedIn: false, fname: '', lname: '',   }),
+  logout: () => set({ loggedIn: false, fname: '', lname: '' }),
   login: () => set({ loggedIn: true }),
   addToCart: (product) =>
     set((state) => {
@@ -126,6 +127,10 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
         cartItems: state.cartItems,
       };
     }),
+  removeFromList: (product: productItem) =>
+    set((state) => ({
+      List: state.List.filter((item) => item !== product),
+    })),
   resetCart: () =>
     set({ cartItemsNumber: 0, cartItems: new Map<productItem, number>() }),
 });
