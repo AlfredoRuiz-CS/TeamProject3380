@@ -229,6 +229,36 @@ async function updateUserAddress(email, streetAddress, city, state, zipcode){
   }
 }
 
+async function updateUserName(email, fName, lName){
+  try{
+    const [rows] = await pool.query(`
+    UPDATE customer
+    SET fName = ?, lName = ?
+    WHERE email = ?`, [fName, lName, email]);
+
+    return rows;
+
+  } catch (error){
+    console.log(error.message);
+    throw error;
+  }
+}
+
+// async function updateUserlName(email, lName){
+//   try{
+//     const [rows] = await pool.query(`
+//     UPDATE customer
+//     SET lName = ?
+//     WHERE email = ?`, [lName, email]);
+
+//     return rows;
+    
+//   } catch (error){
+//     console.log(error.message);
+//     throw error;
+//   }
+// }
+
 module.exports = {
     register,
     login,
@@ -239,5 +269,7 @@ module.exports = {
     updateUserEmail,
     updateUserPassword,
     updateUserPhone,
-    updateUserAddress
+    updateUserAddress,
+    updateUserName,
+    // updateUserlName
 }

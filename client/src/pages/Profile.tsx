@@ -267,7 +267,7 @@ const Profile = () => {
 
                   <input
                     className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
-                    type="text"
+                    type={isPasswordVisible ? 'text' : 'password'}
                     placeholder={
                       '*'.repeat(10)
                     }

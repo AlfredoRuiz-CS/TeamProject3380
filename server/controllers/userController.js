@@ -212,6 +212,38 @@ const updateUserAddress = async (req, res) => {
 
 }
 
+const updateUserName = async (req, res) => {
+  try {
+    const body = getRequestBody(req);
+    const { email, fName, lName } = body;
+
+    const updateUserName = await userModel.updateUserName(email, fName, lName);
+
+    res.writeHead(201, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ "message": `Successfully updated name for - ${email}` }));
+
+  } catch (error){
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringyf({ "status": "Failed to update name", "error" : error.message }));
+  }
+}
+
+// const updateUserlName = async (req, res) => {
+//   try {
+//     const body = getRequestBody(req);
+//     const { email, lName } = body;
+
+//     const updateUserfName = await userModel.updateUserfName(email, lName);
+
+//     res.writeHead(201, { 'Content-Type': 'application/json' });
+//     res.end(JSON.stringify({ "message": `Successfully updated last name for - ${email}` }));
+
+//   } catch (error){
+//     res.writeHead(500, { 'Content-Type': 'application/json' });
+//     res.end(JSON.stringyf({ "status": "Failed to update address", "error" : error.message }));
+//   }
+// }
+
 module.exports = { 
   registerAuth, 
   loginAuth, 
@@ -222,5 +254,6 @@ module.exports = {
   updateUserEmail,
   updateUserPassword,
   updateUserPhone,
-  updateUserAddress 
+  updateUserAddress,
+  updateUserName 
 };
