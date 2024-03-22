@@ -31,11 +31,17 @@ import {
 import { productItem } from '@/components/store';
 import { dummyProducts } from './Products';
 import useUserStore from '@/components/store';
+import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 const Cart = () => {
   const store = useUserStore();
+  const navigate = useNavigate();
   const shipping = 10;
-  const parsedArray = Array.from(store.cartItems);
+
+  const [quantity, setQuantity] = useState(1);
+
+  // ! REPLACE POPULAR ITEMS WITH USER LIST
 
   const popularItem1 = dummyProducts.reduce((lowest, product) => {
     return lowest.supplierStock < product.supplierStock ? lowest : product;
@@ -47,7 +53,9 @@ const Cart = () => {
     return lowest.supplierStock < product.supplierStock ? lowest : product;
   }, dummyProducts[0]);
 
-  function handleCheckout() {}
+  function handleCheckout() {
+    navigate('/payment:cart');
+  }
 
   return (
     <>
@@ -70,9 +78,12 @@ const Cart = () => {
             {/* CARD COMPONENT HERE * NUMBER OF ITEMS IN CART */}
             <div className="">
               <ul className="flex flex-col gap-2">
-                {parsedArray.map(([product, quantity], index) => (
+                {store.cartItems.map((product, index) => (
                   <li key={index} className="">
-                    <CartItem product={product} quantity={quantity} />
+                    <CartItem
+                      product={product}
+                      quantity={store.quantity[index]}
+                    />
                   </li>
                 ))}
               </ul>

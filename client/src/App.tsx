@@ -30,7 +30,11 @@ function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/list" element={<ProductList />} />
         <Route path="/membership" element={<MemberPage />} />
-        <Route path="/payment" element={<Payment />} />
+        <Route path="/payment/:cart" element={<Payment type={'cart'} />} />
+        <Route
+          path="/payment/membership"
+          element={<Payment type={'membership'} />}
+        />
         {/* Admin Dashboard */}
         <Route path="/admin" element={<AdminDashboard />} />
         {/* Products */}

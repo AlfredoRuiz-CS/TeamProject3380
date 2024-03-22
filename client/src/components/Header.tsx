@@ -93,7 +93,7 @@ const Header = (props: HeaderProps) => {
                 ) : (
                   <a href="/cart">
                     <IoMdCart size={20} color="primary" />
-                    <p className="">{store.cartItems.length}</p>
+                    <p className="">{10}</p>
                   </a>
                 )}
               </li>

@@ -10,6 +10,7 @@ export type productItem = {
   name: string;
   price: number;
   description: string[];
+  category: 'produce' | 'Meat' | 'Fish' | 'Dairy' | 'Snacks';
   nutritionFacts?: {
     servingSize: string;
     servingsPerContainer: string;
@@ -59,7 +60,8 @@ type UserState = {
   accountType: 'customer' | 'admin';
   cartItemsNumber: number;
   List: productItem[];
-  cartItems: Map<productItem, number>;
+  cartItems: productItem[];
+  quantity: number[];
 
   // Actions for user login
   // setUserfName: (firstname: string) => void;
@@ -96,19 +98,28 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
     zip: '12345',
   },
   cartItemsNumber: 0,
-  cartItems: new Map<productItem, number>(
-    dummyProducts.slice(0, 3).map((product, i) => [product, i + 1])
-  ),
+  cartItems: dummyProducts.slice(0, 3),
+  quantity: [1, 1, 1],
   List: [],
-  setUserDetails: (details: Partial<UserState>) => set((state) => ({ ...state, ...details })),
-  logout: () => set({ loggedIn: false, fname: '', lname: '', email: '', phone: '', address: {street: '', city: '', state: 'CA', zip: '', }}),
+  setUserDetails: (details: Partial<UserState>) =>
+    set((state) => ({ ...state, ...details })),
+  logout: () =>
+    set({
+      loggedIn: false,
+      fname: '',
+      lname: '',
+      email: '',
+      phone: '',
+      address: { street: '', city: '', state: 'CA', zip: '' },
+    }),
   login: () => set({ loggedIn: true }),
   addToCart: (product) =>
     set((state) => {
-      state.cartItems.set(product, (state.cartItems.get(product) || 0) + 1);
+      const newCartItems = state.cartItems.concat(product);
       return {
-        cartItemsNumber: state.cartItemsNumber + 1,
-        cartItems: state.cartItems,
+        cartItemsNumber: newCartItems.length,
+        cartItems: newCartItems,
+        quantity: state.quantity.concat(1),
       };
     }),
   addToList: (product) =>
@@ -117,36 +128,24 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
     })),
   removeFromCart: (product) =>
     set((state) => {
-      const currentQuantity = state.cartItems.get(product);
-      if (currentQuantity && currentQuantity > 1) {
-        state.cartItems.set(product, currentQuantity - 1);
-      } else {
-        state.cartItems.delete(product);
-      }
+      const newCartItems = state.cartItems.filter((item) => item !== product);
       return {
-        cartItemsNumber: state.cartItemsNumber - 1,
-        cartItems: state.cartItems,
+        cartItemsNumber: newCartItems.length,
+        cartItems: newCartItems,
       };
     }),
   changeQuantity: (product, quantity) =>
     set((state) => {
-      if (quantity <= 0) {
-        state.cartItems.delete(product);
-        state.cartItemsNumber -= 1;
-      } else {
-        state.cartItems.set(product, quantity);
-      }
-      return {
-        cartItemsNumber: state.cartItemsNumber,
-        cartItems: state.cartItems,
-      };
+      const newQuantity = state.quantity.map((q, i) =>
+        state.cartItems[i] === product ? quantity : q
+      );
+      return { quantity: newQuantity };
     }),
   removeFromList: (product: productItem) =>
     set((state) => ({
       List: state.List.filter((item) => item !== product),
     })),
-  resetCart: () =>
-    set({ cartItemsNumber: 0, cartItems: new Map<productItem, number>() }),
+  resetCart: () => set({ cartItemsNumber: 0, cartItems: [] }),
 });
 
 const useUserStore = create(

@@ -2,7 +2,8 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
 import { useState, useEffect } from 'react';
-import { Button } from '../components/ui/button';
+import { Button } from '@/components/ui/button';
+import { Sonner } from '@/components/ui/sonner';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -11,11 +12,14 @@ import axios from 'axios';
 // Imports for state management
 import useUserStore from '@/components/store';
 import type {} from '@redux-devtools/extension'; // required for devtools typing
+import { Toaster } from 'sonner';
 // import { devtools, persist } from "zustand/middleware";
 
 const validationSchema = Yup.object({
-  email: Yup.string().email('Invalid email address').required('Email is required'),
-  password: Yup.string().required('Password is required')
+  email: Yup.string()
+    .email('Invalid email address')
+    .required('Email is required'),
+  password: Yup.string().required('Password is required'),
 });
 
 const Login = () => {
@@ -46,7 +50,10 @@ const Login = () => {
     onSubmit: async (values, { setSubmitting }) => {
       console.log('Form submitted:', values);
       try {
-        const response = await axios.post('http://localhost:4000/login', values);
+        const response = await axios.post(
+          'http://localhost:4000/login',
+          values
+        );
         const userData = await response.data;
         store.login();
         setUserDetails({
@@ -54,12 +61,12 @@ const Login = () => {
           lname: userData.lName,
           email: userData.email,
           phone: userData.phoneNumber,
-          address: { 
+          address: {
             street: userData.streetAddress,
             city: userData.city,
             state: userData.state,
             zip: userData.zipcode,
-          }
+          },
         });
         // navigate('/profile');
       } catch (error) {
@@ -79,10 +86,10 @@ const Login = () => {
 
   useEffect(() => {
     if (store.loggedIn) {
-        console.log('User is loggin in...redirecting')
-        navigate('/products');
+      console.log('User is loggin in...redirecting');
+      navigate('/products');
     }
-}, [store.loggedIn, navigate]);
+  }, [store.loggedIn, navigate]);
 
   // console.log(store.name);
   return (
@@ -128,7 +135,10 @@ const Login = () => {
               Show Password
             </label>
           </div>
-          <button className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-10 rounded-md px-8 select-none" type="submit">
+          <button
+            className="inline-flex h-10 select-none items-center justify-center whitespace-nowrap rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+            type="submit"
+          >
             <p>Log in</p>
           </button>
         </form>
