@@ -74,8 +74,8 @@ type UserState = {
   logout: () => void;
   addToCart: (product: productItem) => void;
   addToList: (product: productItem) => void;
-  removeFromCart: (product: productItem) => void;
-  // changeQuantity: (product: productItem, quantity: number) => void;
+  // removeFromCart: (product: productItem) => void;
+  changeQuantity: (product: productItem, quantity: number) => void;
   resetCart: () => void;
 };
 
@@ -126,7 +126,7 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
     set((state) => ({
       List: state.List.concat(product),
     })),
-  removeFromCart: (product) =>
+  /*removeFromCart: (product) =>
     set((state) => {
       const newCartItems = state.cartItems.filter((item) => item !== product);
       return {
@@ -136,14 +136,14 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
         cartItemsNumber: newCartItems.length,
         cartItems: newCartItems,
       };
-    }),
-  /*changeQuantity: (product, quantity) =>
+    }),*/
+  changeQuantity: (product, quantity) =>
     set((state) => {
       const newQuantity = state.quantity.map((q, i) =>
         state.cartItems[i] === product ? quantity : q
       );
       return { quantity: newQuantity };
-    }),*/
+    }),
   removeFromList: (product: productItem) =>
     set((state) => ({
       List: state.List.filter((item) => item !== product),

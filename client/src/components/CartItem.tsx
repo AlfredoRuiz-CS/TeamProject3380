@@ -12,7 +12,7 @@ const CartItem = (props: CartItemProps) => {
 
   function handleRemoveItem(e: React.MouseEvent, product: productItem) {
     e.preventDefault();
-    store.removeFromCart(product);
+    // store.removeFromCart(product);
   }
 
   function handleSubtractQuantity(e: React.MouseEvent) {
