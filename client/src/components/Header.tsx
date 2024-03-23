@@ -18,7 +18,7 @@ import { Link } from 'react-router-dom';
 import useUserStore from '@/components/store';
 // import { devtools, persist } from "zustand/middleware";
 import type {} from '@redux-devtools/extension'; // required for devtools typing
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   color?: 'blue' | 'white';
@@ -26,7 +26,7 @@ interface HeaderProps {
 
 const Header = (props: HeaderProps) => {
   const store = useUserStore();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   useEffect(() => {}, [store.loggedIn]);
 
   let textColor = 'text-white';
