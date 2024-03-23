@@ -30,6 +30,7 @@ const dummyProduct: productItem = {
   price: 3.97,
   image: '/assets/strawberries.jpg',
   stock: 10,
+  category: 'produce',
   portion: 'lb.',
   supplier: 'Bury Farms',
   supplierStock: 100,
