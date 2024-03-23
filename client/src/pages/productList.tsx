@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+// import React, { useState } from 'react';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button.tsx";
-import { productItem } from '@/components/store';
-import ProductCard from '@/components/ProductCard.tsx';
+// import { Button } from "@/components/ui/button.tsx";
+// import { productItem } from '@/components/store';
+// import ProductCard from '@/components/ProductCard.tsx';
 import {
     Select,
     SelectContent,
@@ -13,9 +13,9 @@ import {
 } from '@/components/ui/select';
 import { dummyProducts } from './Products';
 
-const productList: React.FC<productProps> = ({ products = [] }) => {
-    const [catSortOrder, setCatSortOrder] = useState('All');
-    const [valueSortOrder, setValueSortOrder] = useState('Price Desc.');
+const productList = (/*{ products = [] }*/) => { // const productList: React.FC<productProps> = ({ products = [] }) => {
+    // const [catSortOrder, setCatSortOrder] = useState('All');
+    // const [valueSortOrder, setValueSortOrder] = useState('Price Desc.');
 
     /*
     const listItems = dummyProducts.map((item) =>
@@ -63,7 +63,7 @@ const productList: React.FC<productProps> = ({ products = [] }) => {
                             {/* Sort Dropdown for category */}
                             <Select
                                 defaultValue="All"
-                                onValueChange={(e) => setCatSortOrder(e)}
+                                // onValueChange={(e) => setCatSortOrder(e)}
                             >
                                 <SelectTrigger className="h-10 w-[8rem] bg-white text-black ">
                                     <SelectValue placeholder="All" />
@@ -81,7 +81,7 @@ const productList: React.FC<productProps> = ({ products = [] }) => {
                             {/* Select Dropdown for sorting products by value */}
                             <Select
                                 defaultValue="Price Desc."
-                                onValueChange={(e) => setValueSortOrder(e)}
+                                // onValueChange={(e) => setValueSortOrder(e)}
                             >
                                 <SelectTrigger className="h-10 w-[10rem] bg-white text-black ">
                                     <SelectValue placeholder="Price Desc." />

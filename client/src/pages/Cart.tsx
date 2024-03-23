@@ -1,57 +1,57 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CartItem from '@/components/CartItem';
-import { Toaster } from '@/components/ui/sonner';
+// import { Toaster } from '@/components/ui/sonner';
 import { Button } from '@/components/ui/button';
 import { FaTrashCan } from 'react-icons/fa6';
 import { Link } from 'react-router-dom';
-import { Separator } from '@/components/ui/separator';
+// import { Separator } from '@/components/ui/separator';
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+// import {
+//   Table,
+//   TableBody,
+//   TableCell,
+//   TableHead,
+//   TableHeader,
+//   TableRow,
+// } from '@/components/ui/table';
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+// import {
+//   AlertDialog,
+//   AlertDialogAction,
+//   AlertDialogCancel,
+//   AlertDialogContent,
+//   AlertDialogDescription,
+//   AlertDialogFooter,
+//   AlertDialogHeader,
+//   AlertDialogTitle,
+//   AlertDialogTrigger,
+// } from '@/components/ui/alert-dialog';
 
-import { productItem } from '@/components/store';
+// import { productItem } from '@/components/store';
 import { dummyProducts } from './Products';
 import useUserStore from '@/components/store';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+// import { useState } from 'react';
 
 const Cart = () => {
   const store = useUserStore();
   const navigate = useNavigate();
   const shipping = 10;
 
-  const [quantity, setQuantity] = useState(1);
+  // const [quantity, setQuantity] = useState(1);
 
   // ! REPLACE POPULAR ITEMS WITH USER LIST
 
-  const popularItem1 = dummyProducts.reduce((lowest, product) => {
-    return lowest.supplierStock < product.supplierStock ? lowest : product;
-  }, dummyProducts[0]);
-  const updatedProducts = dummyProducts.filter(
-    (product) => product !== popularItem1
-  );
-  const popularItem2 = updatedProducts.reduce((lowest, product) => {
-    return lowest.supplierStock < product.supplierStock ? lowest : product;
-  }, dummyProducts[0]);
+  // const popularItem1 = dummyProducts.reduce((lowest, product) => {
+  //   return lowest.supplierStock < product.supplierStock ? lowest : product;
+  // }, dummyProducts[0]);
+  // const updatedProducts = dummyProducts.filter(
+  //   (product) => product !== popularItem1
+  // );
+  // const popularItem2 = updatedProducts.reduce((lowest, product) => {
+  //   return lowest.supplierStock < product.supplierStock ? lowest : product;
+  // }, dummyProducts[0]);
 
   function handleCheckout() {
     navigate('/payment');

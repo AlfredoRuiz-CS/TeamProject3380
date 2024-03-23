@@ -85,9 +85,9 @@ const Profile = () => {
     'WY',
   ];
 
-  function handleStateSelect() {
-    console.log('State Selected: ', state);
-  }
+  // function handleStateSelect() {
+  //   console.log('State Selected: ', state);
+  // }
 
   return (
     <>

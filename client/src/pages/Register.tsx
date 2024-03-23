@@ -1,10 +1,10 @@
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import ErrorText from '../components/ErrorText';
+// import ErrorText from '../components/ErrorText';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
-import React, { ReactEventHandler, useState, useEffect } from 'react';
-import { Button } from '../components/ui/button.tsx';
-import { useFormik, ErrorMessage } from 'formik';
+import React, { useState, useEffect } from 'react'; // reacteventhandler removed from imports
+// import { Button } from '../components/ui/button.tsx';
+import { useFormik } from 'formik'; // error message removed from imports
 import * as Yup from 'yup';
 import axios from 'axios';
 import useUserStore from '../components/store.ts';

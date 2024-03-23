@@ -2,8 +2,8 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Sonner } from '@/components/ui/sonner';
+// import { Button } from '@/components/ui/button';
+// import { Sonner } from '@/components/ui/sonner';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -12,15 +12,15 @@ import axios from 'axios';
 // Imports for state management
 import useUserStore from '@/components/store';
 import type {} from '@redux-devtools/extension'; // required for devtools typing
-import { Toaster } from 'sonner';
+// import { Toaster } from 'sonner';
 // import { devtools, persist } from "zustand/middleware";
 
-const validationSchema = Yup.object({
-  email: Yup.string()
-    .email('Invalid email address')
-    .required('Email is required'),
-  password: Yup.string().required('Password is required'),
-});
+// const validationSchema = Yup.object({
+//   email: Yup.string()
+//     .email('Invalid email address')
+//     .required('Email is required'),
+//   password: Yup.string().required('Password is required'),
+// });
 
 const Login = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);

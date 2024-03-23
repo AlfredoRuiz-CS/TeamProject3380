@@ -2,9 +2,9 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 import { Button } from '@/components/ui/button';
-import { productItem } from '@/components/store';
+// import { productItem } from '@/components/store';
 import useUserStore from '@/components/store';
-import React from 'react';
+// import React from 'react';
 
 interface paymentProps {
   type: 'cart' | 'membership';

@@ -30,9 +30,9 @@ type Order = {
   items: productItem[];
 };
 
-interface OrdersProps {
-  orders: Order[];
-}
+// interface OrdersProps {
+//   orders: Order[];
+// }
 
 const dummyOrders: Order[] = Array(20)
   .fill({ items: [] })

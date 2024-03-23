@@ -22,7 +22,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 import { productItem } from '@/components/store';
-import useUserStore from '@/components/store';
+// import useUserStore from '@/components/store';
 
 const dummyProduct: productItem = {
   productId: 12345,
@@ -85,9 +85,9 @@ const AdminDashboard = () => {
     return lowest.supplierStock < product.supplierStock ? lowest : product;
   }, dummyProducts[0]);
 
-  function handleSubmitOrder(event: React.FormEvent<HTMLFormElement>) {
-    console.log('Order Submitted');
-  }
+  // function handleSubmitOrder(event: React.FormEvent<HTMLFormElement>) {
+  //   console.log('Order Submitted');
+  // }
 
   return (
     <>
