@@ -30,9 +30,9 @@ type Order = {
   items: productItem[];
 };
 
-interface OrdersProps {
-  orders: Order[];
-}
+// interface OrdersProps {
+//   orders: Order[];
+// }
 
 const dummyOrders: Order[] = Array(20)
   .fill({ items: [] })
@@ -41,7 +41,7 @@ const dummyOrders: Order[] = Array(20)
     date: new Date().toDateString(),
     paymentMethod: 'Credit Card',
     total: 100,
-    items: dummyProducts,
+    items: dummyProducts.slice(0, 10),
   }));
 
 const Orders = () => {
@@ -176,7 +176,7 @@ const Orders = () => {
               </Sheet>
             </div>
           ) : (
-            <div></div>
+            <></>
           )}
         </div>
       </div>

@@ -11,6 +11,7 @@ import Orders from './pages/Orders';
 import ProductList from './pages/productList';
 import AdminDashboard from './pages/AdminDashboard';
 import MemberPage from './pages/MemberPage';
+import Payment from './pages/Payment';
 import './index.css';
 
 function App() {
@@ -26,14 +27,20 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/orders" element={<Orders />} />
+        {/* User Cart/Payments */}
         <Route path="/cart" element={<Cart />} />
+        <Route path="/list" element={<ProductList />} />
         <Route path="/membership" element={<MemberPage />} />
+        <Route path="/payment/cart" element={<Payment type={'cart'} />} />
+        <Route
+          path="/payment/membership"
+          element={<Payment type={'membership'} />}
+        />
         {/* Admin Dashboard */}
         <Route path="/admin" element={<AdminDashboard />} />
         {/* Products */}
         <Route path="/products" element={<Products />} />
         <Route path="/product/:productId" element={<SingleProduct />} />
-        <Route path="/test" element={<ProductList />} />
         {/* Any non-valid URL returns to home */}
         <Route path="*" element={<Home />} />
       </Routes>

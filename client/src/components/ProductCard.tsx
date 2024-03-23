@@ -50,7 +50,7 @@ const ProductCard = (props: ProductCardProps) => {
         </h2>
         {/* Short Product Info */}
         <ul className="ml-10 list-disc text-left text-sm">
-          {props.product.description.map((item, index) => (
+          {props.product.description.slice(0, 2).map((item, index) => (
             <li className="" key={index}>
               {item}
             </li>

@@ -22,7 +22,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 import { productItem } from '@/components/store';
-import useUserStore from '@/components/store';
+// import useUserStore from '@/components/store';
 
 const dummyProduct: productItem = {
   productId: 12345,
@@ -30,6 +30,7 @@ const dummyProduct: productItem = {
   price: 3.97,
   image: '/assets/strawberries.jpg',
   stock: 10,
+  category: 'produce',
   portion: 'lb.',
   supplier: 'Bury Farms',
   supplierStock: 100,
@@ -84,9 +85,9 @@ const AdminDashboard = () => {
     return lowest.supplierStock < product.supplierStock ? lowest : product;
   }, dummyProducts[0]);
 
-  function handleSubmitOrder(event: React.FormEvent<HTMLFormElement>) {
-    console.log('Order Submitted');
-  }
+  // function handleSubmitOrder(event: React.FormEvent<HTMLFormElement>) {
+  //   console.log('Order Submitted');
+  // }
 
   return (
     <>
@@ -246,6 +247,7 @@ const AdminDashboard = () => {
                 </DialogContent>
               </Dialog>
             </div>
+
             {/* Popular Items */}
             <div className="">
               <div className="mr-10 mt-10 flex min-h-[20rem] min-w-14 flex-col gap-5 rounded-lg bg-cardwhite pt-5">
@@ -255,7 +257,7 @@ const AdminDashboard = () => {
                 <div className="flex flex-row gap-5 pl-28">
                   <div>
                     <img
-                      className="h-[5rem] w-[5rem]"
+                      className=" h-[5rem] w-[5rem] rounded-lg object-cover"
                       src={popularItem1.image}
                     ></img>
                   </div>
@@ -275,7 +277,7 @@ const AdminDashboard = () => {
                 <div className="flex flex-row gap-5 pl-28">
                   <div className="pt-5">
                     <img
-                      className="h-[5rem] w-[5rem]"
+                      className="h-[5rem] w-[5rem] rounded-lg object-cover"
                       src={popularItem2.image}
                     />
                   </div>

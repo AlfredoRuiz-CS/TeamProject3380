@@ -18,7 +18,7 @@ import { useState } from 'react';
 
 const Profile = () => {
   const store = useUserStore();
-  const [state, setState] = useState('');
+  // const [state, setState] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   console.log(store);
@@ -85,9 +85,9 @@ const Profile = () => {
     'WY',
   ];
 
-  function handleStateSelect() {
-    console.log('State Selected: ', state);
-  }
+  // function handleStateSelect() {
+  //   console.log('State Selected: ', state);
+  // }
 
   return (
     <>
@@ -100,7 +100,7 @@ const Profile = () => {
             Profile
           </h1>
           <BsFillPersonLinesFill className="h-[20rem] w-[20rem]" />
-          <div className=" pt-2 font-jua text-6xl">{store.name}</div>
+          <div className=" pt-2 font-jua text-6xl">{store.fname}</div>
 
           {/* Member Since: AccountCreatedDate */}
           <div className="pb-6 pt-4 font-inter text-3xl">
@@ -132,7 +132,7 @@ const Profile = () => {
                       <input
                         className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                         type="text"
-                        placeholder={store.name}
+                        placeholder={store.fname}
                         name="firstName"
                       />
                       <h3 className="pl-4 pt-2 text-lg font-semibold text-white">
@@ -141,7 +141,7 @@ const Profile = () => {
                       <input
                         className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                         type="text"
-                        placeholder={store.name}
+                        placeholder={store.lname}
                         name="lastName"
                       ></input>
                       <Button
@@ -193,7 +193,7 @@ const Profile = () => {
                             name="phone"
                           ></input>
                           <Select
-                            onValueChange={(e) => setState(e)}
+                            // onValueChange={(e) => setState(e)}
                             defaultValue={store.address.state}
                           >
                             <SelectTrigger className="h-10 w-[5rem] flex-grow border-none bg-gray-200 text-gray-500">
@@ -267,11 +267,9 @@ const Profile = () => {
 
                   <input
                     className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
-                    type="text"
+                    type={isPasswordVisible ? 'text' : 'password'}
                     placeholder={
-                      isPasswordVisible
-                        ? store.password
-                        : '*'.repeat(store.password.length)
+                      '*'.repeat(10)
                     }
                     name="password"
                   />

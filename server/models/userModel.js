@@ -1,9 +1,9 @@
 const { pool } = require("../config/db");
 const bcrypt = require("bcrypt");
 
-async function register (fName, lName, email, address, phoneNumber, password){
+async function register (email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, password){
     // validation
-    if (!fName || ! lName || !email || !address || !phoneNumber || !password) {
+    if (!fName || ! lName || !email || !phoneNumber || !streetAddress || !city || !state || !zipcode || !password) {
         throw Error('All fields must be filled')
     }
     // if (!validator.isEmail(email)) {
@@ -29,10 +29,10 @@ async function register (fName, lName, email, address, phoneNumber, password){
     
     // Insert the new user
     const result = await pool.query(`
-    INSERT INTO customer(email, password) 
-    VALUES (?, ?)`, [email, hash]);
+    INSERT INTO customer(email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, password) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`, [email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, hash]);
 
-    return { id: result[0].insertId, email };
+    return { email };
 }
 
 async function login(email, password) {
@@ -47,12 +47,13 @@ async function login(email, password) {
     }
   
     // Check if password matches
-    const match = await bcrypt.compare(password, user.password);
+    const hashedPassword = user.password.toString('utf8');
+    const match = await bcrypt.compare(password, hashedPassword);
     if (!match) {
       throw Error('Incorrect password');
     }
   
-    return { id: user.id, email: user.email };
+    return { email: user.email, fName: user.fName, lName: user.lName, phoneNumber: user.phoneNumber, streetAddress: user.streetAddress, city: user.city, state: user.state, zipcode: user.zipcode };
   }
 
 async function findAllCustomers() {
@@ -162,7 +163,7 @@ async function updateUserEmail(currentEmail, newEmail){
   }
 }
 
-async function updateUserPassword(email, currentPassword, newPassword){
+async function updateUserPassword(email, oldPassword, newPassword){
     // password validation
     // TODO
 
@@ -177,7 +178,8 @@ async function updateUserPassword(email, currentPassword, newPassword){
         throw Error('User not found');
       }
 
-      const match = await bcrypt.compare(oldPassword, user.password);
+      const hashedPassword = user.password.toString('utf8');
+      const match = await bcrypt.compare(oldPassword, hashedPassword);
       if (!match){
         throw Error('Your current password is incorrect');
       }
@@ -228,6 +230,36 @@ async function updateUserAddress(email, streetAddress, city, state, zipcode){
   }
 }
 
+async function updateUserName(email, fName, lName){
+  try{
+    const [rows] = await pool.query(`
+    UPDATE customer
+    SET fName = ?, lName = ?
+    WHERE email = ?`, [fName, lName, email]);
+
+    return rows;
+
+  } catch (error){
+    console.log(error.message);
+    throw error;
+  }
+}
+
+// async function updateUserlName(email, lName){
+//   try{
+//     const [rows] = await pool.query(`
+//     UPDATE customer
+//     SET lName = ?
+//     WHERE email = ?`, [lName, email]);
+
+//     return rows;
+    
+//   } catch (error){
+//     console.log(error.message);
+//     throw error;
+//   }
+// }
+
 module.exports = {
     register,
     login,
@@ -238,5 +270,7 @@ module.exports = {
     updateUserEmail,
     updateUserPassword,
     updateUserPhone,
-    updateUserAddress
+    updateUserAddress,
+    updateUserName,
+    // updateUserlName
 }

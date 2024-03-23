@@ -2,7 +2,8 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { productItem } from '@/components/store';
 import ProductCard from '@/components/ProductCard.tsx';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import useUserStore from '@/components/store';
 
 import {
   Select,
@@ -12,33 +13,91 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-interface productProps {
-  // ! REMOVE ? FOR FINAL VERSION
-  products?: productItem[];
-}
-
 const dummyProduct: productItem = {
   productId: 12345,
-  name: 'Fresh Strawberries, 1 lb.',
-  price: 10.99,
+  name: 'Fresh Strawberries',
+  price: 3.97,
+  image: '/assets/strawberries.jpg',
   stock: 10,
   supplier: 'Berry Farms',
   supplierStock: 100,
+  portion: 'lb.',
+  category: 'produce',
   description: [
     'Organic, locally-sourced strawberries',
     'Grown in Gary, Indiana',
+    'good source of Vitamin C, fiber and potassium',
   ],
-  image: '/assets/strawberries.jpg',
-  portion: 'lb.',
+  shippingDetails: {
+    dimensions: {
+      length: '7.38 inches',
+      width: '6.38 inches',
+      height: '2.3 inches',
+    },
+    weight: '14 ounces',
+  },
+  nutritionFacts: {
+    servingSize: '8 medium strawberries',
+    servingsPerContainer: '1.5',
+    calories: 50,
+    totalFat: '0',
+    sodium: '0',
+    totalCarbohydrates: '11 g',
+    dietaryFiber: '2 g',
+    sugars: '8 g',
+    protein: '1 g',
+    potassium: '170 mg',
+    vitaminA: '1 mg',
+    vitaminC: '144 mg',
+    calcium: '24 mg',
+    iron: '0.6 mg',
+  },
 };
 
 export const dummyProducts: productItem[] = Array(20)
   .fill({})
   .map(() => ({ ...dummyProduct }));
 
-const Products = (props: productProps) => {
+const Products = () => {
+  const store = useUserStore();
   let [valueSortOrder, setValueSortOrder] = useState('Price Desc.');
   let [catSortOrder, setCatSortOrder] = useState('All');
+  // ! CHANGE TO DATABASE CALL FOR FINAL VERSION!!
+  const [products, setProducts] = useState<productItem[]>(
+    sortProducts(dummyProducts)
+  );
+
+  useEffect(() => {
+    let sorted = sortProducts(products);
+    setProducts(sorted);
+  }, [catSortOrder, valueSortOrder]);
+
+  function sortProducts(products: productItem[]) {
+    if (catSortOrder !== 'All') {
+      products = products.filter(
+        (product) => product.category === catSortOrder
+      );
+    }
+
+    switch (valueSortOrder) {
+      case 'Price Desc.':
+        return products.sort((a, b) => b.price - a.price);
+      case 'Price Asc.':
+        return products.sort((a, b) => a.price - b.price);
+      case 'Alpha Desc.':
+        return products.sort((a, b) => a.name.localeCompare(b.name));
+      case 'Alpha Asc.':
+        return products.sort((a, b) => b.name.localeCompare(a.name));
+      case 'In List':
+      case 'In List':
+        return [
+          ...store.List,
+          ...products.filter((product) => !store.List.includes(product)),
+        ];
+      default:
+        return products;
+    }
+  }
 
   return (
     <>
@@ -97,7 +156,7 @@ const Products = (props: productProps) => {
 
           {/* List of Product Items */}
           <div className="mx-[10rem] flex flex-row flex-wrap gap-7">
-            {dummyProducts.map((product, index) => (
+            {products.map((product, index) => (
               <ProductCard key={index} product={product} />
             ))}
           </div>

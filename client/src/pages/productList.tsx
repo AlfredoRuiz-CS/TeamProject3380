@@ -21,6 +21,10 @@ const productList: React.FC<productProps> = ({ products = [] }) => {
     );
     const [QuantityEnabled, setQuantityEnabled] = useState(true); // State to control the visibility of the quantity dropdown
 
+    /* const productList = (/*{ products = [] }*///)// => { // const productList: React.FC<productProps> = ({ products = [] }) => {
+    // const [catSortOrder, setCatSortOrder] = useState('All');
+    // const [valueSortOrder, setValueSortOrder] = useState('Price Desc.'); */
+
     const incrementQuantity = (productId) => {
         setProductQuantities(prevQuantities => ({
             ...prevQuantities,
@@ -57,7 +61,7 @@ const productList: React.FC<productProps> = ({ products = [] }) => {
                 <p className="text-gray-600">{item.description}</p>
                 <p className="text-green-600 font-bold mt-2">${item.price}</p>
                 <div className="flex space-x-4"> {/* This div acts as the flex container */}
-                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">
+                    <button className="bg-blue-500 hover:bg-blue-700 text-black font-jua py-2 px-4 rounded mt-4">
                         Add to Cart
                     </button>
                     {activeProductId === item.productId ? (
@@ -92,7 +96,7 @@ const productList: React.FC<productProps> = ({ products = [] }) => {
                             Qty.
                         </Button>
                     )}
-                    <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-4" onClick={() => removeFromList(item.productId)}>
+                    <button className="bg-red-500 hover:bg-red-700 text-black font-jua py-2 px-4 rounded mt-4" onClick={() => removeFromList(item.productId)}>
                         Remove from List
                     </button>
                 </div>
@@ -112,6 +116,10 @@ const productList: React.FC<productProps> = ({ products = [] }) => {
                         </h1>
                         {/* Dropdown for sorting */}
                         <div className="flex gap-2 place-self-start pb-5">
+                            <h3 className="items-center place-self-center pl-10 font-inter text-lg font-medium">
+                                Category:{' '}
+                            </h3>
+
                             {/* Sort Dropdown for category */}
                             <Select
                                 defaultValue="All"
@@ -129,6 +137,10 @@ const productList: React.FC<productProps> = ({ products = [] }) => {
                                     <SelectItem value="Snacks">Snacks</SelectItem>
                                 </SelectContent>
                             </Select>
+
+                            <h3 className="items-center place-self-center pl-2 font-inter text-lg font-medium">
+                                Sort by:{' '}
+                            </h3>
 
                             {/* Select Dropdown for sorting products by value */}
                             <Select

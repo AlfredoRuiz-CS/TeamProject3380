@@ -1,19 +1,30 @@
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
-import { useState } from 'react';
-import { Button } from '../components/ui/button';
+import { useState, useEffect } from 'react';
+// import { Button } from '@/components/ui/button';
+// import { Sonner } from '@/components/ui/sonner';
 import { useNavigate } from 'react-router-dom';
+import { useFormik } from 'formik';
+// import * as Yup from 'yup';
+import axios from 'axios';
 
 // Imports for state management
 import useUserStore from '@/components/store';
 import type {} from '@redux-devtools/extension'; // required for devtools typing
+// import { Toaster } from 'sonner';
 // import { devtools, persist } from "zustand/middleware";
 
+// const validationSchema = Yup.object({
+//   email: Yup.string()
+//     .email('Invalid email address')
+//     .required('Email is required'),
+//   password: Yup.string().required('Password is required'),
+// });
+
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const setUserDetails = useUserStore((state) => state.setUserDetails);
 
   const [message] = useTypewriter({
     words: ['Always Fresh, just for you'],
@@ -24,19 +35,61 @@ const Login = () => {
   const store = useUserStore();
   const navigate = useNavigate();
 
-  function updateUserInfo() {
-    store.setUserName(email);
-    store.login();
-    console.log(store);
-  }
+  // function updateUserInfo() {
+  //   store.setUserDetails();
+  //   store.login();
+  //   console.log(store);
+  // }
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    // TODO: Add calls to backend to check if user exists
-    // TODO: If user exists, then update the userStore
-    updateUserInfo();
-    navigate('/profile');
-  }
+  const formik = useFormik({
+    initialValues: {
+      email: '',
+      password: '',
+    },
+    // validationSchema: validationSchema,
+    onSubmit: async (values, { setSubmitting }) => {
+      console.log('Form submitted:', values);
+      try {
+        const response = await axios.post(
+          'http://localhost:4000/login',
+          values
+        );
+        const userData = await response.data;
+        store.login();
+        setUserDetails({
+          fname: userData.fName,
+          lname: userData.lName,
+          email: userData.email,
+          phone: userData.phoneNumber,
+          address: {
+            street: userData.streetAddress,
+            city: userData.city,
+            state: userData.state,
+            zip: userData.zipcode,
+          },
+        });
+        // navigate('/profile');
+      } catch (error) {
+        console.log(error);
+      }
+      setSubmitting(false);
+    },
+    // },
+  });
+  // function handleSubmit(e: React.FormEvent) {
+  //   e.preventDefault();
+  //   // TODO: Add calls to backend to check if user exists
+  //   // TODO: If user exists, then update the userStore
+  //   updateUserInfo();
+  //   navigate('/profile');
+  // }
+
+  useEffect(() => {
+    if (store.loggedIn) {
+      console.log('User is loggin in...redirecting');
+      navigate('/products');
+    }
+  }, [store.loggedIn, navigate]);
 
   // console.log(store.name);
   return (
@@ -45,7 +98,7 @@ const Login = () => {
         <Header />
         <form
           className="flex w-full flex-col items-center gap-5 py-5"
-          onSubmit={handleSubmit}
+          onSubmit={formik.handleSubmit}
         >
           <h1 className="mb-10 font-jua text-8xl">Login</h1>
           <p className="mb-10 font-jua text-5xl">
@@ -58,15 +111,17 @@ const Login = () => {
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="text"
             placeholder="Email"
-            onChange={(e) => setEmail(e.target.value)}
-            value={email}
+            name="email"
+            onChange={formik.handleChange}
+            value={formik.values.email}
           />
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type={isPasswordVisible ? 'text' : 'password'}
             placeholder="Password"
-            onChange={(e) => setPassword(e.target.value)}
-            value={password}
+            name="password"
+            onChange={formik.handleChange}
+            value={formik.values.password}
           />
           <div className="mr-[310px] mt-[-14px] flex items-center">
             <input
@@ -80,9 +135,12 @@ const Login = () => {
               Show Password
             </label>
           </div>
-          <Button className="my-6" size="lg" type="submit">
-            Log in
-          </Button>
+          <button
+            className="inline-flex h-10 select-none items-center justify-center whitespace-nowrap rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+            type="submit"
+          >
+            <p>Log in</p>
+          </button>
         </form>
 
         <h2 className="mb-32 flex items-center justify-center font-jua text-[64px]">

@@ -93,6 +93,7 @@ const Header = (props: HeaderProps) => {
                 ) : (
                   <a href="/cart">
                     <IoMdCart size={20} color="primary" />
+                    <p className="">{10}</p>
                   </a>
                 )}
               </li>
@@ -120,7 +121,7 @@ const Header = (props: HeaderProps) => {
                         textColor
                       }
                     >
-                      {store.name}
+                      {store.fname}
                       <IoIosArrowDown />
                     </Button>
                   </DropdownMenuTrigger>

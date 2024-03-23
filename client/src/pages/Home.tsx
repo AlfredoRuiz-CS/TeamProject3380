@@ -1,8 +1,10 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button.tsx';
+import useUserStore from '@/components/store';
 
 const Home = () => {
+  const user = useUserStore();
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
@@ -13,7 +15,12 @@ const Home = () => {
             Shop at ShastaMart for all your produce needs!
           </h1>
           {/* Buttons */}
-          <div className="mb-2 mt-6 flex flex-row gap-6 lg:mb-12">
+          {user.loggedIn ? (
+            <Button asChild className="" size="lg">
+            <a href="/products">Start Shopping</a>
+          </Button>
+          ) : (
+            <div className="mb-2 mt-6 flex flex-row gap-6 lg:mb-12">
             <Button
               asChild
               variant="outline"
@@ -25,14 +32,8 @@ const Home = () => {
             <Button asChild className="" size="lg">
               <a href="/register">Register</a>
             </Button>
-
-            {/*I don't know where to put the MemberPage so I put it here temporarily*/}
-            <Button asChild className="" size="lg">
-              <a href="/memberpage">MemberPage</a>
-            </Button>
-            {/*I don't know where to put the MemberPage so I put it here temporarily*/}
-
           </div>
+          )}
         </div>
         <div className="mx-[15rem] flex flex-row justify-around gap-10 pb-10">
           {/* Bus Card */}

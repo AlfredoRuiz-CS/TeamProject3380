@@ -22,6 +22,7 @@ const dummyProduct: productItem = {
   price: 3.97,
   image: '/assets/strawberries.jpg',
   stock: 10,
+  category: 'produce',
   supplier: 'Berry Farms',
   supplierStock: 100,
   portion: 'lb.',
@@ -64,7 +65,7 @@ const SingleProduct = () => {
   console.log(test);
   // Funcitonality to toggle the quantity dropdown
   const [QuantityEnabled, setQuantityEnabled] = useState(false);
-  const [quantity, setQuantity] = useState(1);
+  // const [quantity, setQuantity] = useState(1);
 
   function quantityDropdownToggle() {
     setQuantityEnabled(!QuantityEnabled);
@@ -127,7 +128,7 @@ const SingleProduct = () => {
                     </Button>
                     <Select
                       defaultValue="1"
-                      onValueChange={(e) => setQuantity(parseInt(e))}
+                      // onValueChange={(e) => setQuantity(parseInt(e))}
                     >
                       <SelectTrigger className="h-12 w-[3rem] flex-grow border border-black bg-gray-200">
                         <SelectValue placeholder="1" />
