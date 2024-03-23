@@ -46,7 +46,7 @@ const ProductCard = (props: ProductCardProps) => {
         </Link>
         {/* Product Name */}
         <h2 className="ml-6 mr-auto pt-4 text-left font-jua text-xl hover:underline hover:underline-offset-4">
-          <a href={`/product/${props.product.name}`}>{props.product.name}</a>
+          <Link to={`/product/${props.product.name}`}>{props.product.name}</Link>
         </h2>
         {/* Short Product Info */}
         <ul className="ml-10 list-disc text-left text-sm">

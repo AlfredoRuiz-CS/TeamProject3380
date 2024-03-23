@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const validationSchema = Yup.object({
   fName: Yup.string().required('First name is required'),
@@ -163,9 +164,9 @@ const Register = () => {
         <Header />
         <form className="flex w-full flex-col items-center gap-5 py-5" onSubmit={formik.handleSubmit}>
           <h1 className="mb-5 font-jua text-8xl">Register</h1>
-          <a href="/login" className="mb-5 font-jua text-5xl text-darkblue">
+          <Link to="/login" className="mb-5 font-jua text-5xl text-darkblue">
             Already have an account?
-          </a>
+          </Link>
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="text"

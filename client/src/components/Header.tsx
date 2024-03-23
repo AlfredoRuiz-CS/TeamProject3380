@@ -12,6 +12,7 @@ import {
   // DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx';
+import { Link } from 'react-router-dom';
 
 // Imports for state management
 import useUserStore from '@/components/store';
@@ -38,7 +39,7 @@ const Header = (props: HeaderProps) => {
 
   function logoutHandler() {
     store.logout();
-    navigate('/home');
+    // navigate('/home');
   }
 
   return (
@@ -51,50 +52,50 @@ const Header = (props: HeaderProps) => {
       >
         {/* Logo */}
         <div className="pl-10 pt-5">
-          <a href="/home">
+          <Link to="/home">
             {props.color === 'blue' ? (
               <img src="/logos/logo_full_blue.svg" alt="ShastaMart Logo" />
             ) : (
               <img src="/logos/logo_full_white.svg" alt="ShastaMart Logo" />
             )}
-          </a>
+          </Link>
         </div>
 
         {/* Links */}
         <div className="mr-10 flex h-full items-center justify-between text-center">
           <ul className="flex min-h-full flex-row justify-center gap-6 text-center">
             <li className="flex items-center justify-center">
-              <a href="/">Home</a>
+              <Link to="/">Home</Link>
             </li>
             {/* If NOT a member display Membership link */}
             {!store.loggedIn ? (
               <li className="flex items-center justify-center">
-                <a href="/membership">Membership</a>
+                <Link to="/membership">Membership</Link>
               </li>
             ) : !store.isMember ? (
               <li className="flex items-center justify-center">
-                <a href="/membership">Membership</a>
+                <Link to="/membership">Membership</Link>
               </li>
             ) : (
               <></>
             )}
 
             <li className="flex items-center justify-center">
-              <a href="/products">Products</a>
+              <Link to="/products">Products</Link>
             </li>
 
             {/* If logged in display name and cart along with dropdown for dashboard*/}
             {store.loggedIn ? (
               <li className="flex items-center justify-center">
                 {textColor === 'text-white' ? (
-                  <a href="/cart">
+                  <Link to="/cart">
                     <IoMdCart size={20} color="white" />
-                  </a>
+                  </Link>
                 ) : (
-                  <a href="/cart">
+                  <Link to="/cart">
                     <IoMdCart size={20} color="primary" />
                     <p className="">{10}</p>
-                  </a>
+                  </Link>
                 )}
               </li>
             ) : (
@@ -104,7 +105,7 @@ const Header = (props: HeaderProps) => {
                   variant="outline"
                   className={'bg-transparent ' + textColor + ' ' + borderColor}
                 >
-                  <a href="/login">Login</a>
+                  <Link to="/login">Login</Link>
                 </Button>
               </li>
             )}
@@ -130,19 +131,19 @@ const Header = (props: HeaderProps) => {
                     <DropdownMenuSeparator />
                     <DropdownMenuGroup>
                       <DropdownMenuItem>
-                        <a href="/orders">Orders</a>
+                        <Link to="/orders">Orders</Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem>
-                        <a href="/list">My List</a>
+                        <Link to="/list">My List</Link>
                       </DropdownMenuItem>
 
                       <DropdownMenuItem>
-                        <a href="/profile">Profile</a>
+                        <Link to="/profile">Profile</Link>
                       </DropdownMenuItem>
                     </DropdownMenuGroup>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={logoutHandler}>
-                      <a>Logout</a>
+                      <Link to="/home">Logout</Link>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -150,7 +151,7 @@ const Header = (props: HeaderProps) => {
             ) : (
               <li className="flex items-center justify-center">
                 <Button asChild className="">
-                  <a href="/register">Register</a>
+                  <Link to="/register">Register</Link>
                 </Button>
               </li>
             )}

@@ -2,6 +2,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button.tsx';
 import useUserStore from '@/components/store';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
   const user = useUserStore();
@@ -17,7 +18,7 @@ const Home = () => {
           {/* Buttons */}
           {user.loggedIn ? (
             <Button asChild className="" size="lg">
-            <a href="/products">Start Shopping</a>
+            <Link to="/products">Start Shopping</Link>
           </Button>
           ) : (
             <div className="mb-2 mt-6 flex flex-row gap-6 lg:mb-12">
@@ -27,10 +28,10 @@ const Home = () => {
               className="border-primary bg-transparent"
               size="lg"
             >
-              <a href="/login">Login</a>
+              <Link to="/login">Login</Link>
             </Button>
             <Button asChild className="" size="lg">
-              <a href="/register">Register</a>
+              <Link to="/register">Register</Link>
             </Button>
           </div>
           )}
