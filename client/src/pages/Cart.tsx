@@ -54,7 +54,11 @@ const Cart = () => {
   }, dummyProducts[0]);
 
   function handleCheckout() {
-    navigate('/payment:cart');
+    navigate('/payment');
+  }
+
+  function handleDeleteCart() {
+    store.resetCart();
   }
 
   return (
@@ -68,6 +72,7 @@ const Cart = () => {
             <div className="flex flex-row justify-between pb-4">
               <h1 className="pl-4 text-3xl text-white ">Review Cart</h1>
               <Button
+                onClick={handleDeleteCart}
                 variant="outline"
                 className="border border-darkblue bg-transparent text-darkblue hover:bg-darkblue hover:text-bgwhite"
               >
@@ -150,42 +155,27 @@ const Cart = () => {
               <div className="flex flex-row gap-5 pl-12">
                 <div className="flex flex-col gap-10">
                   <div className="flex flex-row gap-5">
-                    <div>
-                      <img
-                        className=" h-[5rem] w-[5rem] rounded-lg object-cover"
-                        src={popularItem1.image}
-                      ></img>
-                    </div>
-                    <div className="flex flex-col">
-                      <h1 className="flex flex-row self-center pt-5 text-3xl">
-                        {popularItem1.name}
-                      </h1>
-                      {popularItem1.price.toLocaleString('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
-                      }) +
-                        ' per ' +
-                        popularItem1.portion}
-                    </div>
-                  </div>
-                  <div className="flex flex-row gap-5">
-                    <div>
-                      <img
-                        className=" h-[5rem] w-[5rem] rounded-lg object-cover"
-                        src={popularItem1.image}
-                      ></img>
-                    </div>
-                    <div className="flex flex-col">
-                      <h1 className="flex flex-row self-center pt-5 text-3xl">
-                        {popularItem1.name}
-                      </h1>
-                      {popularItem1.price.toLocaleString('en-US', {
-                        style: 'currency',
-                        currency: 'USD',
-                      }) +
-                        ' per ' +
-                        popularItem1.portion}
-                    </div>
+                    {store.List.map((product) => (
+                      <div className="flex flex-row gap-5">
+                        <div>
+                          <img
+                            className=" h-[5rem] w-[5rem] rounded-lg object-cover"
+                            src={product.image}
+                          ></img>
+                        </div>
+                        <div className="flex flex-col">
+                          <h1 className="flex flex-row self-center pt-5 text-3xl">
+                            {product.name}
+                          </h1>
+                          {product.price.toLocaleString('en-US', {
+                            style: 'currency',
+                            currency: 'USD',
+                          }) +
+                            ' per ' +
+                            product.portion}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>

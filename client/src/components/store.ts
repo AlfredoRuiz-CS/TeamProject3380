@@ -130,6 +130,9 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
     set((state) => {
       const newCartItems = state.cartItems.filter((item) => item !== product);
       return {
+        quantity: state.quantity.filter(
+          (q, i) => state.cartItems[i] !== product
+        ),
         cartItemsNumber: newCartItems.length,
         cartItems: newCartItems,
       };

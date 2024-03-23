@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Button } from '@/components/ui/button';
+// import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 const dummyPage = () => {
   return (
@@ -35,9 +36,9 @@ const dummyPage = () => {
               a world where convenience and savings go hand in hand!
             </div>
             <button className="mt-7 flex h-auto w-full flex-grow items-center justify-center rounded-lg bg-indianred px-2 py-3 hover:bg-indianred/90">
-              <a href="" className="text-[32px]">
+              <Link to="/payment/membership" className="text-[32px]">
                 Get Membership
-              </a>
+              </Link>
             </button>
           </div>
         </div>
