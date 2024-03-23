@@ -10,7 +10,7 @@ interface CartItemProps {
 const CartItem = (props: CartItemProps) => {
   const store = useUserStore();
 
-  function handleRemoveItem(e: React.MouseEvent, product: productItem) {
+  function handleRemoveItem(e: React.MouseEvent/*, product: productItem*/) {
     e.preventDefault();
     // store.removeFromCart(product);
   }
@@ -29,7 +29,7 @@ const CartItem = (props: CartItemProps) => {
     <>
       <div className="flex h-[8rem] flex-row items-center rounded-lg bg-cardwhite">
         {/* Item Delete Button */}
-        <button onClick={(e) => handleRemoveItem(e, props.product)}>
+        <button onClick={(e) => handleRemoveItem(e/*, props.product*/)}>
           <FaTrashCan className="mx-5 h-8 w-8 text-darkblue" />
         </button>
         <img
