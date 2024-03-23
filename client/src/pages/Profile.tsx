@@ -18,7 +18,7 @@ import { useState } from 'react';
 
 const Profile = () => {
   const store = useUserStore();
-  const [state, setState] = useState('');
+  // const [state, setState] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   console.log(store);
@@ -193,7 +193,7 @@ const Profile = () => {
                             name="phone"
                           ></input>
                           <Select
-                            onValueChange={(e) => setState(e)}
+                            // onValueChange={(e) => setState(e)}
                             defaultValue={store.address.state}
                           >
                             <SelectTrigger className="h-10 w-[5rem] flex-grow border-none bg-gray-200 text-gray-500">
