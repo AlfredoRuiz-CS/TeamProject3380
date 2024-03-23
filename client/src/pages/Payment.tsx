@@ -144,7 +144,7 @@ const payment = (props: paymentProps) => {
           // Membership Payment Page Variant
           <>
             <h1 className="pt-16 text-center text-3xl font-medium text-white">
-              Payment Summary
+              Subscription Summary
             </h1>
             <section className="mt-6 flex h-[40rem] w-[40rem] flex-col justify-between place-self-center rounded-2xl bg-cardwhite">
               <div className="">
@@ -152,29 +152,10 @@ const payment = (props: paymentProps) => {
                   Order Summary
                 </h3>
                 {/* Item Table */}
-                <table className="mt-2 w-full">
-                  <thead>
-                    <tr>
-                      <th className="pl-5 text-left">Item</th>
-                      <th className=" pr-5 text-right">Cost</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {store.cartItems.map((product, index) => (
-                      <tr key={index}>
-                        <td className="pl-5">
-                          {product.name + ' x ' + store.quantity[index]}
-                        </td>
-                        <td className="pr-5 text-right">
-                          {product.price.toLocaleString('en-US', {
-                            style: 'currency',
-                            currency: 'USD',
-                          })}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <div className="flex flex-row justify-between pt-[30rem]">
+                  <p className="w-5 pl-5">Membership Subscription</p>
+                  <p className="pr-5">$10.00 per month</p>
+                </div>
               </div>
               <table>
                 <tbody>
@@ -184,17 +165,8 @@ const payment = (props: paymentProps) => {
                         Total
                       </h3>
                     </td>
-                    <td className="pr-5 text-right">
-                      {store.cartItems
-                        .reduce(
-                          (acc, product, index) =>
-                            acc + product.price * store.quantity[index],
-                          0
-                        )
-                        .toLocaleString('en-US', {
-                          style: 'currency',
-                          currency: 'USD',
-                        })}
+                    <td className="pr-5 text-right text-xl font-bold">
+                      {'$10.00'}
                     </td>
                   </tr>
                 </tbody>
