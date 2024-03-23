@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 // import * as Yup from 'yup';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 // Imports for state management
 import useUserStore from '@/components/store';
@@ -103,9 +104,9 @@ const Login = () => {
           <h1 className="mb-10 font-jua text-8xl">Login</h1>
           <p className="mb-10 font-jua text-5xl">
             Don't have an account?{' '}
-            <a href="/register" className="text-darkblue">
+            <Link to="/register" className="text-darkblue">
               Create One
-            </a>
+            </Link>
           </p>
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
