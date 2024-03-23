@@ -15,7 +15,11 @@ const server = http.createServer((req, res) => {
         res.end();
         return;
     }
-    if(req.url === '/init-db' && req.method === 'GET'){
+    if(req.url === '/' && req.method === 'GET'){
+        res.writeHead(200, { 'Content-Type' : 'application/json' });
+        res.end(JSON.stringify({ message: 'Server is running.'}))
+    }
+    else if(req.url === '/init-db' && req.method === 'GET'){
         dbInitializer(req, res);
     }
     else if (req.url === '/login' && req.method === 'POST') {
