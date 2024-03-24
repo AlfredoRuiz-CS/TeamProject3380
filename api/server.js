@@ -1,4 +1,4 @@
-const { setCorsHeaders } = require(".../lib/cors");
+const { setCorsHeaders } = require("../../lib/cors");
 
 module.exports = (req, res) => {
     if(setCorsHeaders(res)) return;
