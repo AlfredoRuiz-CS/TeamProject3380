@@ -52,7 +52,7 @@ const Login = () => {
       console.log('Form submitted:', values);
       try {
         const response = await axios.post(
-          'http://localhost:4000/login',
+          'http://localhost:4000/api/users/login',
           values
         );
         const userData = await response.data;
