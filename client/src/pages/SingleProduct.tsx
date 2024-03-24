@@ -12,7 +12,6 @@ import {
 } from '@/components/ui/select';
 
 import { productItem } from '@/components/store';
-import { dummyProducts } from './Products';
 // interface productProps {
 //   product: productItem;
 // }
@@ -23,6 +22,9 @@ const dummyProduct: productItem = {
   price: 3.97,
   image: '/assets/strawberries.jpg',
   stock: 10,
+  category: 'produce',
+  supplier: 'Berry Farms',
+  supplierStock: 100,
   portion: 'lb.',
   description: [
     'Organic, locally-sourced strawberries',
@@ -41,17 +43,17 @@ const dummyProduct: productItem = {
     servingSize: '8 medium strawberries',
     servingsPerContainer: '1.5',
     calories: 50,
-    totalFat: '0g',
-    sodium: '0mg',
-    totalCarbohydrates: '11g',
-    dietaryFiber: '2g',
-    sugars: '8g',
-    protein: '1g',
-    potassium: '170mg',
-    vitaminA: '100mg',
-    vitaminC: '50mg',
-    calcium: '10mg',
-    iron: '10mg',
+    totalFat: '0',
+    sodium: '0',
+    totalCarbohydrates: '11 g',
+    dietaryFiber: '2 g',
+    sugars: '8 g',
+    protein: '1 g',
+    potassium: '170 mg',
+    vitaminA: '1 mg',
+    vitaminC: '144 mg',
+    calcium: '24 mg',
+    iron: '0.6 mg',
   },
 };
 
@@ -63,12 +65,29 @@ const SingleProduct = () => {
   console.log(test);
   // Funcitonality to toggle the quantity dropdown
   const [QuantityEnabled, setQuantityEnabled] = useState(false);
-  const [quantity, setQuantity] = useState(1);
+  // const [quantity, setQuantity] = useState(1);
 
   function quantityDropdownToggle() {
     setQuantityEnabled(!QuantityEnabled);
   }
 
+  //for calculating %DV
+  const dV = {
+    tFat: 78, //gram
+    sod: 2300, //mg
+    tCarbohydrate: 275, //gram
+    dietFiber: 28, //gram
+    potassium: 4700, //mg
+    vitA: 900, //mcg
+    vitC: 90, //mg
+    calcium: 1300, //mg
+    iron: 18, //mg
+  };
+
+  //calculate %DV
+  const calDV = (value: number, dailyValue: number) => {
+    return Math.round((value / dailyValue) * 100) + '%';
+  };
   // function handleAddToList() {
   //   console.log('Added ', quantity, ' ', product.name, 'to List');
   // }
@@ -79,7 +98,7 @@ const SingleProduct = () => {
 
   return (
     <>
-      <div className="font-poppins flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite pb-10 text-black">
+      <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite pb-10 font-inter text-black">
         <Header />
 
         <div className="flex flex-col items-center gap-[5px]">
@@ -91,7 +110,6 @@ const SingleProduct = () => {
             />
             <div className="flex flex-col items-start gap-2 font-jua">
               <div className="text-[32px]">{product.name}</div>
-              <div className="text-[32px]"></div>
               <div className="text-[32px]">
                 {product.price.toLocaleString('en-US', {
                   style: 'currency',
@@ -110,7 +128,7 @@ const SingleProduct = () => {
                     </Button>
                     <Select
                       defaultValue="1"
-                      onValueChange={(e) => setQuantity(parseInt(e))}
+                      // onValueChange={(e) => setQuantity(parseInt(e))}
                     >
                       <SelectTrigger className="h-12 w-[3rem] flex-grow border border-black bg-gray-200">
                         <SelectValue placeholder="1" />
@@ -133,7 +151,7 @@ const SingleProduct = () => {
                   </Button>
                 )}
 
-                <button className="flex h-12 flex-grow items-center justify-center place-self-end rounded-lg bg-blue-500 px-2 py-3">
+                <button className="flex h-12 min-w-24 flex-shrink items-center justify-center place-self-end rounded-lg bg-blue-500 px-2 py-3">
                   <div className="text-[32px]">Add to list</div>
                 </button>
               </div>
@@ -181,68 +199,130 @@ const SingleProduct = () => {
               <div className="text-[28px]">
                 Total Fat {product.nutritionFacts?.totalFat}
               </div>
-              <div className="text-[28px]">0%</div>
+              <div className="text-[28px]">
+                {calDV(
+                  Number(
+                    product.nutritionFacts?.totalFat?.replace(/\D/g, '')
+                  ) || 0,
+                  dV.tFat
+                )}
+              </div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Sodium {product.nutritionFacts?.sodium}
               </div>
-              <div className="text-[28px]">0%</div>
+              <div className="text-[28px]">
+                {calDV(
+                  Number(product.nutritionFacts?.sodium?.replace(/\D/g, '')) ||
+                    0,
+                  dV.sod
+                )}
+              </div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Total Cabohydrate {product.nutritionFacts?.totalCarbohydrates}
               </div>
-              <div className="text-[28px]">4%</div>
+              <div className="text-[28px]">
+                {calDV(
+                  Number(
+                    product.nutritionFacts?.totalCarbohydrates?.replace(
+                      /\D/g,
+                      ''
+                    )
+                  ) || 0,
+                  dV.tCarbohydrate
+                )}
+              </div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Dietary Fiber {product.nutritionFacts?.dietaryFiber}
               </div>
-              <div className="text-[28px]">8%</div>
+              <div className="text-[28px]">
+                {calDV(
+                  Number(
+                    product.nutritionFacts?.dietaryFiber?.replace(/\D/g, '')
+                  ) || 0,
+                  dV.dietFiber
+                )}
+              </div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Sugar {product.nutritionFacts?.sugars}
               </div>
-              <div className="text-[28px]">8%</div>
+              <div className="text-[28px]"></div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Protein {product.nutritionFacts?.protein}
               </div>
-              <div className="text-[28px]">8%</div>
+              <div className="text-[28px]"></div>
             </div>
 
             <div className="flex justify-between ">
               <div className="text-[28px]">
                 Potassium {product.nutritionFacts?.potassium}
               </div>
-              <div className="text-[28px]">5%</div>
+              <div className="text-[28px]">
+                {calDV(
+                  Number(
+                    product.nutritionFacts?.potassium?.replace(/\D/g, '')
+                  ) || 0,
+                  dV.potassium
+                )}
+              </div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Vitamin A {product.nutritionFacts?.vitaminA}
               </div>
-              <div className="text-[28px]">0%</div>
+              <div className="text-[28px]">
+                {calDV(
+                  Number(
+                    product.nutritionFacts?.vitaminA?.replace(/\D/g, '')
+                  ) || 0,
+                  dV.vitA
+                )}
+              </div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Calcium {product.nutritionFacts?.calcium}
               </div>
-              <div className="text-[28px]">2%</div>
+              <div className="text-[28px]">
+                {calDV(
+                  Number(product.nutritionFacts?.calcium?.replace(/\D/g, '')) ||
+                    0,
+                  dV.calcium
+                )}
+              </div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Vitamin C {product.nutritionFacts?.vitaminC}
               </div>
-              <div className="text-[28px]">160%</div>
+              <div className="text-[28px]">
+                {calDV(
+                  Number(
+                    product.nutritionFacts?.vitaminC?.replace(/\D/g, '')
+                  ) || 0,
+                  dV.vitC
+                )}
+              </div>
             </div>
             <div className="flex justify-between">
               <div className="text-[28px]">
                 Iron {product.nutritionFacts?.iron}
               </div>
-              <div className="text-[28px]">2%</div>
+              <div className="text-[28px]">
+                {calDV(
+                  Number(product.nutritionFacts?.iron?.replace(/\D/g, '')) || 0,
+                  dV.iron
+                )}
+              </div>
             </div>
             <div className="text-base font-normal">
               *The %Daily Value (DV) tells you how much a nutrient in a serving

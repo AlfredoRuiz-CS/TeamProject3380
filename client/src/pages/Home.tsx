@@ -1,11 +1,14 @@
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { Button } from "@/components/ui/button.tsx";
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
+import { Button } from '@/components/ui/button.tsx';
+import useUserStore from '@/components/store';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
+  const user = useUserStore();
   return (
     <>
-      <div className="font-poppins flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite text-black">
+      <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
         <Header />
         {/* Page Content */}
         <div className=" flex flex-col items-center text-pretty bg-transparent pb-[15rem] pt-4 text-center lg:pt-[10rem]">
@@ -13,19 +16,25 @@ const Home = () => {
             Shop at ShastaMart for all your produce needs!
           </h1>
           {/* Buttons */}
-          <div className="mb-2 mt-6 flex flex-row gap-6 lg:mb-12">
+          {user.loggedIn ? (
+            <Button asChild className="" size="lg">
+            <Link to="/products">Start Shopping</Link>
+          </Button>
+          ) : (
+            <div className="mb-2 mt-6 flex flex-row gap-6 lg:mb-12">
             <Button
               asChild
               variant="outline"
               className="border-primary bg-transparent"
               size="lg"
             >
-              <a href="/login">Login</a>
+              <Link to="/login">Login</Link>
             </Button>
             <Button asChild className="" size="lg">
-              <a href="/register">Register</a>
+              <Link to="/register">Register</Link>
             </Button>
           </div>
+          )}
         </div>
         <div className="mx-[15rem] flex flex-row justify-around gap-10 pb-10">
           {/* Bus Card */}

@@ -30,18 +30,18 @@ type Order = {
   items: productItem[];
 };
 
-interface OrdersProps {
-  orders: Order[];
-}
+// interface OrdersProps {
+//   orders: Order[];
+// }
 
-const dummyOrders: Order[] = Array(10)
+const dummyOrders: Order[] = Array(20)
   .fill({ items: [] })
   .map((_, index) => ({
     orderNumber: index,
     date: new Date().toDateString(),
     paymentMethod: 'Credit Card',
     total: 100,
-    items: dummyProducts,
+    items: dummyProducts.slice(0, 10),
   }));
 
 const Orders = () => {
@@ -66,7 +66,7 @@ const Orders = () => {
   }
   return (
     <>
-      <div className="font-poppins flex min-h-screen flex-col overflow-x-hidden bg-bgwhite  via-bgwhite to-bgwhite text-black">
+      <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite font-inter text-black">
         <Header color="blue" />
         <div className="flex w-screen flex-col gap-10">
           <h1 className="ml-16 pt-14 font-inter text-5xl font-medium text-black">
@@ -176,7 +176,7 @@ const Orders = () => {
               </Sheet>
             </div>
           ) : (
-            <div></div>
+            <></>
           )}
         </div>
       </div>

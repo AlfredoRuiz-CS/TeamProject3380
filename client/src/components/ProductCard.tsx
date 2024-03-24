@@ -9,8 +9,7 @@ import {
 } from '@/components/ui/select';
 
 import { productItem } from '@/components/store';
-import { dummyProducts } from '@/pages/Products';
-import { Link, useParams } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 interface ProductCardProps {
   product: productItem;
@@ -47,11 +46,11 @@ const ProductCard = (props: ProductCardProps) => {
         </Link>
         {/* Product Name */}
         <h2 className="ml-6 mr-auto pt-4 text-left font-jua text-xl hover:underline hover:underline-offset-4">
-          <a href={`/product/${props.product.name}`}>{props.product.name}</a>
+          <Link to={`/product/${props.product.name}`}>{props.product.name}</Link>
         </h2>
         {/* Short Product Info */}
         <ul className="ml-10 list-disc text-left text-sm">
-          {props.product.description.map((item, index) => (
+          {props.product.description.slice(0, 2).map((item, index) => (
             <li className="" key={index}>
               {item}
             </li>

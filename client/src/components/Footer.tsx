@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 const GITHUB = {
   SAGE: 'https://github.com/SageCT',
   ALFREDO: 'https://github.com/AlfredoRuiz-CS',
@@ -12,30 +13,30 @@ const Footer = () => {
       <div className="flex min-h-20  flex-col items-center gap-5 overflow-x-hidden border-t bg-bgwhite pb-5">
         {/* Logo */}
         <div className="pl-10 pt-5">
-          <a href="/home">
+          <Link to="/home">
             <img src="/logos/logo_full_blue.svg" alt="ShastaMart Logo" />
-          </a>
+          </Link>
         </div>
-        <div className="font-inter ">
+        <div className="font-inter">
           Built and Designed by{' '}
           <span className="font-medium underline">
-            <a href={GITHUB.SAGE}>Sage Turner</a>
+            <Link to={GITHUB.SAGE}>Sage Turner</Link>
           </span>
           {', '}
           <span className="font-medium underline">
-            <a href={GITHUB.ALFREDO}>Alfredo Ruiz</a>
+            <Link to={GITHUB.ALFREDO}>Alfredo Ruiz</Link>
           </span>
           {', '}
           <span className="font-medium underline">
-            <a href={GITHUB.THINH}>Thinh Pham</a>
+            <Link to={GITHUB.THINH}>Thinh Pham</Link>
           </span>
           {', '}
           <span className="font-medium underline">
-            <a href={GITHUB.CHINEDU}>Chinedu Okafor</a>
+            <Link to={GITHUB.CHINEDU}>Chinedu Okafor</Link>
           </span>
           {', and '}
           <span className="font-medium underline">
-            <a href={GITHUB.JAMIE}>Jamie Yanga</a>
+            <Link to={GITHUB.JAMIE}>Jamie Yanga</Link>
           </span>
         </div>
       </div>
