@@ -2,7 +2,7 @@ const userController = require("../../controllers/userController");
 const { setCorsHeaders } = require("../../lib/cors");
 
 module.exports = async (req, res) => {
-  if(setCorsHeaders(res)) return;
+  if(setCorsHeaders(req, res)) return;
   if (req.method === 'POST'){
     await userController.updateUserName(req, res);
   } else {
