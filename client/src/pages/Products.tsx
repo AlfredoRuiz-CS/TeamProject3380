@@ -99,6 +99,22 @@ const Products = () => {
     }
   }
 
+  const sortByPriceAsc = (products: productItem[]): productItem[] => {
+    return products.slice().sort((a, b) => a.price - b.price);
+  };
+
+  const sortByPriceDesc = (products: productItem[]) => {
+    return products.slice().sort((a,b) => b.price - a.price);
+  };
+
+  const sortByAlphaAsc = (products: productItem[]) => {
+    return products.slice().sort((a,b) => a.name.localeCompare(b.name));
+  };
+
+  const sortByAlphaDesc = (products: productItem[]) => {
+    return products.slice().sort((a,b) => b.name.localeCompare(a.name));
+  };
+
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
