@@ -1,6 +1,7 @@
-const { setCorsHeaders } = require("../lib/cors");
 const userController = require("../controllers/userController");
-
+const http = require("http");
+const { dbInitializer } = require("./config/db");
+const userController = require("./controllers/userController");
 const userModel = require("../models/userModel");
 const jwt = require("jsonwebtoken");
 
