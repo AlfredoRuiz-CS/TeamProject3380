@@ -99,21 +99,21 @@ const Products = () => {
     }
   }
 
-  const sortByPriceAsc = (products: productItem[]): productItem[] => {
-    return products.slice().sort((a, b) => a.price - b.price);
-  };
+  // const sortByPriceAsc = (products: productItem[]): productItem[] => {
+  //   return products.slice().sort((a, b) => a.price - b.price);
+  // };
 
-  const sortByPriceDesc = (products: productItem[]) => {
-    return products.slice().sort((a,b) => b.price - a.price);
-  };
+  // const sortByPriceDesc = (products: productItem[]) => {
+  //   return products.slice().sort((a,b) => b.price - a.price);
+  // };
 
-  const sortByAlphaAsc = (products: productItem[]) => {
-    return products.slice().sort((a,b) => a.name.localeCompare(b.name));
-  };
+  // const sortByAlphaAsc = (products: productItem[]) => {
+  //   return products.slice().sort((a,b) => a.name.localeCompare(b.name));
+  // };
 
-  const sortByAlphaDesc = (products: productItem[]) => {
-    return products.slice().sort((a,b) => b.name.localeCompare(a.name));
-  };
+  // const sortByAlphaDesc = (products: productItem[]) => {
+  //   return products.slice().sort((a,b) => b.name.localeCompare(a.name));
+  // };
 
   return (
     <>
