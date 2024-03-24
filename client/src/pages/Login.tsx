@@ -51,10 +51,7 @@ const Login = () => {
     onSubmit: async (values, { setSubmitting }) => {
       console.log('Form submitted:', values);
       try {
-        const response = await axios.post(
-          'http://localhost:4000/api/users/login',
-          values
-        );
+        const response = await axios.post('https://shastamart-api-deploy.vercel.app/api/users/login',values);
         const userData = await response.data;
         store.login();
         setUserDetails({
