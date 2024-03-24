@@ -3,6 +3,7 @@ const { setCorsHeaders } = require("../../lib/cors");
 
 module.exports = async (req, res) => {
   if(setCorsHeaders(req, res)) return;
+  
   if (req.method === "POST") {
     await userController.registerAuth(req, res);
   } else {
