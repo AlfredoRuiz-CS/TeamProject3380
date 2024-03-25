@@ -3,7 +3,6 @@ import Footer from '@/components/Footer';
 import CartItem from '@/components/CartItem';
 import { Button } from '@/components/ui/button';
 import { FaTrashCan } from 'react-icons/fa6';
-import { Link } from 'react-router-dom';
 
 import {
   AlertDialog,
@@ -21,15 +20,11 @@ import {
 import { dummyProducts } from './Products';
 import useUserStore from '@/components/store';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 
 const Cart = () => {
   const store = useUserStore();
   const navigate = useNavigate();
   const shipping = 10;
-
-  const [deleteCart, setDeleteCart] = useState(false);
-  const [quantity, setQuantity] = useState(1);
 
   // ! REPLACE POPULAR ITEMS WITH USER LIST
 
@@ -45,11 +40,6 @@ const Cart = () => {
 
   function handleCheckout() {
     navigate('/payment');
-  }
-
-  function handleDeleteCart() {
-    // store.resetCart();
-    setDeleteCart(true);
   }
 
   return (
