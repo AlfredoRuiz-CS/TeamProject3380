@@ -63,7 +63,7 @@ const Products = () => {
   let [valueSortOrder, setValueSortOrder] = useState('Price Desc.');
   let [catSortOrder, setCatSortOrder] = useState('All');
   // ! CHANGE TO DATABASE CALL FOR FINAL VERSION!!
-  const [products, setProducts] = useState<productItem[]>(dummyProducts);
+  const products = dummyProducts;
   const [orderedProducts, setOrderedProducts] = useState<productItem[]>(
     sortProducts(dummyProducts)
   );
