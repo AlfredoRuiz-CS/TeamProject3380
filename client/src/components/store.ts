@@ -10,7 +10,7 @@ export type productItem = {
   name: string;
   price: number;
   description: string[];
-  category: 'produce' | 'Meat' | 'Fish' | 'Dairy' | 'Snacks';
+  category: 'produce' | 'meat' | 'fish' | 'dairy' | 'snacks';
   nutritionFacts?: {
     servingSize: string;
     servingsPerContainer: string;
