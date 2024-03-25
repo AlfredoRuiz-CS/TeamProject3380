@@ -12,6 +12,8 @@ import {
 } from '@/components/ui/select';
 
 import { productItem } from '@/components/store';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 // interface productProps {
 //   product: productItem;
 // }
@@ -65,7 +67,18 @@ const SingleProduct = () => {
   console.log(test);
   // Funcitonality to toggle the quantity dropdown
   const [QuantityEnabled, setQuantityEnabled] = useState(false);
-  // const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(1);
+
+  const cartConfirmToast = () =>
+    toast.success('Added ' + quantity + ' ' + product.name + ' to Cart!', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+    });
+  const listConfirmToast = () =>
+    toast.success('Added ' + quantity + ' ' + product.name + ' to List!', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+    });
 
   function quantityDropdownToggle() {
     setQuantityEnabled(!QuantityEnabled);
@@ -88,13 +101,15 @@ const SingleProduct = () => {
   const calDV = (value: number, dailyValue: number) => {
     return Math.round((value / dailyValue) * 100) + '%';
   };
-  // function handleAddToList() {
-  //   console.log('Added ', quantity, ' ', product.name, 'to List');
-  // }
+  function handleAddToList() {
+    console.log('Added ', quantity, ' ', product.name, 'to List');
+    listConfirmToast();
+  }
 
-  // function handleAddToCart() {
-  //   console.log('Added ', quantity, ' ', product.name, 'to Cart');
-  // }
+  function handleAddToCart() {
+    console.log('Added ', quantity, ' ', product.name, 'to Cart');
+    cartConfirmToast();
+  }
 
   return (
     <>
@@ -128,7 +143,7 @@ const SingleProduct = () => {
                     </Button>
                     <Select
                       defaultValue="1"
-                      // onValueChange={(e) => setQuantity(parseInt(e))}
+                      onValueChange={(e) => setQuantity(parseInt(e))}
                     >
                       <SelectTrigger className="h-12 w-[3rem] flex-grow border border-black bg-gray-200">
                         <SelectValue placeholder="1" />
@@ -150,14 +165,20 @@ const SingleProduct = () => {
                     Qty.
                   </Button>
                 )}
-
-                <button className="flex h-12 min-w-24 flex-shrink items-center justify-center place-self-end rounded-lg bg-blue-500 px-2 py-3">
-                  <div className="text-[32px]">Add to list</div>
+                <button
+                  className="flex h-12 min-w-24 flex-shrink items-center justify-center place-self-end rounded-lg bg-blue-500 px-2 py-3 text-[2rem]"
+                  onClick={handleAddToList}
+                >
+                  Add to list
                 </button>
               </div>
-              <button className="flex h-12 w-full flex-grow items-center justify-center rounded-lg bg-red-500 px-2 py-3">
-                <div className="text-[32px]">Add to cart</div>
+              <button
+                className="flex h-12 w-full flex-grow items-center justify-center rounded-lg bg-red-500 px-2 py-3 text-[2rem]"
+                onClick={handleAddToCart}
+              >
+                Add to cart
               </button>
+              <ToastContainer />
             </div>
           </div>
           <div className=" w-full max-w-[1086px] px-4">
@@ -181,7 +202,6 @@ const SingleProduct = () => {
             ) : (
               <div></div>
             )}
-            {/* TODO: IMPLEMENT PERCENTAGE CALCULATORS FOR DAILY VALUE PERCENTAGE */}
             <div className="flex justify-between">
               <div className="text-[28px]">Serving Size</div>
               <div className="text-[28px]">
