@@ -63,57 +63,41 @@ const Products = () => {
   let [valueSortOrder, setValueSortOrder] = useState('Price Desc.');
   let [catSortOrder, setCatSortOrder] = useState('All');
   // ! CHANGE TO DATABASE CALL FOR FINAL VERSION!!
-  const [products, setProducts] = useState<productItem[]>(
+  const products = dummyProducts;
+  const [orderedProducts, setOrderedProducts] = useState<productItem[]>(
     sortProducts(dummyProducts)
   );
 
   useEffect(() => {
     let sorted = sortProducts(products);
-    setProducts(sorted);
+    setOrderedProducts(sorted);
   }, [catSortOrder, valueSortOrder]);
 
-  function sortProducts(products: productItem[]) {
+  function sortProducts(p: productItem[]) {
     if (catSortOrder !== 'All') {
-      products = products.filter(
-        (product) => product.category === catSortOrder
-      );
+      p = products.filter((product) => product.category === catSortOrder);
     }
+
+    if (products.length === 0) p = products;
 
     switch (valueSortOrder) {
       case 'Price Desc.':
-        return products.sort((a, b) => b.price - a.price);
+        return p.sort((a, b) => b.price - a.price);
       case 'Price Asc.':
-        return products.sort((a, b) => a.price - b.price);
+        return p.sort((a, b) => a.price - b.price);
       case 'Alpha Desc.':
-        return products.sort((a, b) => a.name.localeCompare(b.name));
+        return p.sort((a, b) => a.name.localeCompare(b.name));
       case 'Alpha Asc.':
-        return products.sort((a, b) => b.name.localeCompare(a.name));
-      case 'In List':
+        return p.sort((a, b) => b.name.localeCompare(a.name));
       case 'In List':
         return [
           ...store.List,
-          ...products.filter((product) => !store.List.includes(product)),
+          ...p.filter((product) => !store.List.includes(product)),
         ];
       default:
-        return products;
+        return p;
     }
   }
-
-  // const sortByPriceAsc = (products: productItem[]): productItem[] => {
-  //   return products.slice().sort((a, b) => a.price - b.price);
-  // };
-
-  // const sortByPriceDesc = (products: productItem[]) => {
-  //   return products.slice().sort((a,b) => b.price - a.price);
-  // };
-
-  // const sortByAlphaAsc = (products: productItem[]) => {
-  //   return products.slice().sort((a,b) => a.name.localeCompare(b.name));
-  // };
-
-  // const sortByAlphaDesc = (products: productItem[]) => {
-  //   return products.slice().sort((a,b) => b.name.localeCompare(a.name));
-  // };
 
   return (
     <>
@@ -140,11 +124,11 @@ const Products = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="All">All</SelectItem>
-                <SelectItem value="Produce">Produce</SelectItem>
-                <SelectItem value="Meat">Meat</SelectItem>
-                <SelectItem value="Fish">Fish</SelectItem>
-                <SelectItem value="Dairy">Dairy</SelectItem>
-                <SelectItem value="Snacks">Snacks</SelectItem>
+                <SelectItem value="produce">Produce</SelectItem>
+                <SelectItem value="meat">Meat</SelectItem>
+                <SelectItem value="fish">Fish</SelectItem>
+                <SelectItem value="dairy">Dairy</SelectItem>
+                <SelectItem value="snacks">Snacks</SelectItem>
               </SelectContent>
             </Select>
 
@@ -172,7 +156,7 @@ const Products = () => {
 
           {/* List of Product Items */}
           <div className="mx-[10rem] flex flex-row flex-wrap gap-7">
-            {products.map((product, index) => (
+            {orderedProducts.map((product, index) => (
               <ProductCard key={index} product={product} />
             ))}
           </div>
