@@ -56,6 +56,7 @@ const loginAuth = async (req, res) => {
     console.log(email, password);
 
     const user = await userModel.login(email, password);
+    console.log(user);
 
     const token = createToken(user.email);
 
@@ -73,10 +74,7 @@ const loginAuth = async (req, res) => {
       token 
     }));
   } catch (error) {
-    // Only attempt to set headers if they haven't been sent yet.
-    if (!res.headersSent) {
-      res.writeHead(400, { 'Content-Type': 'application/json' });
-    }
+    res.writeHead(400, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: error.message }));
   }
 };
