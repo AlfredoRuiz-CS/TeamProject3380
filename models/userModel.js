@@ -1,14 +1,14 @@
 const { pool } = require("../config/db");
 const bcrypt = require("bcrypt");
 
-async function register(email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, password, role = 'customer', jobTitle = null) {
+async function register(email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, password, accountType = 'customer', jobTitle = null) {
   // validation
   if (!fName || !lName || !email || !phoneNumber || !streetAddress || !city || !state || !zipcode || !password) {
       throw Error('All fields must be filled');
   }
 
   // Determine the table based on the role
-  const tableName = role === 'customer' ? 'customer' : 'employee';
+  const tableName = accountType === 'customer' ? 'customer' : 'employee';
   const [users] = await pool.query(`SELECT * FROM ${tableName} WHERE email = ?`, [email]);
 
   if (users.length > 0) {
@@ -22,7 +22,7 @@ async function register(email, fName, lName, phoneNumber, streetAddress, city, s
   // Insert the new user
   let query, queryParams;
 
-  if (role === 'customer') {
+  if (accountType === 'customer') {
       query = `INSERT INTO customer(email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, password) 
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
       queryParams = [email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, hash];
@@ -33,14 +33,14 @@ async function register(email, fName, lName, phoneNumber, streetAddress, city, s
   }
 
   const result = await pool.query(query, queryParams);
-  return { email, role };
+  return { email, accountType };
 }
 
 
 async function login(email, password) {
     
     let user;
-    let role;
+    let accountType;
 
     // Check if user exists
     const [customers] = await pool.query(`
@@ -49,7 +49,7 @@ async function login(email, password) {
     WHERE email = ?`, [email]);
     if (customers.length > 0){
       user = customers[0];
-      role = 'customer';
+      accountType = 'customer';
     } else {
       const [employees] = await pool.query(`
       SELECT * 
@@ -57,7 +57,7 @@ async function login(email, password) {
       WHERE email = ?`, [email]);
       if (employees.length > 0){
         user = employees[0];
-        role = 'employee';
+        accountType = 'employee';
       }
     }
 
@@ -72,7 +72,7 @@ async function login(email, password) {
       throw Error('Incorrect password');
     }
   
-    return { email: user.email, fName: user.fName, lName: user.lName, phoneNumber: user.phoneNumber, streetAddress: user.streetAddress, city: user.city, state: user.state, zipcode: user.zipcode, role };
+    return { email: user.email, fName: user.fName, lName: user.lName, phoneNumber: user.phoneNumber, streetAddress: user.streetAddress, city: user.city, state: user.state, zipcode: user.zipcode, accountType };
   }
 
 async function findAllCustomers() {

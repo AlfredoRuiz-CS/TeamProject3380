@@ -70,7 +70,7 @@ const loginAuth = async (req, res) => {
       city: user.city,
       state: user.state,
       zipcode: user.zipcode,
-      role,
+      accountType: user.accountType,
       token 
     }));
   } catch (error) {
