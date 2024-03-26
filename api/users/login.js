@@ -1,6 +1,6 @@
 const userController = require("../../controllers/userController");
 
-function setCorsHeaders(res) {
+function setCorsHeaders(req, res) {
   console.log("Setting CORS headers");
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, PATCH, DELETE');
@@ -15,7 +15,7 @@ module.exports = async (req, res) => {
     res.end();
     return;
   }
-  
+
   if (req.method === "POST") {
     await userController.loginAuth(req, res);
   } else {
