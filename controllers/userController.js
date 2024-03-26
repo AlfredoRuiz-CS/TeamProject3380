@@ -51,7 +51,9 @@ const loginAuth = async (req, res) => {
   
   try {
     const body = await getRequestBody(req);
+    console.log(body);
     const { email, password } = body;
+    console.log(email, password);
 
     const user = await userModel.login(email, password);
 
