@@ -1,5 +1,6 @@
 const userModel = require('../models/userModel');
 const jwt = require('jsonwebtoken');
+const { setCorsHeaders } = require('../lib/cors');
 
 const createToken = (email) => {
   return jwt.sign({ email }, process.env.SECRET, { expiresIn: '1d' });
@@ -38,6 +39,7 @@ const registerAuth = async (req, res) => {
 
     const token = createToken(user.email);
 
+    setCorsHeaders(req, res);
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, token, role }));
   } catch (error) {
@@ -56,6 +58,7 @@ const loginAuth = async (req, res) => {
 
     const token = createToken(user.email);
 
+    setCorsHeaders(req, res);
     res.writeHead(200, { 'Content-Type': 'application/json'});
     res.end(JSON.stringify({ 
       email: user.email,
