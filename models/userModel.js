@@ -1,59 +1,78 @@
 const { pool } = require("../config/db");
 const bcrypt = require("bcrypt");
 
-async function register (email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, password){
-    // validation
-    if (!fName || ! lName || !email || !phoneNumber || !streetAddress || !city || !state || !zipcode || !password) {
-        throw Error('All fields must be filled')
-    }
-    // if (!validator.isEmail(email)) {
-    //     throw Error('Email not valid')
-    // }
-    // if (!validator.isStrongPassword(password)) {
-    //     throw Error('Password not strong enough')
-    // }
+async function register(email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, password, accountType = 'customer', jobTitle = 'manager') {
+  // validation
+  if (!fName || !lName || !email || !phoneNumber || !streetAddress || !city || !state || !zipcode || !password) {
+      throw Error('All fields must be filled');
+  }
 
-    // Check if user exists
-    const [users] = await pool.query(`
-    SELECT * 
-    FROM customer 
-    WHERE email = ?`, [email]);
+  // Determine the table based on the role
+  const tableName = accountType === 'customer' ? 'customer' : 'employee';
+  const [users] = await pool.query(`SELECT * FROM ${tableName} WHERE email = ?`, [email]);
 
-    if (users.length > 0) {
-        throw Error('Email already in use');
-    }
+  if (users.length > 0) {
+      throw Error('Email already in use');
+  }
 
-    // Hash the password
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
-    
-    // Insert the new user
-    const result = await pool.query(`
-    INSERT INTO customer(email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, password) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`, [email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, hash]);
+  // Hash the password
+  const salt = await bcrypt.genSalt(10);
+  const hash = await bcrypt.hash(password, salt);
+  
+  // Insert the new user
+  let query, queryParams;
 
-    return { email };
+  if (accountType === 'customer') {
+      query = `INSERT INTO customer(email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, password) 
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      queryParams = [email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, hash];
+  } else { // role is 'employee'
+      query = `INSERT INTO employee(email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, empPassword, jobTitle) 
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+      queryParams = [email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, hash, jobTitle];
+  }
+
+  const result = await pool.query(query, queryParams);
+  return { email, accountType };
 }
 
+
 async function login(email, password) {
+    
+    let user;
+    let accountType;
+
     // Check if user exists
-    const [users] = await pool.query(`
+    const [customers] = await pool.query(`
     SELECT * 
     FROM customer 
     WHERE email = ?`, [email]);
-    const user = users[0];
+    if (customers.length > 0){
+      user = customers[0];
+      accountType = 'customer';
+    } else {
+      const [employees] = await pool.query(`
+      SELECT * 
+      FROM employee 
+      WHERE email = ?`, [email]);
+      if (employees.length > 0){
+        user = employees[0];
+        accountType = 'employee';
+      }
+    }
+
     if (!user) {
       throw Error('Incorrect email');
     }
   
     // Check if password matches
-    const hashedPassword = user.password.toString('utf8');
-    const match = await bcrypt.compare(password, hashedPassword);
+    const hashedPassword = user.password || user.empPassword;
+    const match = await bcrypt.compare(password, hashedPassword.toString('utf8'));
     if (!match) {
       throw Error('Incorrect password');
     }
   
-    return { email: user.email, fName: user.fName, lName: user.lName, phoneNumber: user.phoneNumber, streetAddress: user.streetAddress, city: user.city, state: user.state, zipcode: user.zipcode };
+    return { email: user.email, fName: user.fName, lName: user.lName, phoneNumber: user.phoneNumber, streetAddress: user.streetAddress, city: user.city, state: user.state, zipcode: user.zipcode, accountType };
   }
 
 async function findAllCustomers() {
