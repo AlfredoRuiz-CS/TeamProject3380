@@ -1,7 +1,7 @@
 const { pool } = require("../config/db");
 const bcrypt = require("bcrypt");
 
-async function register(email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, password, accountType = 'customer', jobTitle = null) {
+async function register(email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, password, accountType = 'customer', jobTitle = 'manager') {
   // validation
   if (!fName || !lName || !email || !phoneNumber || !streetAddress || !city || !state || !zipcode || !password) {
       throw Error('All fields must be filled');

@@ -32,17 +32,19 @@ const registerAuth = async (req, res) => {
   try {
     const body = await getRequestBody(req);
     console.log(body);
-    const { fName, lName, email, phoneNumber, streetAddress, city, state, zipcode, password, role, jobTitle } = body;
-    console.log(fName, lName, email, phoneNumber, streetAddress, city, state, zipcode, password, role);
+    const { fName, lName, email, phoneNumber, streetAddress, city, state, zipcode, password } = body;
+    console.log(fName, lName, email, phoneNumber, streetAddress, city, state, zipcode, password);
 
-    const user = await userModel.register(email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, password, role, jobTitle);
+    const user = await userModel.register(email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, password);
 
     const token = createToken(user.email);
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, token, role }));
+    res.end(JSON.stringify({ email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, token, accountType }));
   } catch (error) {
-    res.writeHead(400, { 'Content-Type': 'application/json' });
+    if (!res.headersSent) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+    }
     res.end(JSON.stringify({ error: error.message }));
   }
 };
