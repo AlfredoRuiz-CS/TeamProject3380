@@ -70,7 +70,7 @@ type UserState = {
   // setUserPhone: (phone: string) => void;
   // setUserAddress: (address: object) => void;
   setUserDetails: (details: Partial<UserState>) => void;
-  login: () => void;
+  login: (isEmployee: boolean) => void;
   logout: () => void;
   addToCart: (product: productItem) => void;
   addToList: (product: productItem) => void;
@@ -112,7 +112,13 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
       phone: '',
       address: { street: '', city: '', state: 'CA', zip: '' },
     }),
-  login: () => set({ loggedIn: true }),
+  login: (isEmployee) => {
+    set((state) => ({ 
+      loggedIn: true,
+      isAdmin: isEmployee,
+      isMember: isEmployee || state.isMember
+    }));
+  },
   addToCart: (product) =>
     set((state) => {
       const newCartItems = state.cartItems.concat(product);
