@@ -8,7 +8,7 @@ async function register(email, fName, lName, phoneNumber, streetAddress, city, s
   }
 
   // Determine the table based on the role
-  const tableName = role === 'customer' ? 'customer' : 'admin';
+  const tableName = role === 'customer' ? 'customer' : 'employee';
   const [users] = await pool.query(`SELECT * FROM ${tableName} WHERE email = ?`, [email]);
 
   if (users.length > 0) {
