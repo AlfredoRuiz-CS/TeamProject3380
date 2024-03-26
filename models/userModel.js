@@ -48,7 +48,7 @@ async function login(email, password) {
     FROM customer 
     WHERE email = ?`, [email]);
     if (customers.length > 0){
-      user = users[0];
+      user = customers[0];
       role = 'customer';
     } else {
       const [employees] = await pool.query(`
