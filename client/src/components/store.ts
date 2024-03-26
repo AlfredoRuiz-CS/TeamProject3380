@@ -57,7 +57,7 @@ type UserState = {
     zip: string;
   };
   accountCreatedDate: Date;
-  accountType: 'customer' | 'admin';
+  accountType: 'customer' | 'employee';
   cartItemsNumber: number;
   List: productItem[];
   cartItems: productItem[];
