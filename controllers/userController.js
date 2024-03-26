@@ -71,7 +71,10 @@ const loginAuth = async (req, res) => {
       token 
     }));
   } catch (error) {
-    res.writeHead(400, { 'Content-Type': 'application/json' });
+    // Only attempt to set headers if they haven't been sent yet.
+    if (!res.headersSent) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+    }
     res.end(JSON.stringify({ error: error.message }));
   }
 };
