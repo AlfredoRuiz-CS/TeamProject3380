@@ -1,5 +1,6 @@
 const userModel = require('../models/userModel');
 const jwt = require('jsonwebtoken');
+const { setCorsHeaders } = require('../lib/cors');
 
 const createToken = (email) => {
   return jwt.sign({ email }, process.env.SECRET, { expiresIn: '1d' });
@@ -39,9 +40,11 @@ const registerAuth = async (req, res) => {
     const token = createToken(user.email);
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, token }));
+    res.end(JSON.stringify({ email: user.email, fName: fName, lName: lName, phoneNumber: phoneNumber, streetAddress: streetAddress, city: city, state: state, zipcode: zipcode, token, accountType: user.accountType }));
   } catch (error) {
-    res.writeHead(400, { 'Content-Type': 'application/json' });
+    if (!res.headersSent) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+    }
     res.end(JSON.stringify({ error: error.message }));
   }
 };
@@ -50,9 +53,12 @@ const loginAuth = async (req, res) => {
   
   try {
     const body = await getRequestBody(req);
+    console.log(body);
     const { email, password } = body;
+    console.log(email, password);
 
     const user = await userModel.login(email, password);
+    console.log(user);
 
     const token = createToken(user.email);
 
@@ -66,10 +72,13 @@ const loginAuth = async (req, res) => {
       city: user.city,
       state: user.state,
       zipcode: user.zipcode,
+      accountType: user.accountType,
       token 
     }));
   } catch (error) {
-    res.writeHead(400, { 'Content-Type': 'application/json' });
+    if (!res.headersSent) {
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+    }
     res.end(JSON.stringify({ error: error.message }));
   }
 };

@@ -2,7 +2,13 @@ const userController = require("../../controllers/userController");
 const { setCorsHeaders } = require("../../lib/cors");
 
 module.exports = async (req, res) => {
-  if(setCorsHeaders(req, res)) return;
+  setCorsHeaders(req, res);
+   // Handle OPTIONS method by ending the request after setting CORS headers.
+   if (req.method === "OPTIONS") {
+    res.writeHead(204); // Use writeHead instead of status to stay consistent.
+    res.end();
+    return;
+  }
   
   if (req.method === "POST") {
     await userController.registerAuth(req, res);

@@ -117,8 +117,8 @@ const Register = () => {
       try {
         const response = await axios.post('https://shastamart-api-deploy.vercel.app/api/users/register', values);
         const userData = await response.data;
+        store.login(userData.accountType === 'employee');
         setUserDetails({
-          loggedIn: true,
           fname: userData.fName,
           lname: userData.lName,
           email: userData.email,
@@ -128,7 +128,8 @@ const Register = () => {
             city: userData.city,
             state: userData.state,
             zip: userData.zipcode,
-          }
+          },
+          accountType: userData.accountType
         });
         // navigate('/profile');
       } catch (error) {
