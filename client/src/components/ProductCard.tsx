@@ -1,5 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {
   Select,
   SelectContent,
@@ -27,12 +29,31 @@ const ProductCard = (props: ProductCardProps) => {
   }
 
   function handleAddToList() {
+    listConfirmToast();
     console.log('Added ', quantity, ' ', props.product.name, 'to List');
   }
 
   function handleAddToCart() {
+    cartConfirmToast();
     console.log('Added ', quantity, ' ', props.product.name, 'to Cart');
   }
+
+  const cartConfirmToast = () =>
+    toast.success(
+      'Added ' + quantity + ' ' + props.product.name + ' to Cart!',
+      {
+        position: 'bottom-right',
+        className: 'font-bold text-black',
+      }
+    );
+  const listConfirmToast = () =>
+    toast.success(
+      'Added ' + quantity + ' ' + props.product.name + ' to List!',
+      {
+        position: 'bottom-right',
+        className: 'font-bold text-black',
+      }
+    );
 
   return (
     <>
@@ -46,7 +67,9 @@ const ProductCard = (props: ProductCardProps) => {
         </Link>
         {/* Product Name */}
         <h2 className="ml-6 mr-auto pt-4 text-left font-jua text-xl hover:underline hover:underline-offset-4">
-          <Link to={`/product/${props.product.name}`}>{props.product.name}</Link>
+          <Link to={`/product/${props.product.name}`}>
+            {props.product.name}
+          </Link>
         </h2>
         {/* Short Product Info */}
         <ul className="ml-10 list-disc text-left text-sm">
@@ -114,6 +137,7 @@ const ProductCard = (props: ProductCardProps) => {
           >
             Add to Cart
           </Button>
+          <ToastContainer />
         </div>
       </div>
     </>

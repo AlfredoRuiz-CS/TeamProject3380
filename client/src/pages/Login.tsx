@@ -51,12 +51,10 @@ const Login = () => {
     onSubmit: async (values, { setSubmitting }) => {
       console.log('Form submitted:', values);
       try {
-        const response = await axios.post(
-          'http://localhost:4000/login',
-          values
-        );
+        const response = await axios.post('https://shastamart-api-deploy.vercel.app/api/users/login',values);
         const userData = await response.data;
-        store.login();
+        console.log(userData);
+        store.login(userData.accountType === 'employee');
         setUserDetails({
           fname: userData.fName,
           lname: userData.lName,
@@ -68,6 +66,7 @@ const Login = () => {
             state: userData.state,
             zip: userData.zipcode,
           },
+          accountType: userData.accountType
         });
         // navigate('/profile');
       } catch (error) {

@@ -76,6 +76,10 @@ const Header = (props: HeaderProps) => {
               <li className="flex items-center justify-center">
                 <Link to="/membership">Membership</Link>
               </li>
+            ) : store.loggedIn && store.accountType === "employee" ? (
+              <li className="flex items-center justify-center">
+                <Link to="/admin">Dashboard</Link>
+              </li>
             ) : (
               <></>
             )}

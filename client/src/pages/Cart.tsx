@@ -1,45 +1,30 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CartItem from '@/components/CartItem';
-// import { Toaster } from '@/components/ui/sonner';
 import { Button } from '@/components/ui/button';
 import { FaTrashCan } from 'react-icons/fa6';
-import { Link } from 'react-router-dom';
-// import { Separator } from '@/components/ui/separator';
 
-// import {
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableHead,
-//   TableHeader,
-//   TableRow,
-// } from '@/components/ui/table';
-
-// import {
-//   AlertDialog,
-//   AlertDialogAction,
-//   AlertDialogCancel,
-//   AlertDialogContent,
-//   AlertDialogDescription,
-//   AlertDialogFooter,
-//   AlertDialogHeader,
-//   AlertDialogTitle,
-//   AlertDialogTrigger,
-// } from '@/components/ui/alert-dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 // import { productItem } from '@/components/store';
 import { dummyProducts } from './Products';
 import useUserStore from '@/components/store';
 import { useNavigate } from 'react-router-dom';
-// import { useState } from 'react';
 
 const Cart = () => {
   const store = useUserStore();
   const navigate = useNavigate();
   const shipping = 10;
-
-  // const [quantity, setQuantity] = useState(1);
 
   // ! REPLACE POPULAR ITEMS WITH USER LIST
 
@@ -57,10 +42,6 @@ const Cart = () => {
     navigate('/payment');
   }
 
-  function handleDeleteCart() {
-    store.resetCart();
-  }
-
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
@@ -71,14 +52,34 @@ const Cart = () => {
           <section className="flex w-[50%] flex-col pl-[5rem] pt-[6rem]">
             <div className="flex flex-row justify-between pb-4">
               <h1 className="pl-4 text-3xl text-white ">Review Cart</h1>
-              <Button
-                onClick={handleDeleteCart}
-                variant="outline"
-                className="border border-darkblue bg-transparent text-darkblue hover:bg-darkblue hover:text-bgwhite"
-              >
-                <FaTrashCan className="mr-2 h-4 w-4" />
-                Empty Cart
-              </Button>
+              {/* Alert to confirm cart deletion */}
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="border border-darkblue bg-transparent text-darkblue hover:bg-darkblue hover:text-bgwhite"
+                  >
+                    <FaTrashCan className="mr-2 h-4 w-4" />
+                    Empty Cart
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action will clear every item in your cart.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={store.resetCart}>
+                      Confirm
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
             {/* CARD COMPONENT HERE * NUMBER OF ITEMS IN CART */}
             <div className="">
@@ -145,7 +146,7 @@ const Cart = () => {
                   className="mt-10 h-[3rem] w-[12rem] self-center border-darkblue text-white hover:bg-darkblue hover:text-bgwhite"
                   onClick={handleCheckout}
                 >
-                  <Link to="/payment">Proceed to Checkout</Link>
+                  <a href="/payment/cart">Proceed to Checkout</a>
                 </Button>
               </div>
             </div>

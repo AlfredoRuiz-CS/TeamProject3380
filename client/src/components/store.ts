@@ -10,12 +10,13 @@ export type productItem = {
   name: string;
   price: number;
   description: string[];
-  category: 'produce' | 'Meat' | 'Fish' | 'Dairy' | 'Snacks';
+  category: 'produce' | 'meat' | 'fish' | 'dairy' | 'snacks';
   nutritionFacts?: {
     servingSize: string;
     servingsPerContainer: string;
     calories: number;
     totalFat?: string;
+    cholesterol?: string;
     sodium?: string;
     totalCarbohydrates?: string;
     dietaryFiber?: string;
@@ -24,6 +25,8 @@ export type productItem = {
     potassium?: string;
     vitaminA?: string;
     vitaminC?: string;
+    vitaminD?: string;
+    vitaminE?: string;
     calcium?: string;
     iron?: string;
   };
@@ -38,7 +41,7 @@ export type productItem = {
   stock: number;
   supplier: string;
   supplierStock: number;
-  portion: 'lb.' | 'oz.' | 'item';
+  portion: 'lb.' | 'oz.' | 'item' | 'gal.';
 };
 
 type UserState = {
@@ -57,7 +60,7 @@ type UserState = {
     zip: string;
   };
   accountCreatedDate: Date;
-  accountType: 'customer' | 'admin';
+  accountType: 'customer' | 'employee';
   cartItemsNumber: number;
   List: productItem[];
   cartItems: productItem[];
@@ -70,7 +73,7 @@ type UserState = {
   // setUserPhone: (phone: string) => void;
   // setUserAddress: (address: object) => void;
   setUserDetails: (details: Partial<UserState>) => void;
-  login: () => void;
+  login: (isEmployee: boolean) => void;
   logout: () => void;
   addToCart: (product: productItem) => void;
   addToList: (product: productItem) => void;
@@ -112,7 +115,13 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
       phone: '',
       address: { street: '', city: '', state: 'CA', zip: '' },
     }),
-  login: () => set({ loggedIn: true }),
+  login: (isEmployee) => {
+    set((state) => ({ 
+      loggedIn: true,
+      isAdmin: isEmployee,
+      isMember: isEmployee || state.isMember
+    }));
+  },
   addToCart: (product) =>
     set((state) => {
       const newCartItems = state.cartItems.concat(product);
