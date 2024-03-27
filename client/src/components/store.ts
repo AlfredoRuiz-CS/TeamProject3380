@@ -16,6 +16,7 @@ export type productItem = {
     servingsPerContainer: string;
     calories: number;
     totalFat?: string;
+    cholesterol?: string;
     sodium?: string;
     totalCarbohydrates?: string;
     dietaryFiber?: string;
@@ -24,6 +25,8 @@ export type productItem = {
     potassium?: string;
     vitaminA?: string;
     vitaminC?: string;
+    vitaminD?: string;
+    vitaminE?: string;
     calcium?: string;
     iron?: string;
   };
@@ -38,7 +41,7 @@ export type productItem = {
   stock: number;
   supplier: string;
   supplierStock: number;
-  portion: 'lb.' | 'oz.' | 'item';
+  portion: 'lb.' | 'oz.' | 'item' | 'gal.';
 };
 
 type UserState = {
