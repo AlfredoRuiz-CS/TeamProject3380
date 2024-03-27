@@ -778,13 +778,28 @@ const cookies: productItem = {
   },
 };
 
-export const dummyProducts: productItem[] = Array(20)
-  .fill({})
-  .map(() => ({ strawberries, greenBeans, bananas, avocado, 
-                 chicken, beef, pork, sausage,
-                 salmon, shrimp, crab, cod,
-                wholeMilk, twoMilk, cheese, yogurt, 
-                chips, chocolate, pretzels, cookies}));
+export const dummyProducts: productItem[] = [
+  strawberries,
+  greenBeans,
+  bananas,
+  avocado,
+  chicken,
+  beef,
+  pork,
+  sausage,
+  salmon,
+  shrimp,
+  crab,
+  cod,
+  wholeMilk,
+  twoMilk,
+  cheese,
+  yogurt,
+  chips,
+  chocolate,
+  pretzels,
+  cookies,
+];
 
 const Products = () => {
   const store = useUserStore();
