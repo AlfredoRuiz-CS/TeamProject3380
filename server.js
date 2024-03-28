@@ -2,6 +2,7 @@
 // const http = require('http');
 // const { dbInitializer } = require('./config/db');
 // const userController = require('./controllers/userController');
+// const orderController = require('./controllers/orderController'); //Thinh
 
 // const server = http.createServer((req, res) => {
 //         // Set CORS headers
@@ -54,6 +55,9 @@
 //     }
 //     else if (req.url === '/api/update_name' && req.method === 'POST'){
 //         userController.updateUserName(req, res);
+//     }
+//     else if (req.url === '/createOrder' && req.method === 'POST'){ //Thinh
+//         orderController.createOrder(req,res);   
 //     }
 //     else{
 //         res.writeHead(404, { 'Content-Type' : 'application/json' })

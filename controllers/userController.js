@@ -107,7 +107,7 @@ const getUserPaymentInfo = async (req, res) => {
       res.end("none");
     }
 
-    let paymentInfo = paymentInfo[0];
+    let paymentInfo = paymentInfo[0]; //Should it be paymentInfoQuery
     let expirationDate = `${paymentInfo.expiration.getMonth() + 1}-${paymentInfo.expiration.getDate()}-${paymentInfo.expiration.getFullYear()}`;
     paymentInfo.expiration = expirationDate;
 
