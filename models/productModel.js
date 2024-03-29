@@ -2,7 +2,7 @@ const { pool } = require('../config/db');
 
 async function getAllProducts() {
     try {
-        const [rows] = pool.query(`
+        const [rows] = await pool.query(`
         SELECT *
         FROM product`);
 
