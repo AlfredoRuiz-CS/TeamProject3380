@@ -11,7 +11,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-import { productItem } from '@/components/store';
 import { dummyProducts } from '@/pages/Products';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
