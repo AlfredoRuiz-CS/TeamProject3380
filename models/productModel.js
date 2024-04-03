@@ -48,7 +48,7 @@ async function insertProduct(connection, productInfo){
 async function insertNutritionFacts(connection, productID, nutritionFacts){
     try {
         const [result] = await connection.execute(`
-        INSERT INTO nutritionFacts (productID, servingSize, servingsPerContainer, calories, totalFat, cholesterol, sodium, totalCarbohydrate, dietaryFiber, sugars, protein, potassium, vitaminA, vitaminC, vitaminD, vitaminE, calcium, iron)
+        INSERT INTO nutritionFacts (productID, servingSize, servingsPerContainer, calories, totalFat, cholesterol, sodium, totalCarbohydrates, dietaryFiber, sugars, protein, potassium, vitaminA, vitaminC, vitaminD, vitaminE, calcium, iron)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `, [
             productID,
