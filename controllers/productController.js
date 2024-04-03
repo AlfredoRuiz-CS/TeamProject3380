@@ -1,0 +1,64 @@
+const productModel = require('../models/productModel');
+const { getRequestBody } = require('../lib/requestBodyParser');
+const { pool } = require('../config/db');
+
+const getAllProducts = async (req, res) => {
+    try {
+        const products = await productModel.getAllProducts();
+
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify(products));
+    } catch (error){
+        res.writeHead(400, { 'Content-Type' : 'application/json' });
+        res.end(JSON.stringify({ error: error.message}));
+    }
+}
+
+const insertProductInfo = async (req, res) => {
+    const connection = await pool.getConnection();
+    try {
+        await connection.beginTransaction();
+
+        const body = await getRequestBody(req);
+        const { productInfo, nutritionFacts, shippingDetails } = body;
+        for (const [key, value] of Object.entries(productInfo)) {
+            if (value === undefined) {
+                console.log(`Undefined found in productInfo: ${key}`);
+                // Set to null or handle as needed
+            }
+        }
+        for (const [key, value] of Object.entries(nutritionFacts)) {
+            if (value === undefined) {
+                console.log(`Undefined found in productInfo: ${key}`);
+                // Set to null or handle as needed
+            }
+        }
+        for (const [key, value] of Object.entries(shippingDetails)) {
+            if (value === undefined) {
+                console.log(`Undefined found in productInfo: ${key}`);
+                // Set to null or handle as needed
+            }
+        }
+
+        const prodID = await productModel.insertProduct(connection, productInfo);
+        const nutritionF = await productModel.insertNutritionFacts(connection, prodID, nutritionFacts);
+        const shipDetails = await productModel.insertShippingDetails(connection, prodID, shippingDetails);
+
+        await connection.commit();
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ "message": "Successfully added product to database" }));
+        
+    } catch (error){
+        await connection.rollback();
+        res.writeHead(400, { 'Content-Type' : 'application/json' });
+        res.end(JSON.stringify({ error: error.message}));
+    } finally {
+        connection.release();
+    }
+}
+
+
+module.exports = {
+    getAllProducts,
+    insertProductInfo
+}
