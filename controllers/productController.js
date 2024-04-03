@@ -20,7 +20,11 @@ const insertProductInfo = async (req, res) => {
         await connection.beginTransaction();
 
         const body = await getRequestBody(req);
+        console.log(body);
         const { productInfo, nutritionFacts, shippingDetails } = body;
+        console.log(productInfo);
+        console.log(nutritionFacts);
+        console.log(shippingDetails);
         for (const [key, value] of Object.entries(productInfo)) {
             if (value === undefined) {
                 console.log(`Undefined found in productInfo: ${key}`);
