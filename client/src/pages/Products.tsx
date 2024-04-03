@@ -54,20 +54,22 @@ const strawberries: productItem = {
     iron: '0.6 mg',
   },
 };
+// ! FOR FUTURE REFERENCE KEEP BULLETPOINTS >105 CHARACTERS
+// ! KEEP NAME >40 CHARACTERS
 const greenBeans: productItem = {
   productId: 10002,
   name: 'Fresh Steamable Green Beans',
   price: 2.67,
   image: '/assets/greenbeans.jpg',
   stock: 27,
-  supplier: 'Josh’s Beans',
+  supplier: "Josh's Beans",
   supplierStock: 120,
   portion: 'oz.',
   category: 'produce',
   description: [
-    'Prewashed, trimmed, and ready to cook', 
-    'Can be cooked on the stovetop or steamed in the microwave', 
+    'Prewashed, trimmed, and ready to cook',
     'No artificial growth hormones',
+    'Can be cooked on the stovetop or steamed in the microwave',
   ],
   shippingDetails: {
     dimensions: {
@@ -105,7 +107,7 @@ const bananas: productItem = {
   description: [
     'Bunch of bananas (about 4-7 total)',
     'Ripe and ready to enjoy',
-    'Convenient Fruit Snack' ,
+    'Convenient Fruit Snack',
   ],
   shippingDetails: {
     dimensions: {
@@ -131,8 +133,8 @@ const bananas: productItem = {
 };
 const avocado: productItem = {
   productId: 10004,
-  name: 'Fresh Jumbo Hass Avocado ',
-  price: 2.60,
+  name: 'Fresh Jumbo Hass Avocado',
+  price: 2.6,
   image: '/assets/strawberries.jpg',
   stock: 10,
   supplier: 'Houston Avocado Co',
@@ -140,7 +142,7 @@ const avocado: productItem = {
   portion: 'oz.',
   category: 'produce',
   description: [
-    'Fresh avocados with a creamy, nutty taste', 
+    'Fresh avocados with a creamy, nutty taste',
     'Ripe when slightly soft, yet firm',
     'Key guacamole ingredient',
   ],
@@ -178,7 +180,7 @@ const chicken: productItem = {
   portion: 'lb.',
   category: 'meat',
   description: [
-    'Fresh chicken wing portion', 
+    'Fresh chicken wing portion',
     'No added hormones, 100% natural',
     'Hatched, raised, and harvested in USA',
   ],
@@ -207,18 +209,18 @@ const chicken: productItem = {
 };
 const beef: productItem = {
   productId: 20002,
-  name: 'Center Cut Beef Sirloin Portion Steaks – USDA Select  ',
+  name: 'Center Cut Beef Sirloin Steaks  ',
   price: 9.97,
   image: '/assets/beef.jpg',
   stock: 10,
-  supplier: 'Bill\'s Beef',
+  supplier: "Bill's Beef",
   supplierStock: 100,
   portion: 'lb.',
   category: 'meat',
   description: [
-    'Lean, juicy, and tender steaks', 
-    'Perfect to upgrade your grill out',
-    'Always 100% natural, no artificial ingredients of preservatives',
+    'USDA Select Grade Beef',
+    'Lean, juicy, and tender steaks',
+    'Always natural, no artificial ingredients or preservatives',
   ],
   shippingDetails: {
     dimensions: {
@@ -246,16 +248,16 @@ const beef: productItem = {
 const pork: productItem = {
   productId: 20003,
   name: 'Bone-in Center Loin Pork Chops',
-  price: 4.80,
+  price: 4.8,
   image: '/assets/porkchop.jpg',
   stock: 7,
-  supplier: 'Timmmy\'s Pork',
+  supplier: "Timmmy's Pork",
   supplierStock: 40,
   portion: 'lb.',
   category: 'meat',
   description: [
-    'Fresh, 100% natural pork cuts', 
-    'No preservatives or added hormones', 
+    'Fresh, 100% natural pork cuts',
+    'No preservatives or added hormones',
     'Provided from your local butcher, Timmy’s Pork',
   ],
   shippingDetails: {
@@ -286,14 +288,14 @@ const sausage: productItem = {
   price: 5.19,
   image: '/assets/sausage.jpg',
   stock: 14,
-  supplier: 'Bill\'s Beef',
+  supplier: "Bill's Beef",
   supplierStock: 50,
   portion: 'oz.',
   category: 'meat',
   description: [
     'Authentic, Texas flavor, perfect for your next cookout',
     'Made with quality cuts of beef, gluten free, no MSG',
-    'An excellent main course or side dish',  
+    'An excellent main course or side dish',
   ],
   shippingDetails: {
     dimensions: {
@@ -331,7 +333,7 @@ const salmon: productItem = {
   portion: 'oz.',
   category: 'fish',
   description: [
-    'Classic, fresh Atlantic salmon', 
+    'Classic, fresh Atlantic salmon',
     'Pre-cut into 4 portions for easy preparation',
     'Bake, grill, or pan-fry skin side down for best results',
   ],
@@ -359,7 +361,7 @@ const salmon: productItem = {
 };
 const shrimp: productItem = {
   productId: 30002,
-  name: 'Frozen Peeled Deveined Tail-On Jumbo Cooked Shrimp',
+  name: 'Frozen Tail-On Jumbo Cooked Shrimp',
   price: 10.37,
   image: '/assets/shrimp.jpg',
   stock: 10,
@@ -368,7 +370,7 @@ const shrimp: productItem = {
   portion: 'lb.',
   category: 'fish',
   description: [
-    'Pre-cooked and frozen, these shrimps are great for an easy dinner', 
+    'Pre-cooked and frozen',
     'Already deveined and peeled',
     'Thaw in refrigerator overnight or under cold running water for a few minutes',
   ],
@@ -396,7 +398,7 @@ const shrimp: productItem = {
 };
 const crab: productItem = {
   productId: 30003,
-  name: 'Wild Caught Extra Jumbo Snow Crab Clusters ',
+  name: 'Wild Caught Jumbo Snow Crab Clusters ',
   price: 16.61,
   image: '/assets/crab.png',
   stock: 5,
@@ -405,7 +407,7 @@ const crab: productItem = {
   portion: 'lb.',
   category: 'fish',
   description: [
-    'Freshly caught from the Gulf of St. Laurence, Canada', 
+    'Freshly caught from the Gulf of St. Laurence, Canada',
     'Tender, white meat with a sweet, delicate flavor',
     'Approximately 12-14 oz average per cluster',
   ],
@@ -442,8 +444,8 @@ const cod: productItem = {
   portion: 'lb.',
   category: 'fish',
   description: [
-    'Wild caught and sustainably sourced', 
-    'Great for beer-battered fish & chips or a creamy fish chowder', 
+    'Wild caught and sustainably sourced',
+    'Great for beer-battered fish & chips',
     'Flaky, firm, mild, delicious',
   ],
   shippingDetails: {
@@ -473,7 +475,7 @@ const cod: productItem = {
 const wholeMilk: productItem = {
   productId: 40001,
   name: 'Whole Milk',
-  price: 3.70,
+  price: 3.7,
   image: '/assets/wholemilk.jpg',
   stock: 35,
   supplier: 'Sweet Dairy Farms',
@@ -514,7 +516,7 @@ const wholeMilk: productItem = {
 const twoMilk: productItem = {
   productId: 40002,
   name: '2% Reduced Fat Milk ',
-  price: 3.70,
+  price: 3.7,
   image: '/assets/twomilk.jpg',
   stock: 35,
   supplier: 'Sweet Dairy Farms',
@@ -522,9 +524,9 @@ const twoMilk: productItem = {
   portion: 'gal.',
   category: 'dairy',
   description: [
-    'Made with 38% less fat than whole milk', 
+    'Made with 38% less fat than whole milk',
     'Enriched with Vitamin E',
-    'No artificial growth hormones',  
+    'No artificial growth hormones',
   ],
   shippingDetails: {
     dimensions: {
@@ -556,7 +558,7 @@ const twoMilk: productItem = {
 const cheese: productItem = {
   productId: 40003,
   name: 'Sharp Cheddar Sliced Cheese',
-  price: 3.10,
+  price: 3.1,
   image: '/assets/cheese.jpeg',
   stock: 20,
   supplier: 'Sweet Dairy Farms',
@@ -564,9 +566,9 @@ const cheese: productItem = {
   portion: 'oz.',
   category: 'dairy',
   description: [
-    'Tangy, complex flavor due to longer aging',  
+    'Tangy, complex flavor due to longer aging',
     'Thinly sliced for your convenience',
-    'No artificial growth hormones',  
+    'No artificial growth hormones',
   ],
   shippingDetails: {
     dimensions: {
@@ -603,9 +605,9 @@ const yogurt: productItem = {
   portion: 'lb.',
   category: 'dairy',
   description: [
-    'Low in calories and rich in delicious taste', 
-    'Only 100 calories, making this the perfect, guilt-free treat',
-     'Small cup making this great for on the go',
+    'Low in calories and rich in delicious taste',
+    'Only 100 calories, great for any diet',
+    'Small cup making this great for on the go',
   ],
   shippingDetails: {
     dimensions: {
@@ -619,7 +621,7 @@ const yogurt: productItem = {
     servingSize: '1 container',
     servingsPerContainer: '4',
     calories: 100,
-    totalFat: '0 g', 
+    totalFat: '0 g',
     sodium: '45 mg',
     totalCarbohydrates: '12 g',
     dietaryFiber: '0 g',
@@ -630,11 +632,11 @@ const yogurt: productItem = {
     iron: '0 mg',
   },
 };
- 
+
 //Snacks
 const chips: productItem = {
   productId: 50001,
-  name: 'Sasha’s Barbecue Chips ',
+  name: "Sasha's Barbecue Chips ",
   price: 2.98,
   image: '/assets/chips.jpeg',
   stock: 30,
@@ -643,9 +645,9 @@ const chips: productItem = {
   portion: 'oz.',
   category: 'snacks',
   description: [
-    'Thin, crispy, sweet, smoky flavors that explode in your mouth',
+    'Thin, crispy, sweet, and barbecue flavors in every bite',
     'Add an extra kick to packed lunches',
-    'No certified synthetic colors', 
+    'No certified synthetic colors',
   ],
   shippingDetails: {
     dimensions: {
@@ -680,7 +682,7 @@ const chocolate: productItem = {
   portion: 'oz.',
   category: 'snacks',
   description: [
-    'Rick, milky goodness, everyone’s favorite treat', 
+    "Rick, milky goodness, everyone's favorite treat",
     'A classic in homes for decades',
     'Enjoy alone or with your loved ones',
   ],
@@ -707,7 +709,7 @@ const chocolate: productItem = {
 };
 const pretzels: productItem = {
   productId: 50003,
-  name: 'Louis’s Homestyle Pretzels',
+  name: "Louis's Homestyle Pretzels",
   price: 6.22,
   image: '/assets/pretzels.jpg',
   stock: 15,
@@ -745,14 +747,14 @@ const cookies: productItem = {
   price: 4.11,
   image: '/assets/cookies.jpg',
   stock: 15,
-  supplier: 'Karen\'s Bakery',
+  supplier: "Karen's Bakery",
   supplierStock: 40,
   portion: 'oz.',
   category: 'snacks',
   description: [
-    'A sweet, sugary treat perfect for every special occasion', 
+    'A sweet treat perfect for any special occasion',
     'Nut-free',
-    'Made locally by Karen’s Bakery', 
+    "Made locally by Karen's Bakery",
   ],
   shippingDetails: {
     dimensions: {
@@ -778,13 +780,28 @@ const cookies: productItem = {
   },
 };
 
-export const dummyProducts: productItem[] = Array(20)
-  .fill({})
-  .map(() => ({ strawberries, greenBeans, bananas, avocado, 
-                 chicken, beef, pork, sausage,
-                 salmon, shrimp, crab, cod,
-                wholeMilk, twoMilk, cheese, yogurt, 
-                chips, chocolate, pretzels, cookies}));
+export const dummyProducts: productItem[] = [
+  strawberries,
+  greenBeans,
+  bananas,
+  avocado,
+  chicken,
+  beef,
+  pork,
+  sausage,
+  salmon,
+  shrimp,
+  crab,
+  cod,
+  wholeMilk,
+  twoMilk,
+  cheese,
+  yogurt,
+  chips,
+  chocolate,
+  pretzels,
+  cookies,
+];
 
 const Products = () => {
   const store = useUserStore();
