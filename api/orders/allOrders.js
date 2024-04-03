@@ -3,7 +3,7 @@ const { setCorsHeaders } = require("../../lib/cors");
 
 module.exports = async (req, res) => {
   setCorsHeaders(req, res);
-  if (req.method === 'GET'){
+  if (req.method === 'POST'){
     await orderController.getAllOrder(req, res);
   } else {
     res.writeHead(404, { 'Content-Type' : 'application/json' });
