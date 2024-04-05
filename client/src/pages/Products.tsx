@@ -909,8 +909,8 @@ const Products = () => {
     fetchProducts();
   }, [setProducts])
 
-  // const products = useProductStore((state) => state.products);
-  const products = dummyProducts;
+  const products = useProductsStore((state) => state.products);
+  // const products = dummyProducts;
   const [orderedProducts, setOrderedProducts] = useState<productItem[]>([]);
 
   useEffect(() => {
