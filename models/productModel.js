@@ -4,7 +4,7 @@ async function getAllProducts() {
     try {
         const [rows] = await pool.query(`
         SELECT p.*,
-        n.servingSize, n.servingsPerContainer, n.calories, n.totalFat, n.cholesterol, n.sodium, n.dietaryFiber, 
+        n.servingSize, n.servingsPerContainer, n.calories, n.totalFat, n.cholesterol, n.sodium, n.totalCarbohydrates, n.dietaryFiber, 
         n.sugars, n.protein, n.potassium, n.vitaminA, n.vitaminC, n.vitaminD, n.vitaminE, n.calcium, n.iron,
         s.dimensionsLength, s.dimensionsWidth, s.dimensionsHeight, s.weight
         FROM product p

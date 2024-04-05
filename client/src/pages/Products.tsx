@@ -4,6 +4,8 @@ import { productItem } from '@/components/store';
 import ProductCard from '@/components/ProductCard.tsx';
 import { useState, useEffect } from 'react';
 import useUserStore from '@/components/store';
+import { useProductsStore } from '@/components/store';
+import axios from 'axios';
 
 import {
   Select,
@@ -801,20 +803,120 @@ export const dummyProducts: productItem[] = [
   cookies,
 ];
 
+interface ProductApiResponse {
+  productID: number;
+  productName: string;
+  productDesc: string;
+  productPrice: string;
+  stockQuantity: number;
+  categoryID: number;
+  image: string;
+  supplier: string;
+  supplierStock: number;
+  portion: string;
+  servingSize: string;
+  servingsPerContainer: string;
+  calories: number;
+  totalFat: string;
+  cholesterol: string;
+  sodium: string;
+  totalCarbohydrates: string;
+  dietaryFiber: string;
+  sugars: string;
+  protein: string;
+  potassium: string;
+  vitaminA: string;
+  vitaminC: string;
+  vitaminD: string;
+  vitaminE: string;
+  calcium: string;
+  iron: string;
+  dimensionsLength: string;
+  dimensionsWidth: string;
+  dimensionsHeight: string;
+  weight: string;
+}
+
+enum Category {
+  produce = 1,
+  meat = 2,
+  fish = 3,
+  dairy = 4,
+  snacks = 5
+}
+
+function mapCategory(categoryID: number): string {
+  return Category[categoryID] || "Unknown Category";
+}
+
 const Products = () => {
   const store = useUserStore();
   let [valueSortOrder, setValueSortOrder] = useState('Price Desc.');
   let [catSortOrder, setCatSortOrder] = useState('All');
   // ! CHANGE TO DATABASE CALL FOR FINAL VERSION!!
+  const { setProducts } = useProductsStore();
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get('https://shastamart-api-deploy.vercel.app/api/products/getAllProducts');
+        const productsData = await response.data;
+        const transformedProducts = productsData.map((product: ProductApiResponse) => ({
+          productId: product.productID,
+          name: product.productName,
+          description: product.productDesc.split('. '),
+          price: parseFloat(product.productPrice),
+          stock: product.stockQuantity,
+          category: mapCategory(product.categoryID),
+          image: product.image,
+          supplier: product.supplier,
+          supplierStock: product.supplierStock,
+          portion: product.portion,
+          nutritionFacts: {
+            servingSize: product.servingSize,
+            servingsPerContainer: product.servingsPerContainer,
+            calories: product.calories,
+            totalFat: product.totalFat,
+            cholesterol: product.cholesterol,
+            sodium: product.sodium,
+            totalCarbohydrates: product.totalCarbohydrates,
+            dietaryFiber: product.dietaryFiber,
+            sugars: product.sugars,
+            protein: product.protein,
+            potassium: product.potassium,
+            vitaminA: product.vitaminA,
+            vitaminC: product.vitaminC,
+            vitaminD: product.vitaminD,
+            vitaminE: product.vitaminE,
+            calcium: product.calcium,
+            iron: product.iron
+          },
+          shippingDetails: {
+            dimensions: {
+              length: product.dimensionsLength,
+              width: product.dimensionsWidth,
+              height: product.dimensionsHeight
+            },
+            weight: product.weight
+          }
+        }));
+        setProducts(transformedProducts);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchProducts();
+  }, [setProducts])
+
+  // const products = useProductStore((state) => state.products);
   const products = dummyProducts;
-  const [orderedProducts, setOrderedProducts] = useState<productItem[]>(
-    sortProducts(dummyProducts)
-  );
+  const [orderedProducts, setOrderedProducts] = useState<productItem[]>([]);
 
   useEffect(() => {
     let sorted = sortProducts(products);
     setOrderedProducts(sorted);
-  }, [catSortOrder, valueSortOrder]);
+  }, [products, catSortOrder, valueSortOrder]);
 
   function sortProducts(p: productItem[]) {
     if (catSortOrder !== 'All') {

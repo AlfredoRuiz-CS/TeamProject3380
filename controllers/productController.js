@@ -25,25 +25,7 @@ const insertProductInfo = async (req, res) => {
         console.log(productInfo);
         console.log(nutritionFacts);
         console.log(shippingDetails);
-        for (const [key, value] of Object.entries(productInfo)) {
-            if (value === undefined) {
-                console.log(`Undefined found in productInfo: ${key}`);
-                // Set to null or handle as needed
-            }
-        }
-        for (const [key, value] of Object.entries(nutritionFacts)) {
-            if (value === undefined) {
-                console.log(`Undefined found in productInfo: ${key}`);
-                // Set to null or handle as needed
-            }
-        }
-        for (const [key, value] of Object.entries(shippingDetails)) {
-            if (value === undefined) {
-                console.log(`Undefined found in productInfo: ${key}`);
-                // Set to null or handle as needed
-            }
-        }
-
+        
         const prodID = await productModel.insertProduct(connection, productInfo);
         const nutritionF = await productModel.insertNutritionFacts(connection, prodID, nutritionFacts);
         const shipDetails = await productModel.insertShippingDetails(connection, prodID, shippingDetails);
