@@ -73,7 +73,9 @@ CREATE TABLE customer(
     state varchar(50),
     zipcode varchar(20),
     password binary(64),
-    active boolean default 1
+    bankID int,
+    active boolean default 1,
+    FOREIGN KEY (bankID) REFERENCES bank(accountID) ON DELETE CASCADE
 );
 -- @block
 CREATE TABLE membership(
@@ -107,7 +109,8 @@ CREATE TABLE purchaseOrder (
     customerEmail varchar(100),
     orderDate date,
     tax decimal(10, 2),
-    totalAmount decimal(10, 2),
+    subTotal decimal(10, 2),
+    orderProcessed boolean DEFAULT FALSE,
     FOREIGN KEY (customerEmail) REFERENCES customer(email) ON DELETE
     SET NULL
 );
@@ -201,5 +204,22 @@ CREATE TABLE totalInventory(
     inventoryQuantity int,
     totalValueChange decimal(10, 2),
     totalQuantityChange int
+);
+-- @block 
+CREATE TABLE cart(
+    cartID int PRIMARY KEY AUTO_INCREMENT,
+    orderID int,
+    productID int,
+    productPrice int,
+    quantity int,
+    FOREIGN KEY (orderID) REFERENCES purchaseOrder(orderID) ON DELETE CASCADE,
+    FOREIGN KEY (productID) REFERENCES product(productID) ON DELETE SET NULL
+);
+-- @block 
+CREATE TABLE bank(
+    accountID int PRIMARY KEY AUTO_INCREMENT,
+    customerEmail varchar(100),
+    balance int, 
+    FOREIGN KEY (customerEmail) REFERENCES customer(customerEmail) ON DELETE CASCADE
 );
 

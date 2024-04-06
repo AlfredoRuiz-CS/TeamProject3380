@@ -41,11 +41,11 @@ const createOrder = async (req, res) => {
 };
 
 //get a specific order with orderID
-const getOrderInfo = async (req,res) => {
+const findOrder = async (req,res) => {
   try{
     const body = await getRequestBody(req);
     const {orderID} = body;
-    const order = await orderModel.getOrderInfo(orderID);
+    const order = await orderModel.findAnOrder(orderID);
     if (!order){
       res.writeHead(200, { 'Content-Type': 'text/plain' });
       res.end("none");
@@ -81,50 +81,103 @@ const getAllOrder = async (req,res) => {
     }
 }
 
-//add items to existing order
-const addItemToOrder = async (req,res) => {
+const addToCart = async(req,res)=>{
   try{
     const body = await getRequestBody(req);
-    const {orderID, items} = body;
-    const addedItems = await orderModel.addItem(orderID,items);
-    if(!addedItems){
-      res.writeHead(200,{'Content-Type': 'application/json'});
-      res.end("none");
-      return; //exits if there is no added item
+    const {customerEmail,productID,productPrice,productName,productQuantity} = body;
+    const currTime = new Date();
+    const formatDigit = (x) => x.toString().length === 1 ? '0' + x.toString() : x.toString();
+    let orderDate = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate())}`;
+    const toCart = await orderModel.insertToCart(customerEmail,orderDate,productID,productPrice,productQuantity);
+    if(!toCart){
+      res.writeHead(500,{'Content-Type':"application/json"});
+      res.end(JSON.stringify({"message":`Failed to add item to cart for ${customerEmail}`}));
     }
-    //else show the number of added items
     res.writeHead(200,{'Content-Type':'application/json'});
-    res.end(JSON.stringify(addedItems));
+    res.end(JSON.stringify({"message":`Successfully added ${productName} to ${customerEmail} cart`,
+                            "data": toCart}));
   } catch(error){
-    res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: error.message }));
+    res.writeHead(500,{'Content-Type':'application/json'});
+    res.end(JSON.stringify({"error":error.message}));
   }
 }
 
-//add items to existing order
-const removeItemFromOrder = async (req,res) => {
+const removeFromCart = async(req,res)=>{
   try{
     const body = await getRequestBody(req);
-    const {orderID, items} = body;
-    const removedItems = await orderModel.addItem(orderID,items);
-    if(!removedItems){
-      res.writeHead(200,{'Content-Type': 'application/json'});
-      res.end("none");
-      return; //exits if there is no removed item
+    const{customerEmail,productID,productPrice,productName,productQuantity} = body;
+    const fromCart = await orderModel.deleteFromCart(customerEmail,productID,productPrice,productQuantity);
+    if(!fromCart){
+      res.writeHead(500,{'Content-Type':"application/json"});
+      res.end(JSON.stringify({"message":`Failed to remove item from cart for ${customerEmail}`}));
     }
-    //else show the number of added items
     res.writeHead(200,{'Content-Type':'application/json'});
-    res.end(JSON.stringify(removedItems));
+    res.end(JSON.stringify({"message":`Successfully remove ${productName} from ${customerEmail} cart`,
+                            "data": fromCart}));
   } catch(error){
-    res.writeHead(400, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: error.message }));
+    res.writeHead(500,{'Content-Type':'application/json'});
+    res.end(JSON.stringify({"error":error.message}));
   }
 }
 
+const getUnprocessedCart = async(req,res)=>{
+  try{
+    const body = await getRequestBody(req);
+    const {customerEmail}=body;
+    const queryCart = await orderModel.queryCurrentCart(customerEmail);
+    
+    res.writeHead(200,{'Content-Type':'application/json'});
+    res.end(JSON.stringify({"message":`Successfully retrieve a cart for ${customerEmail}`,
+                            "data": queryCart}));
+  } catch(error){
+    res.writeHead(500,{'Content-Type':'application/json'});
+    res.end(JSON.stringify({"error":error.message}));
+  }
+}
+
+const getUnprocessedOrder = async(req,res)=>{
+  try{
+    const body = await getRequestBody(req);
+    const {customerEmail} = body;
+    const queryOrder = await orderModel.queryUnprocessedOrder(customerEmail);
+
+    es.writeHead(200,{'Content-Type':'application/json'});
+    res.end(JSON.stringify({"message":`Successfully retrieve an unprocessed order for ${customerEmail}`,
+                            "data": queryOrder}));
+  } catch(error){
+    res.writeHead(500,{'Content-Type':'application/json'});
+    res.end(JSON.stringify({"error":error.message}));
+  }
+}
+
+const processOrder = async(req,res)=>{
+  try{
+    const body = await getRequestBody(req);
+    const {customerEmail} = body;
+    const currTime = new Date();
+    const formatDigit = (x) => x.toString().length === 1 ? '0' + x.toString() : x.toString();
+    let orderDate = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate())}`;
+    const processing = await orderModel.updateBankBanlance(customerEmail,orderDate);
+
+    if(!processing){
+      res.writeHead(500,{'Content-Type':"application/json"});
+      res.end(JSON.stringify({"message":`Failed to process order from ${customerEmail}'s cart`}));
+    }
+    res.writeHead(200,{'Content-Type':'application/json'});
+    res.end(JSON.stringify({"message":`Successfully processing order from ${customerEmail}' cart`,
+                            "data": processing}));
+  } catch(error){
+    res.writeHead(500,{'Content-Type':'application/json'});
+    res.end(JSON.stringify({"error":error.message}));
+  }
+}
 module.exports={
   createOrder,
-  getOrderInfo,
+  findOrder,
   getAllOrder,
-  addItemToOrder,
-  removeItemFromOrder
+  addToCart,
+  removeFromCart,
+  getUnprocessedCart,
+  getUnprocessedOrder,
+  processOrder
 }
