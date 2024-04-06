@@ -145,7 +145,7 @@ const updateUserEmail = async (req, res) => {
     const emailQuery = await userModel.updateUserEmail(currentEmail, newEmail);
 
     res.writeHead(201, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ "message": `Successfully updated email - ${newEmail}` }));
+    res.end(JSON.stringify({ "message": `Successfully updated email - ${newEmail}`, email: newEmail }));
   } catch (error){
     res.writeHead(500, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ "status": "Failed to update user email", "error" : error.message }));
@@ -175,7 +175,7 @@ const updateUserPhone = async (req, res) => {
     const updatePhone = await userModel.updateUserPhone(email, newPhone);
 
     res.writeHead(201, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ "message": `Successfully updated phone for - ${email}` }));
+    res.end(JSON.stringify({ "message": `Successfully updated phone for - ${email}`, phoneNumber: newPhone}));
 
   } catch (error) {
     res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -191,7 +191,7 @@ const updateUserAddress = async (req, res) => {
     const updateUserAddress = await userModel.updateUserAddress(email, streetAddress, city, state, zipcode);
 
     res.writeHead(201, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ "message": `Successfully updated phone for - ${email}` }));
+    res.end(JSON.stringify({ "message": `Successfully updated phone for - ${email}`, streetAddress: streetAddress, city: city, state: state, zipcode: zipcode }));
 
   } catch (error) {
     res.writeHead(500, { 'Content-Type': 'application/json' });
@@ -208,7 +208,7 @@ const updateUserName = async (req, res) => {
     const updateUserName = await userModel.updateUserName(email, fName, lName);
 
     res.writeHead(201, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ "message": `Successfully updated name for - ${email}` }));
+    res.end(JSON.stringify({ "message": `Successfully updated name for - ${email}`, fName: fName, lName: lName }));
 
   } catch (error){
     res.writeHead(500, { 'Content-Type': 'application/json' });
