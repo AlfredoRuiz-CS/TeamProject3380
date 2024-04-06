@@ -372,7 +372,12 @@ const Profile = () => {
                     Change Email
                   </Button>
                 </form>
-                <form className="flex w-1/2 flex-col pt-5">
+                <form className="flex w-1/2 flex-col pt-5" onSubmit={(event) =>{
+                        event.preventDefault();
+                        const form = event.target as HTMLFormElement;
+                        const password = form.elements.namedItem('password') as HTMLInputElement;
+                        handlePhoneChange(password.value);
+                    }}>
                   <h3 className="mt-2 pl-4 text-lg font-semibold text-white">
                     Password
                   </h3>
