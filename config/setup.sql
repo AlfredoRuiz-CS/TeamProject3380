@@ -1,55 +1,23 @@
--- @block
--- Disable foreign key checks
-SET FOREIGN_KEY_CHECKS = 0;
--- Drop tables
-DROP TABLE IF EXISTS shipping,
-refund,
-payment,
-orderLine,
-purchaseOrder,
-mbshipPayment,
-membership,
-customer,
-employee,
-product,
-category,
-paymentInfo,
-supplier,
-inventory,
-totalInventory;
--- DROP TABLE IF EXISTS category;
--- DROP TABLE IF EXISTS product;
--- DROP TABLE IF EXISTS employee;
--- DROP TABLE IF EXISTS customer;
--- DROP TABLE IF EXISTS membership;
--- DROP TABLE IF EXISTS mbshipPayment;
--- DROP TABLE IF EXISTS purchaseOrder;
--- DROP TABLE IF EXISTS payment;
--- DROP TABLE IF EXISTS orderLine;
--- DROP TABLE IF EXISTS shipping;
--- DROP TABLE IF EXISTS refund;
--- DROP TABLE IF EXISTS supplier;
--- DROP TABLE IF EXISTS inventory;
--- DROP TABLE IF EXISTS totalInventory;
--- Enable foreign key checks
-SET FOREIGN_KEY_CHECKS = 1;
--- @block
 CREATE TABLE category(
     categoryID int PRIMARY KEY AUTO_INCREMENT,
     categName varchar(50)
 );
--- @block
+
 CREATE TABLE product(
     productID int PRIMARY KEY AUTO_INCREMENT,
-    productName varchar(50),
-    productDesc varchar(100),
+    productName varchar(255),
+    productDesc text,
     productPrice decimal(10, 2),
     stockQuantity int,
     categoryID int,
+    image varchar(255),
+	supplier varchar(255),
+	supplierStock int,
+	portion varchar(50),
     FOREIGN KEY (categoryID) REFERENCES category(categoryID) ON DELETE
     SET NULL
 );
--- @block
+
 CREATE TABLE employee(
     email varchar(100) PRIMARY KEY,
     fname varchar(100) NOT NULL,
@@ -62,7 +30,7 @@ CREATE TABLE employee(
     state varchar(50),
     zipcode varchar(20)
 );
--- @block
+
 CREATE TABLE customer(
     email varchar(100) PRIMARY KEY,
     fName varchar(100) NOT NULL,
@@ -77,7 +45,7 @@ CREATE TABLE customer(
     active boolean default 1,
     FOREIGN KEY (bankID) REFERENCES bank(accountID) ON DELETE CASCADE
 );
--- @block
+
 CREATE TABLE membership(
     membershipID int PRIMARY KEY AUTO_INCREMENT,
     customerEmail varchar(100),
@@ -88,7 +56,7 @@ CREATE TABLE membership(
     renewalDate date,
     FOREIGN KEY (customerEmail) REFERENCES customer(email) ON DELETE CASCADE
 );
--- @block
+
 CREATE TABLE mbshipPayment(
     mbPaymentID int PRIMARY KEY AUTO_INCREMENT,
     membershipID int,
@@ -103,7 +71,7 @@ CREATE TABLE mbshipPayment(
     FOREIGN KEY (membershipID) REFERENCES membership(membershipID) ON DELETE
     SET NULL
 );
--- @block
+
 CREATE TABLE purchaseOrder (
     orderID int PRIMARY KEY AUTO_INCREMENT,
     customerEmail varchar(100),
@@ -114,7 +82,7 @@ CREATE TABLE purchaseOrder (
     FOREIGN KEY (customerEmail) REFERENCES customer(email) ON DELETE
     SET NULL
 );
--- @block
+
 CREATE TABLE payment(
     paymentID int PRIMARY KEY AUTO_INCREMENT,
     orderID int,
@@ -126,7 +94,7 @@ CREATE TABLE payment(
     FOREIGN KEY (orderID) REFERENCES purchaseOrder(orderID) ON DELETE
     SET NULL
 );
---@block 
+
 CREATE TABLE paymentInfo(
     customerEmail varchar(100) PRIMARY KEY,
     cardtype varchar(50),
@@ -134,7 +102,7 @@ CREATE TABLE paymentInfo(
     cvv INT,
     expiration DATE
 );
--- @block
+
 CREATE TABLE orderLine(
     orderLineID int PRIMARY KEY AUTO_INCREMENT,
     orderID int,
@@ -147,7 +115,7 @@ CREATE TABLE orderLine(
     FOREIGN KEY (productID) REFERENCES product(productID) ON DELETE
     SET NULL ON UPDATE CASCADE
 );
--- @block
+
 CREATE TABLE shipping(
     shippingID int PRIMARY KEY AUTO_INCREMENT,
     membershipID int,
@@ -165,7 +133,7 @@ CREATE TABLE shipping(
         FOREIGN KEY (orderID) REFERENCES purchaseOrder(orderID) ON DELETE CASCADE,
         FOREIGN KEY (paymentID) REFERENCES payment(paymentID) ON DELETE CASCADE
 );
--- @block
+
 CREATE TABLE refund(
     refundID int PRIMARY KEY AUTO_INCREMENT,
     paymentID int,
@@ -175,7 +143,7 @@ CREATE TABLE refund(
     refundStatus varchar(50),
     FOREIGN KEY (paymentID) REFERENCES payment(paymentID) ON DELETE CASCADE
 );
--- @block
+
 CREATE TABLE supplier(
     supplierID int PRIMARY KEY AUTO_INCREMENT,
     name varchar(100) NOT NULL,
@@ -185,7 +153,7 @@ CREATE TABLE supplier(
     state varchar(50),
     zipcode varchar(20)
 );
--- @block
+
 CREATE TABLE inventory(
     inventoryID int PRIMARY KEY AUTO_INCREMENT,
     productID int,
@@ -197,7 +165,7 @@ CREATE TABLE inventory(
     FOREIGN KEY (supplierID) REFERENCES supplier(supplierID) ON DELETE
     SET NULL ON UPDATE CASCADE
 );
--- @block
+
 CREATE TABLE totalInventory(
     totalInventoryID int PRIMARY KEY AUTO_INCREMENT,
     inventoryValue decimal(10, 2),
@@ -223,3 +191,41 @@ CREATE TABLE bank(
     FOREIGN KEY (customerEmail) REFERENCES customer(customerEmail) ON DELETE CASCADE
 );
 
+CREATE TABLE notifications (
+    notificationID int PRIMARY KEY AUTO_INCREMENT,
+    message varchar(255),
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    employeeEmail varchar(100),
+    FOREIGN KEY (employeeEmail) REFERENCES employee(email) ON DELETE CASCADE
+);
+
+CREATE TABLE nutritionFacts(
+    productID int,
+    servingSize varchar(100),
+    servingsPerContainer varchar(100),
+    calories int,
+    totalFat varchar(100),
+    cholesterol varchar(100),
+    sodium varchar(100),
+    totalCarbohydrates varchar(100),
+    dietaryFiber varchar(100),
+    sugars varchar(100),
+    protein varchar(100),
+    potassium varchar(100),
+    vitaminA varchar(100),
+    vitaminC varchar(100),
+    vitaminD varchar(100),
+    vitaminE varchar(100),
+    calcium varchar(100),
+    iron varchar(100),
+    FOREIGN KEY (productID) REFERENCES product(productID) ON DELETE CASCADE
+);
+
+CREATE TABLE shippingDetails(
+    productID int,
+    dimensionsLength varchar(100),
+    dimensionsWidth varchar(100),
+    dimensionsHeight varchar(100),
+    weight varchar(100),
+    FOREIGN KEY (productID) REFERENCES product(productID) ON DELETE CASCADE
+);
