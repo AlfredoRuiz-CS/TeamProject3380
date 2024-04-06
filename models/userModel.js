@@ -221,7 +221,7 @@ async function updateUserPassword(email, oldPassword, newPassword){
 
 async function updateUserPhone(email, newPhone){
   try{
-    const [rows] = pool.query(`
+    const [rows] = await pool.query(`
       UPDATE customer
       SET phoneNumber = ?
       where email = ?`, [newPhone, email]);
