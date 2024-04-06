@@ -140,14 +140,16 @@ const updateUserPaymentInfo = async (req, res) => {
 const updateUserEmail = async (req, res) => {
   try {
     const body = await getRequestBody(req);
-    const { currentEmail, newEmail } = body;
+    const { currentEmail, email: newEmail } = body;
 
     const emailQuery = await userModel.updateUserEmail(currentEmail, newEmail);
 
     res.writeHead(201, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ "message": `Successfully updated email - ${newEmail}` }));
+    res.end(JSON.stringify({ "message": `Successfully updated email - ${newEmail}`, email: newEmail }));
   } catch (error){
-    res.writeHead(500, { 'Content-Type': 'application/json' });
+    if (!res.headersSent) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+    }
     res.end(JSON.stringify({ "status": "Failed to update user email", "error" : error.message }));
   }
 };
@@ -155,46 +157,52 @@ const updateUserEmail = async (req, res) => {
 const updateUserPassword = async (req, res) => {
   try{
     const body = await getRequestBody(req);
-    const { email, oldPassword, newPassword } = body;
+    const { currentEmail: email, oldPassword, newPassword } = body;
 
     const updatePassword = await userModel.updateUserPassword(email, oldPassword, newPassword);
     
     res.writeHead(201, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ "message": `Successfully updated password for - ${email}` }));
   } catch (error){
-    res.writeHead(500, { 'Content-Type': 'application/json' });
+    if (!res.headersSent) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+    }
     res.end(JSON.stringify({ "status": "Failed to update password", "error" : error.message }));
   }
 }
 
 const updateUserPhone = async (req, res) => {
   try {
-    const body = getRequestBody(req);
-    const { email, newPhone } = body;
+    const body = await getRequestBody(req);
+    const { currentEmail: email , phone: newPhone } = body;
     
     const updatePhone = await userModel.updateUserPhone(email, newPhone);
 
     res.writeHead(201, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ "message": `Successfully updated phone for - ${email}` }));
+    res.end(JSON.stringify({ "message": `Successfully updated phone for - ${email}`, phoneNumber: newPhone}));
 
   } catch (error) {
-    res.writeHead(500, { 'Content-Type': 'application/json' });
+    if (!res.headersSent) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+    }
     res.end(JSON.stringify({ "status": "Failed to update phone number", "error" : error.message }));
   }
 }
 
 const updateUserAddress = async (req, res) => {
   try {
-    const body = getRequestBody(req);
-    const { email, streetAddress, city, state, zipcode } = body;
+    const body = await getRequestBody(req);
+    const { currentEmail: email, street: streetAddress, city, state, zip: zipcode } = body;
 
     const updateUserAddress = await userModel.updateUserAddress(email, streetAddress, city, state, zipcode);
 
     res.writeHead(201, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ "message": `Successfully updated phone for - ${email}` }));
+    res.end(JSON.stringify({ "message": `Successfully updated phone for - ${email}`, streetAddress: streetAddress, city: city, state: state, zipcode: zipcode }));
 
   } catch (error) {
-    res.writeHead(500, { 'Content-Type': 'application/json' });
+    if (!res.headersSent) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+    }
     res.end(JSON.stringify({ "status": "Failed to update address", "error" : error.message }));
   }
 
@@ -202,16 +210,18 @@ const updateUserAddress = async (req, res) => {
 
 const updateUserName = async (req, res) => {
   try {
-    const body = getRequestBody(req);
-    const { email, fName, lName } = body;
+    const body = await getRequestBody(req);
+    const { currentEmail: email, firstName: fName, lastName: lName } = body;
 
     const updateUserName = await userModel.updateUserName(email, fName, lName);
 
     res.writeHead(201, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ "message": `Successfully updated name for - ${email}` }));
+    res.end(JSON.stringify({ "message": `Successfully updated name for - ${email}`, fName: fName, lName: lName }));
 
   } catch (error){
-    res.writeHead(500, { 'Content-Type': 'application/json' });
+    if (!res.headersSent) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+    }
     res.end(JSON.stringify({ "status": "Failed to update name", "error" : error.message }));
   }
 }

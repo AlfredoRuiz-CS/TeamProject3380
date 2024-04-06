@@ -44,6 +44,23 @@ export type productItem = {
   portion: 'lb.' | 'oz.' | 'item' | 'gal.';
 };
 
+type ProductState = {
+  products: productItem[];
+  setProducts: (products: productItem[]) => void;
+};
+
+const productsStore: StateCreator<ProductState, [['zustand/persist', unknown]]> = (set) => ({
+  products: [],
+  setProducts: (products: productItem[]) => set({ products }),
+});
+
+export const useProductsStore = create(
+  persist(productsStore, {
+    name: 'products-store',
+    storage: createJSONStorage(() => localStorage),
+  })
+);
+
 type UserState = {
   // States for user login
   loggedIn: boolean;

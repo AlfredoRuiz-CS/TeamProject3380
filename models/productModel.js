@@ -3,8 +3,13 @@ const { pool } = require('../config/db');
 async function getAllProducts() {
     try {
         const [rows] = await pool.query(`
-        SELECT *
-        FROM product`);
+        SELECT p.*,
+        n.servingSize, n.servingsPerContainer, n.calories, n.totalFat, n.cholesterol, n.sodium, n.totalCarbohydrates, n.dietaryFiber, 
+        n.sugars, n.protein, n.potassium, n.vitaminA, n.vitaminC, n.vitaminD, n.vitaminE, n.calcium, n.iron,
+        s.dimensionsLength, s.dimensionsWidth, s.dimensionsHeight, s.weight
+        FROM product p
+        LEFT JOIN nutritionFacts n on p.productID = n.productID
+        LEFT JOIN shippingDetails s on p.productID = s.productID`);
 
         return rows;
 
@@ -43,7 +48,7 @@ async function insertProduct(connection, productInfo){
 async function insertNutritionFacts(connection, productID, nutritionFacts){
     try {
         const [result] = await connection.execute(`
-        INSERT INTO nutritionFacts (productID, servingSize, servingsPerContainer, calories, totalFat, cholesterol, sodium, totalCarbohydrate, dietaryFiber, sugars, protein, potassium, vitaminA, vitaminC, vitaminD, vitaminE, calcium, iron)
+        INSERT INTO nutritionFacts (productID, servingSize, servingsPerContainer, calories, totalFat, cholesterol, sodium, totalCarbohydrates, dietaryFiber, sugars, protein, potassium, vitaminA, vitaminC, vitaminD, vitaminE, calcium, iron)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `, [
             productID,
@@ -53,9 +58,9 @@ async function insertNutritionFacts(connection, productID, nutritionFacts){
             nutritionFacts.totalFat,
             nutritionFacts.cholesterol,
             nutritionFacts.sodium,
-            nutritionFacts.totalCarbohydrate,
+            nutritionFacts.totalCarbohydrates,
             nutritionFacts.dietaryFiber,
-            nutritionFacts.sugar,
+            nutritionFacts.sugars,
             nutritionFacts.protein,
             nutritionFacts.potassium,
             nutritionFacts.vitaminA,

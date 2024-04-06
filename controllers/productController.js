@@ -20,8 +20,12 @@ const insertProductInfo = async (req, res) => {
         await connection.beginTransaction();
 
         const body = await getRequestBody(req);
+        console.log(body);
         const { productInfo, nutritionFacts, shippingDetails } = body;
-
+        console.log(productInfo);
+        console.log(nutritionFacts);
+        console.log(shippingDetails);
+        
         const prodID = await productModel.insertProduct(connection, productInfo);
         const nutritionF = await productModel.insertNutritionFacts(connection, prodID, nutritionFacts);
         const shipDetails = await productModel.insertShippingDetails(connection, prodID, shippingDetails);
