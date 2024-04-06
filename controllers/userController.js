@@ -140,7 +140,7 @@ const updateUserPaymentInfo = async (req, res) => {
 const updateUserEmail = async (req, res) => {
   try {
     const body = await getRequestBody(req);
-    const { currentEmail, newEmail } = body;
+    const { currentEmail, email: newEmail } = body;
 
     const emailQuery = await userModel.updateUserEmail(currentEmail, newEmail);
 
@@ -155,7 +155,7 @@ const updateUserEmail = async (req, res) => {
 const updateUserPassword = async (req, res) => {
   try{
     const body = await getRequestBody(req);
-    const { email, oldPassword, newPassword } = body;
+    const { currentEmail: email, oldPassword, newPassword } = body;
 
     const updatePassword = await userModel.updateUserPassword(email, oldPassword, newPassword);
     
@@ -170,7 +170,7 @@ const updateUserPassword = async (req, res) => {
 const updateUserPhone = async (req, res) => {
   try {
     const body = await getRequestBody(req);
-    const { email, newPhone } = body;
+    const { currentEmail: email , phone: newPhone } = body;
     
     const updatePhone = await userModel.updateUserPhone(email, newPhone);
 
@@ -186,7 +186,7 @@ const updateUserPhone = async (req, res) => {
 const updateUserAddress = async (req, res) => {
   try {
     const body = await getRequestBody(req);
-    const { email, streetAddress, city, state, zipcode } = body;
+    const { currentEmail: email, street: streetAddress, city, state, zip: zipcode } = body;
 
     const updateUserAddress = await userModel.updateUserAddress(email, streetAddress, city, state, zipcode);
 
@@ -203,7 +203,7 @@ const updateUserAddress = async (req, res) => {
 const updateUserName = async (req, res) => {
   try {
     const body = await getRequestBody(req);
-    const { email, fName, lName } = body;
+    const { currentEmail: email, firstName: fName, lastName: lName } = body;
 
     const updateUserName = await userModel.updateUserName(email, fName, lName);
 
