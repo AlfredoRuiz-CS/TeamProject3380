@@ -118,6 +118,7 @@ const Profile = () => {
     const endpoint = endpointMap[section];
     if (endpoint){
       data.currentEmail = store.email;
+      console.log(data);
       axios.post(endpoint, data)
       .then(response => {
         console.log(response.data);
