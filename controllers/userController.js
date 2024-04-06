@@ -147,7 +147,9 @@ const updateUserEmail = async (req, res) => {
     res.writeHead(201, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ "message": `Successfully updated email - ${newEmail}`, email: newEmail }));
   } catch (error){
-    res.writeHead(500, { 'Content-Type': 'application/json' });
+    if (!res.headersSent) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+    }
     res.end(JSON.stringify({ "status": "Failed to update user email", "error" : error.message }));
   }
 };
@@ -162,7 +164,9 @@ const updateUserPassword = async (req, res) => {
     res.writeHead(201, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ "message": `Successfully updated password for - ${email}` }));
   } catch (error){
-    res.writeHead(500, { 'Content-Type': 'application/json' });
+    if (!res.headersSent) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+    }
     res.end(JSON.stringify({ "status": "Failed to update password", "error" : error.message }));
   }
 }
@@ -178,7 +182,9 @@ const updateUserPhone = async (req, res) => {
     res.end(JSON.stringify({ "message": `Successfully updated phone for - ${email}`, phoneNumber: newPhone}));
 
   } catch (error) {
-    res.writeHead(500, { 'Content-Type': 'application/json' });
+    if (!res.headersSent) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+    }
     res.end(JSON.stringify({ "status": "Failed to update phone number", "error" : error.message }));
   }
 }
@@ -194,7 +200,9 @@ const updateUserAddress = async (req, res) => {
     res.end(JSON.stringify({ "message": `Successfully updated phone for - ${email}`, streetAddress: streetAddress, city: city, state: state, zipcode: zipcode }));
 
   } catch (error) {
-    res.writeHead(500, { 'Content-Type': 'application/json' });
+    if (!res.headersSent) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+    }
     res.end(JSON.stringify({ "status": "Failed to update address", "error" : error.message }));
   }
 
@@ -211,7 +219,9 @@ const updateUserName = async (req, res) => {
     res.end(JSON.stringify({ "message": `Successfully updated name for - ${email}`, fName: fName, lName: lName }));
 
   } catch (error){
-    res.writeHead(500, { 'Content-Type': 'application/json' });
+    if (!res.headersSent) {
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+    }
     res.end(JSON.stringify({ "status": "Failed to update name", "error" : error.message }));
   }
 }
