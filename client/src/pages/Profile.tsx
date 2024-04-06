@@ -25,11 +25,12 @@ type ProfileSection =
 | 'address';
 
 type ProfileData = 
-| { firstName: string; lastName: string }
-| { email: string }
-| { password: string }
-| { phone: string }
+| { currentEmail?: string; firstName: string; lastName: string; }
+| { currentEmail?: string; email: string }
+| { currentEmail?: string; password: string }
+| { currentEmail?: string; phone: string }
 | {
+    currentEmail?: string;
     street: string;
     city: string;
     state: string;
@@ -116,6 +117,7 @@ const Profile = () => {
 
     const endpoint = endpointMap[section];
     if (endpoint){
+      data.currentEmail = store.email;
       axios.post(endpoint, data)
       .then(response => {
         console.log(response.data);
