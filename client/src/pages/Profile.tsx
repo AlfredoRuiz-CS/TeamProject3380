@@ -376,7 +376,7 @@ const Profile = () => {
                         event.preventDefault();
                         const form = event.target as HTMLFormElement;
                         const password = form.elements.namedItem('password') as HTMLInputElement;
-                        handlePhoneChange(password.value);
+                        handlePasswordChange(password.value);
                     }}>
                   <h3 className="mt-2 pl-4 text-lg font-semibold text-white">
                     Password
