@@ -152,7 +152,7 @@ const Cart = () => {
               </div>
             </div>
             {/* My List Section */}
-            <div className="mt-10 h-[20rem] w-[30rem] rounded-lg bg-cardwhite ">
+            <div className="mb-10 mt-10 h-[20rem] w-[30rem] rounded-lg bg-cardwhite">
               <p className="pt-5 text-center text-3xl text-darkblue">My List</p>
               <div className="flex flex-row gap-5 pl-12">
                 <div className="flex flex-col gap-10">
