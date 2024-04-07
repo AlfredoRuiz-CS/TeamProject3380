@@ -15,6 +15,7 @@ import { productItem } from '@/components/store';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useProductsStore } from '@/components/store';
+import useUserStore from '@/components/store';
 // interface productProps {
 //   product: productItem;
 // }
@@ -61,7 +62,7 @@ import { useProductsStore } from '@/components/store';
 // };
 
 const SingleProduct = () => {
-  // ! REMOVE DUMMYPRODUCT FOR FINAL VERSION !!
+  const user = useUserStore();
 
   const { productId } = useParams();
   const [product, setProduct] = useState<productItem | null>(null);
@@ -125,16 +126,18 @@ const SingleProduct = () => {
     return Math.round((value / dailyValue) * 100) + '%';
   };
   function handleAddToList() {
-    if (product){
+    if (product && user.loggedIn){
       console.log('Added ', quantity, ' ', product.name, 'to List');
       listConfirmToast();
+      user.addToList(product);
     }
   }
 
   function handleAddToCart() {
-    if (product){
+    if (product && user.loggedIn){
       console.log('Added ', quantity, ' ', product.name, 'to Cart');
       cartConfirmToast();
+      user.addToCart(product, quantity);
     }
   }
 
@@ -145,11 +148,13 @@ const SingleProduct = () => {
 
         <div className="flex flex-col items-center gap-[5px]">
           <div className="flex items-center gap-5">
-            { product && (<img
-              className="h-[22rem] w-[22rem] rounded-[10px] object-cover pr-5"
-              src={`../${product.image.replace(/\.(jpg|jpeg)$/, '.png')}`}
-              alt={product.name}
-            /> ) }
+            <div className="h-[22rem] w-[22rem] overflow-hidden rounded-[10px]">
+              { product && (<img
+                className="h-full w-full object-contain"
+                src={`../${product.image.replace(/\.(jpg|jpeg)$/, '.png')}`}
+                alt={product.name}
+              /> ) }
+            </div>
             { product && (
             <div className="flex flex-col items-start gap-2 font-jua">
               <div className="text-[32px]">{product.name}</div>
