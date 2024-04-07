@@ -145,11 +145,11 @@ const SingleProduct = () => {
 
         <div className="flex flex-col items-center gap-[5px]">
           <div className="flex items-center gap-5">
-            <img
+            { product && (<img
               className="h-[22rem] w-[22rem] rounded-[10px] object-cover pr-5"
-              src="../assets/strawberry.png"
-              alt="Strawberry"
-            />
+              src={product.image}
+              alt={product.name}
+            /> ) }
             { product && (
             <div className="flex flex-col items-start gap-2 font-jua">
               <div className="text-[32px]">{product.name}</div>
