@@ -1,6 +1,6 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
@@ -14,6 +14,7 @@ import {
 import { productItem } from '@/components/store';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useProductsStore } from '@/components/store';
 // interface productProps {
 //   product: productItem;
 // }
@@ -61,24 +62,46 @@ const dummyProduct: productItem = {
 
 const SingleProduct = () => {
   // ! REMOVE DUMMYPRODUCT FOR FINAL VERSION !!
-  const product = dummyProduct;
-  const test = useParams();
 
-  console.log(test);
+  const { productId } = useParams();
+  const [product, setProduct] = useState<productItem | null>(null);
+
+  const products = useProductsStore(state => state.products);
+
+  useEffect(() => {
+    if(productId){
+
+      const productDetails = products.find(p => p.productId === parseInt(productId));
+
+      if (productDetails) {
+        setProduct(productDetails);
+      } else {
+        console.log(`Product with ID ${productId} not found`);
+      }
+    }
+  }, [productId, products])
+
   // Funcitonality to toggle the quantity dropdown
   const [QuantityEnabled, setQuantityEnabled] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
-  const cartConfirmToast = () =>
-    toast.success('Added ' + quantity + ' ' + product.name + ' to Cart!', {
-      position: 'bottom-right',
-      className: 'font-bold text-black',
-    });
-  const listConfirmToast = () =>
-    toast.success('Added ' + quantity + ' ' + product.name + ' to List!', {
-      position: 'bottom-right',
-      className: 'font-bold text-black',
-    });
+  const cartConfirmToast = () => {
+    if (product) {
+      toast.success('Added ' + quantity + ' ' + product.name + ' to Cart!', {
+        position: 'bottom-right',
+        className: 'font-bold text-black',
+      });
+    }
+  }
+  
+  const listConfirmToast = () => {
+      if (product) {
+      toast.success('Added ' + quantity + ' ' + product.name + ' to List!', {
+        position: 'bottom-right',
+        className: 'font-bold text-black',
+      }
+    )};
+  }
 
   function quantityDropdownToggle() {
     setQuantityEnabled(!QuantityEnabled);
@@ -102,13 +125,17 @@ const SingleProduct = () => {
     return Math.round((value / dailyValue) * 100) + '%';
   };
   function handleAddToList() {
-    console.log('Added ', quantity, ' ', product.name, 'to List');
-    listConfirmToast();
+    if (product){
+      console.log('Added ', quantity, ' ', product.name, 'to List');
+      listConfirmToast();
+    }
   }
 
   function handleAddToCart() {
-    console.log('Added ', quantity, ' ', product.name, 'to Cart');
-    cartConfirmToast();
+    if (product){
+      console.log('Added ', quantity, ' ', product.name, 'to Cart');
+      cartConfirmToast();
+    }
   }
 
   return (
@@ -123,6 +150,7 @@ const SingleProduct = () => {
               src="../assets/strawberry.png"
               alt="Strawberry"
             />
+            { product && (
             <div className="flex flex-col items-start gap-2 font-jua">
               <div className="text-[32px]">{product.name}</div>
               <div className="text-[32px]">
@@ -179,9 +207,11 @@ const SingleProduct = () => {
                 Add to cart
               </button>
               <ToastContainer />
-            </div>
-          </div>
-          <div className=" w-full max-w-[1086px] px-4">
+            </div> 
+            ) }
+          </div> 
+
+          { product && (<div className=" w-full max-w-[1086px] px-4">
             {/* Description of Product */}
             <div className="font-jua text-[32px]">Description</div>
             <ul className="font-junge mb-2 ml-6 list-disc text-[24px]">
@@ -190,9 +220,10 @@ const SingleProduct = () => {
               ))}
             </ul>
           </div>
+          ) }
 
           {/* Nutrition Facts Table */}
-          <div className="mt-10 w-full max-w-[786px] rounded-[10px] bg-stone-200 p-5 font-jua text-black">
+          { product && ( <div className="mt-10 w-full max-w-[786px] rounded-[10px] bg-stone-200 p-5 font-jua text-black">
             <div className="my-10 text-[32px]">Nutrition Facts</div>
             {product.nutritionFacts?.servingsPerContainer ? (
               <div className="text-[24px]">
@@ -349,11 +380,12 @@ const SingleProduct = () => {
               of food contributes to a daily diet. 2,000 calories a day is used
               for general nutrition advice.
             </div>
-          </div>
+          </div> ) }
+
           <div className="mt-10 font-jua text-[32px] font-normal">
             Shipping & Returns
           </div>
-          <div className="mt-3 flex w-full max-w-[1086px] flex-col gap-10 md:flex-row">
+          { product && ( <div className="mt-3 flex w-full max-w-[1086px] flex-col gap-10 md:flex-row">
             <div className="flex-1 rounded-[10px] bg-stone-200 p-5">
               <div className="mb-3 font-jua text-[28px]">Shipping details</div>
               <div className="font-junge text-xl">
@@ -376,7 +408,7 @@ const SingleProduct = () => {
                 original packaging.
               </div>
             </div>
-          </div>
+          </div> ) }
         </div>
       </div>
       <Footer />
