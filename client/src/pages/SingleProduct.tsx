@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-import { productItem } from '@/components/store';
+import { dummyProducts } from '@/pages/Products';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 // interface productProps {
@@ -22,7 +22,7 @@ const dummyProduct: productItem = {
   productId: 12345,
   name: 'Fresh Strawberries',
   price: 3.97,
-  image: '/assets/strawberries.png',
+  image: '/assets/strawberries.jpg',
   stock: 10,
   category: 'produce',
   supplier: 'Berry Farms',
@@ -61,10 +61,13 @@ const dummyProduct: productItem = {
 
 const SingleProduct = () => {
   // ! REMOVE DUMMYPRODUCT FOR FINAL VERSION !!
-  const product = dummyProduct;
-  const test = useParams();
+  const productId = Number(useParams().productId);
+  console.log(productId);
 
-  console.log(test);
+  const product =
+    dummyProducts.find((product) => product.productId === productId) ||
+    dummyProducts[0];
+  console.log(product);
   // Funcitonality to toggle the quantity dropdown
   const [QuantityEnabled, setQuantityEnabled] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -119,9 +122,9 @@ const SingleProduct = () => {
         <div className="flex flex-col items-center gap-[5px]">
           <div className="flex items-center gap-5">
             <img
-              className="h-[22rem] w-[22rem] rounded-[10px] object-cover pr-5"
-              src="../assets/strawberry.png"
-              alt="Strawberry"
+              className="mb-5 mr-5 h-[22rem] w-[22rem] rounded-3xl object-cover"
+              src={product.image}
+              alt={product.name}
             />
             <div className="flex flex-col items-start gap-2 font-jua">
               <div className="text-[32px]">{product.name}</div>
