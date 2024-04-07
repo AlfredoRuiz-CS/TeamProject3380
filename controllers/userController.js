@@ -11,10 +11,10 @@ const registerAuth = async (req, res) => {
   try {
     const body = await getRequestBody(req);
     console.log(body);
-    const { fName, lName, email, phoneNumber, streetAddress, city, state, zipcode, password, role } = body;
+    const { fName, lName, email, phoneNumber, streetAddress, city, state, zipcode, password } = body;
     console.log(fName, lName, email, phoneNumber, streetAddress, city, state, zipcode, password);
 
-    const user = await userModel.register(email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, password, role);
+    const user = await userModel.register(email, fName, lName, phoneNumber, streetAddress, city, state, zipcode, password);
 
     const token = createToken(user.email);
 
