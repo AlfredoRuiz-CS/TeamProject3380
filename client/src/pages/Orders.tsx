@@ -57,8 +57,8 @@ const Orders = () => {
   const [sortedOrders, setSortedOrders] = useState<Order[]>(dummyOrders);
   // ? Sorting Options
   let [sortOrder, setSortOrder] = useState('Order Desc.');
-  // ? Search Query
-  let [searchQuery, setSearchQuery] = useState('');
+  // ? Search Query TO BE IMPLEMENTED USING BACKEND CALL
+  // let [searchQuery, setSearchQuery] = useState('');
   useEffect(() => {}, [sheetOpen]);
 
   // ? Order Selection and Sheet Handlers
@@ -110,7 +110,6 @@ const Orders = () => {
           )
         ).flat();
 
-        return o;
       case 'Total Paid Desc.':
         return o.sort((a, b) => b.total - a.total);
       case 'Total Paid Asc.':
@@ -147,11 +146,9 @@ const Orders = () => {
                 <SelectItem value="Date Asc.">Date Asc.</SelectItem>
                 <SelectItem value="Payment Method">Payment Method</SelectItem>
                 <SelectItem value="Total Paid Desc.">
-                  <SelectItem value="Total Paid Asc.">
-                    Total Paid Asc.
-                  </SelectItem>
                   Total Paid Desc.
                 </SelectItem>
+                <SelectItem value="Total Paid Asc.">Total Paid Asc.</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -172,7 +169,7 @@ const Orders = () => {
             </TableHeader>
 
             <TableBody>
-              {dummyOrders.map((order, index) => (
+              {sortedOrders.map((order, index) => (
                 <TableRow
                   key={index}
                   onClick={() => orderSelectHandler(order.orderNumber)}
@@ -217,7 +214,7 @@ const Orders = () => {
                         </TableHeader>
 
                         <TableBody>
-                          {dummyOrders[selectedOrder].items.map(
+                          {sortedOrders[selectedOrder].items.map(
                             (product, index) => (
                               <TableRow key={index}>
                                 <TableCell className="max-w-6 pl-6">
@@ -242,7 +239,7 @@ const Orders = () => {
                               colSpan={2}
                             >
                               {/* TODO: Make sure that the total amount lines up with the rest of the products if the decimal place changes. */}
-                              {dummyOrders[selectedOrder].total.toLocaleString(
+                              {sortedOrders[selectedOrder].total.toLocaleString(
                                 'en-US',
                                 {
                                   style: 'currency',
