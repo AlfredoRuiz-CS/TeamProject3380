@@ -3,7 +3,6 @@ import type {} from '@redux-devtools/extension'; // required for devtools typing
 import { create, StateCreator } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import type {} from '@redux-devtools/extension'; // required for devtools typing
-import { dummyProducts } from '@/pages/Products';
 
 export type productItem = {
   productId: number;
