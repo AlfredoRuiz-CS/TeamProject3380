@@ -22,7 +22,7 @@ const dummyProduct: productItem = {
   productId: 12345,
   name: 'Fresh Strawberries',
   price: 3.97,
-  image: '/assets/strawberries.jpg',
+  image: '/assets/strawberries.png',
   stock: 10,
   category: 'produce',
   supplier: 'Berry Farms',
