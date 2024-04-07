@@ -147,7 +147,7 @@ const SingleProduct = () => {
           <div className="flex items-center gap-5">
             { product && (<img
               className="h-[22rem] w-[22rem] rounded-[10px] object-cover pr-5"
-              src={product.image.replace(/\.(jpg|jpeg)$/, '.png')}
+              src={`../${product.image.replace(/\.(jpg|jpeg)$/, '.png')}`}
               alt={product.name}
             /> ) }
             { product && (
