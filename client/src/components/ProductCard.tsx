@@ -12,13 +12,14 @@ import {
 
 import { productItem } from '@/components/store';
 import { Link } from 'react-router-dom';
-
+import useUserStore from '@/components/store';
 interface ProductCardProps {
   product: productItem;
 }
 
 const ProductCard = (props: ProductCardProps) => {
   // Impoting the product from dynamic URL
+  const user = useUserStore();
 
   // Funcitonality to toggle the quantity dropdown
   const [QuantityEnabled, setQuantityEnabled] = useState(false);
@@ -31,11 +32,15 @@ const ProductCard = (props: ProductCardProps) => {
   function handleAddToList() {
     listConfirmToast();
     console.log('Added ', quantity, ' ', props.product.name, 'to List');
+    if (user.loggedIn) {
+      user.addToList(props.product);
+    }
   }
 
   function handleAddToCart() {
     cartConfirmToast();
     console.log('Added ', quantity, ' ', props.product.name, 'to Cart');
+    user.addToCart(props.product, quantity);
   }
 
   const cartConfirmToast = () =>

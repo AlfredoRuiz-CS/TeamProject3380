@@ -3,7 +3,6 @@ import type {} from '@redux-devtools/extension'; // required for devtools typing
 import { create, StateCreator } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import type {} from '@redux-devtools/extension'; // required for devtools typing
-import { dummyProducts } from '@/pages/Products';
 
 export type productItem = {
   productId: number;
@@ -92,7 +91,7 @@ type UserState = {
   setUserDetails: (details: Partial<UserState>) => void;
   login: (isEmployee: boolean) => void;
   logout: () => void;
-  addToCart: (product: productItem) => void;
+  addToCart: (productToAdd: productItem, quantity: number) => void;
   addToList: (product: productItem) => void;
   // removeFromCart: (product: productItem) => void;
   changeQuantity: (product: productItem, quantity: number) => void;
@@ -118,8 +117,8 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
     zip: '12345',
   },
   cartItemsNumber: 0,
-  cartItems: dummyProducts.slice(0, 3),
-  quantity: [1, 1, 1],
+  cartItems: [],
+  quantity: [],
   List: [],
   setUserDetails: (details: Partial<UserState>) =>
     set((state) => ({ ...state, ...details })),
@@ -131,6 +130,10 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
       email: '',
       phone: '',
       address: { street: '', city: '', state: 'CA', zip: '' },
+      cartItemsNumber: 0,
+      cartItems: [],
+      List: [],
+      quantity: []
     }),
   login: (isEmployee) => {
     set((state) => ({ 
@@ -139,19 +142,36 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
       isMember: isEmployee || state.isMember
     }));
   },
-  addToCart: (product) =>
+  addToCart: (productToAdd, quantity=1) =>
     set((state) => {
-      const newCartItems = state.cartItems.concat(product);
+      const existingProductIndex = state.cartItems.findIndex(item => item.productId === productToAdd.productId);
+      let newCartItems: productItem[] = [...state.cartItems];
+      let newQuantity = [...state.quantity];
+
+      if (existingProductIndex >= 0) {
+        newQuantity[existingProductIndex] += quantity;
+      } else {
+        newCartItems = [...newCartItems, productToAdd];
+        newQuantity.push(quantity);
+      }
+
+      const newCartItemsNumber = newQuantity.reduce((total, qty) => total + qty, 0);
       return {
-        cartItemsNumber: newCartItems.length,
+        cartItemsNumber: newCartItemsNumber,
         cartItems: newCartItems,
-        quantity: state.quantity.concat(1),
+        quantity: newQuantity,
       };
     }),
-  addToList: (product) =>
-    set((state) => ({
-      List: state.List.concat(product),
-    })),
+    addToList: (productToAdd) =>
+    set((state) => {
+      const isProductInList = state.List.some(item => item.productId === productToAdd.productId);
+      if (!isProductInList) {
+        return {
+          List: [...state.List, productToAdd]
+        };
+      }
+      return {};
+    }),
   /*removeFromCart: (product) =>
     set((state) => {
       const newCartItems = state.cartItems.filter((item) => item !== product);
