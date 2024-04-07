@@ -16,8 +16,6 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 
-// import { productItem } from '@/components/store';
-import { dummyProducts } from './Products';
 import useUserStore from '@/components/store';
 import { useNavigate } from 'react-router-dom';
 
@@ -25,6 +23,11 @@ const Cart = () => {
   const store = useUserStore();
   const navigate = useNavigate();
   const shipping = 10;
+
+  const subtotal = store.cartItems.reduce(
+    (acc, product, index) => acc + product.price * store.quantity[index],
+    0
+  );
 
   // ! REPLACE POPULAR ITEMS WITH USER LIST
 
@@ -81,7 +84,7 @@ const Cart = () => {
                 </AlertDialogContent>
               </AlertDialog>
             </div>
-            {/* CARD COMPONENT HERE * NUMBER OF ITEMS IN CART */}
+            {/* Item Card Section */}
             <div className="">
               <ul className="flex flex-col gap-2">
                 {store.cartItems.map((product, index) => (
@@ -107,10 +110,7 @@ const Cart = () => {
                     <tr className="">
                       <td className="py-3 text-left text-2xl">Subtotal</td>
                       <td className="pr-2 text-right text-xl">
-                        {dummyProducts[0].price.toLocaleString('en-US', {
-                          style: 'currency',
-                          currency: 'USD',
-                        })}
+                        {subtotal > 0 ? subtotal : '--'}
                       </td>
                     </tr>
                     <tr className="border-b-2 border-darkblue">
@@ -118,10 +118,12 @@ const Cart = () => {
                         Estimated Shipping
                       </td>
                       <td className="pr-2 text-right text-xl">
-                        {shipping.toLocaleString('en-US', {
-                          style: 'currency',
-                          currency: 'USD',
-                        })}
+                        {subtotal > 0
+                          ? shipping.toLocaleString('en-US', {
+                              style: 'currency',
+                              currency: 'USD',
+                            })
+                          : '--'}
                       </td>
                     </tr>
 
@@ -130,13 +132,12 @@ const Cart = () => {
                         Estimated Total
                       </td>
                       <td className="pr-2 text-right text-xl">
-                        {(dummyProducts[0].price + shipping).toLocaleString(
-                          'en-US',
-                          {
-                            style: 'currency',
-                            currency: 'USD',
-                          }
-                        )}
+                        {subtotal > 0
+                          ? (subtotal + shipping).toLocaleString('en-US', {
+                              style: 'currency',
+                              currency: 'USD',
+                            })
+                          : '--'}
                       </td>
                     </tr>
                   </tbody>
