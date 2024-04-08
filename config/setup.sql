@@ -175,8 +175,6 @@ CREATE TABLE notifications (
     notificationID int PRIMARY KEY AUTO_INCREMENT,
     message varchar(255),
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    employeeEmail varchar(100),
-    FOREIGN KEY (employeeEmail) REFERENCES employee(email) ON DELETE CASCADE
 );
 
 CREATE TABLE nutritionFacts(
