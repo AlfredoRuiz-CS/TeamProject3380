@@ -6,6 +6,7 @@ import { useState, useEffect } from 'react';
 import useUserStore from '@/components/store';
 import { useProductsStore } from '@/components/store';
 import axios from 'axios';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
   Select,
@@ -1012,6 +1013,7 @@ const Products = () => {
               <ProductCard key={index} product={product} list />
             ))}
           </div>
+          <ToastContainer />
         </div>
       </div>
       <Footer />

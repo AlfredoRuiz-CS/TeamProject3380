@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import {
   Select,
   SelectContent,
@@ -149,7 +149,6 @@ const ProductCard = (props: ProductCardProps) => {
           >
             Add to Cart
           </Button>
-          <ToastContainer />
         </div>
       </div>
     </>
