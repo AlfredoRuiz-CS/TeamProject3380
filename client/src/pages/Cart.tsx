@@ -110,7 +110,12 @@ const Cart = () => {
                     <tr className="">
                       <td className="py-3 text-left text-2xl">Subtotal</td>
                       <td className="pr-2 text-right text-xl">
-                        {subtotal > 0 ? subtotal : '--'}
+                        {subtotal > 0
+                          ? subtotal.toLocaleString('en-US', {
+                              style: 'currency',
+                              currency: 'USD',
+                            })
+                          : '--'}
                       </td>
                     </tr>
                     <tr className="border-b-2 border-darkblue">
