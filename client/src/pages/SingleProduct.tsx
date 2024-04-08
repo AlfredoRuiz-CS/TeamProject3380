@@ -174,11 +174,11 @@ const SingleProduct = () => {
                   })}{' '}
                   per {product.portion}
                 </div>
-                <div className="mt-10 flex flex-grow flex-row justify-center gap-3">
+                <div className="mt-10 flex w-full flex-row gap-3">
                   {QuantityEnabled ? (
-                    <div className="flex gap-2">
+                    <div className="flex flex-shrink gap-2">
                       <Button
-                        className="flex h-12 flex-grow rounded-lg bg-quantityblue px-3 py-2 font-jua text-3xl text-black hover:bg-quantityblue/85"
+                        className="flex h-12 flex-shrink rounded-lg bg-quantityblue px-3 py-2 font-jua text-3xl text-black hover:bg-quantityblue/85"
                         onClick={quantityDropdownToggle}
                       >
                         Qty.
@@ -201,7 +201,7 @@ const SingleProduct = () => {
                     </div>
                   ) : (
                     <Button
-                      className="flex h-12 rounded-lg bg-quantityblue px-3 py-2 font-jua text-3xl text-black hover:bg-quantityblue/85"
+                      className="flex h-12 flex-shrink rounded-lg bg-quantityblue px-3 py-2 font-jua text-3xl text-black hover:bg-quantityblue/85"
                       onClick={quantityDropdownToggle}
                     >
                       Qty.
