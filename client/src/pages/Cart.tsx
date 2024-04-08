@@ -156,13 +156,13 @@ const Cart = () => {
               <p className="pt-5 text-center text-3xl text-darkblue">My List</p>
               <div className="flex flex-row gap-5 pl-12">
                 <div className="flex flex-col gap-10">
-                  <div className="flex flex-row gap-5">
+                  <div className="flex flex-col gap-5">
                     {store.List.map((product) => (
                       <div className="flex flex-row gap-5">
-                        <div>
+                        <div className="h-[5rem] w-[5rem] overflow-hidden rounded-[10px]">
                           <img
-                            className=" h-[5rem] w-[5rem] rounded-lg object-cover"
-                            src={product.image}
+                            className="h-full w-full object-contain"
+                            src={`../${product.image.replace(/\.(jpg|jpeg)$/, '.png')}`}
                           ></img>
                         </div>
                         <div className="flex flex-col">
