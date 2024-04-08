@@ -560,7 +560,7 @@ const twoMilk: productItem = {
 const cheese: productItem = {
   productId: 40003,
   name: 'Sharp Cheddar Sliced Cheese',
-  price: 3.10,
+  price: 3.1,
   image: '/assets/cheese.jpeg',
   stock: 20,
   supplier: 'Sweet Dairy Farms',
@@ -844,11 +844,11 @@ enum Category {
   meat = 2,
   fish = 3,
   dairy = 4,
-  snacks = 5
+  snacks = 5,
 }
 
 function mapCategory(categoryID: number): string {
-  return Category[categoryID] || "Unknown Category";
+  return Category[categoryID] || 'Unknown Category';
 }
 
 const Products = () => {
@@ -861,47 +861,51 @@ const Products = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('https://shastamart-api-deploy.vercel.app/api/products/getAllProducts');
+        const response = await axios.get(
+          'https://shastamart-api-deploy.vercel.app/api/products/getAllProducts'
+        );
         const productsData = await response.data;
-        const transformedProducts = productsData.map((product: ProductApiResponse) => ({
-          productId: product.productID,
-          name: product.productName,
-          description: product.productDesc.split('. '),
-          price: parseFloat(product.productPrice),
-          stock: product.stockQuantity,
-          category: mapCategory(product.categoryID),
-          image: product.image,
-          supplier: product.supplier,
-          supplierStock: product.supplierStock,
-          portion: product.portion,
-          nutritionFacts: {
-            servingSize: product.servingSize,
-            servingsPerContainer: product.servingsPerContainer,
-            calories: product.calories,
-            totalFat: product.totalFat,
-            cholesterol: product.cholesterol,
-            sodium: product.sodium,
-            totalCarbohydrates: product.totalCarbohydrates,
-            dietaryFiber: product.dietaryFiber,
-            sugars: product.sugars,
-            protein: product.protein,
-            potassium: product.potassium,
-            vitaminA: product.vitaminA,
-            vitaminC: product.vitaminC,
-            vitaminD: product.vitaminD,
-            vitaminE: product.vitaminE,
-            calcium: product.calcium,
-            iron: product.iron
-          },
-          shippingDetails: {
-            dimensions: {
-              length: product.dimensionsLength,
-              width: product.dimensionsWidth,
-              height: product.dimensionsHeight
+        const transformedProducts = productsData.map(
+          (product: ProductApiResponse) => ({
+            productId: product.productID,
+            name: product.productName,
+            description: product.productDesc.split('. '),
+            price: parseFloat(product.productPrice),
+            stock: product.stockQuantity,
+            category: mapCategory(product.categoryID),
+            image: product.image,
+            supplier: product.supplier,
+            supplierStock: product.supplierStock,
+            portion: product.portion,
+            nutritionFacts: {
+              servingSize: product.servingSize,
+              servingsPerContainer: product.servingsPerContainer,
+              calories: product.calories,
+              totalFat: product.totalFat,
+              cholesterol: product.cholesterol,
+              sodium: product.sodium,
+              totalCarbohydrates: product.totalCarbohydrates,
+              dietaryFiber: product.dietaryFiber,
+              sugars: product.sugars,
+              protein: product.protein,
+              potassium: product.potassium,
+              vitaminA: product.vitaminA,
+              vitaminC: product.vitaminC,
+              vitaminD: product.vitaminD,
+              vitaminE: product.vitaminE,
+              calcium: product.calcium,
+              iron: product.iron,
             },
-            weight: product.weight
-          }
-        }));
+            shippingDetails: {
+              dimensions: {
+                length: product.dimensionsLength,
+                width: product.dimensionsWidth,
+                height: product.dimensionsHeight,
+              },
+              weight: product.weight,
+            },
+          })
+        );
         setProducts(transformedProducts);
       } catch (error) {
         console.log(error);
@@ -909,7 +913,7 @@ const Products = () => {
     };
 
     fetchProducts();
-  }, [setProducts])
+  }, [setProducts]);
 
   const products = useProductsStore((state) => state.products);
   // const products = dummyProducts;
@@ -1000,11 +1004,10 @@ const Products = () => {
               </SelectContent>
             </Select>
           </div>
-
-          {/* List of Product Items */}
+          {/* List of Product Items */}ß
           <div className="mx-[10rem] flex flex-row flex-wrap gap-7">
             {orderedProducts.map((product, index) => (
-              <ProductCard key={index} product={product} />
+              <ProductCard key={index} product={product} list />
             ))}
           </div>
         </div>
