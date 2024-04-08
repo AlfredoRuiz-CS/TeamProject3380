@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import useUserStore from '@/components/store';
 import { useProductsStore } from '@/components/store';
 import axios from 'axios';
-
+import 'react-toastify/dist/ReactToastify.css';
 import {
   Select,
   SelectContent,
@@ -858,6 +858,8 @@ const Products = () => {
   // ! CHANGE TO DATABASE CALL FOR FINAL VERSION!!
   const { setProducts } = useProductsStore();
 
+  // Ensure link opens at top of page
+
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -1004,7 +1006,7 @@ const Products = () => {
               </SelectContent>
             </Select>
           </div>
-          {/* List of Product Items */}ß
+          {/* List of Product Items */}
           <div className="mx-[10rem] flex flex-row flex-wrap gap-7">
             {orderedProducts.map((product, index) => (
               <ProductCard key={index} product={product} list />

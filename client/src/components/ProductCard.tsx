@@ -50,6 +50,7 @@ const ProductCard = (props: ProductCardProps) => {
       {
         position: 'bottom-right',
         className: 'font-bold text-black',
+        autoClose: 2000,
       }
     );
   const listConfirmToast = () =>
