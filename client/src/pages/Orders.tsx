@@ -22,6 +22,14 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
 type Order = {
   orderNumber: number;
   date: string;
@@ -29,10 +37,6 @@ type Order = {
   total: number;
   items: productItem[];
 };
-
-// interface OrdersProps {
-//   orders: Order[];
-// }
 
 const dummyOrders: Order[] = Array(20)
   .fill({ items: [] })
@@ -45,10 +49,19 @@ const dummyOrders: Order[] = Array(20)
   }));
 
 const Orders = () => {
+  // ? Selections for the order sheet
   const [selectedOrder, setSelectedOrder] = useState<number>(0);
   const [sheetOpen, setSheetOpen] = useState(false);
+  // ! SET THIS TO THE BACKEND API CALL FOR PAST ORDERS
+  const orders = dummyOrders;
+  const [sortedOrders, setSortedOrders] = useState<Order[]>(dummyOrders);
+  // ? Sorting Options
+  let [sortOrder, setSortOrder] = useState('Order Desc.');
+  // ? Search Query TO BE IMPLEMENTED USING BACKEND CALL
+  // let [searchQuery, setSearchQuery] = useState('');
   useEffect(() => {}, [sheetOpen]);
 
+  // ? Order Selection and Sheet Handlers
   function orderSelectHandler(order: number) {
     console.log('Order selected: ', order);
     sheetOpenHandler(order);
@@ -64,14 +77,81 @@ const Orders = () => {
     console.log('Sheet Closed');
     setSheetOpen(!sheetOpen);
   }
+
+  // ? Order Sorting Handlers
+  useEffect(() => {
+    setSortedOrders(sortOrders(orders));
+    console.log('Sort Order: ', sortOrder);
+  }, [sortOrder]);
+
+  function sortOrders(o: Order[]) {
+    switch (sortOrder) {
+      case 'Order Desc.':
+        return o.sort((a, b) => b.orderNumber - a.orderNumber);
+      case 'Order Asc.':
+        return o.sort((a, b) => a.orderNumber - b.orderNumber);
+      case 'Date Desc.':
+        return o.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+      case 'Date Asc.':
+        return o.sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
+      case 'Payment Method':
+        // Function to group orders by a payment method
+        return Object.values(
+          o.reduce(
+            (acc, order) => {
+              const key = order.paymentMethod;
+              if (!acc[key]) {
+                acc[key] = [];
+              }
+              acc[key].push(order);
+              return acc;
+            },
+            {} as Record<string, Order[]>
+          )
+        ).flat();
+
+      case 'Total Paid Desc.':
+        return o.sort((a, b) => b.total - a.total);
+      case 'Total Paid Asc.':
+        return o.sort((a, b) => a.total - b.total);
+      default:
+        return o;
+    }
+  }
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite font-inter text-black">
         <Header color="blue" />
-        <div className="flex w-screen flex-col gap-10">
+        <div className="flex w-screen flex-col">
           <h1 className="ml-16 pt-14 font-inter text-5xl font-medium text-black">
             Order History
           </h1>
+          {/* Sorting Funcitonality */}
+          <div className="mt-5 flex gap-2 place-self-start pb-5">
+            <h3 className="ml-6 items-center place-self-center font-inter text-lg font-medium">
+              Category:{' '}
+            </h3>
+            {/* Sort dropdown */}
+            <Select
+              defaultValue="Order Number"
+              onValueChange={(e) => setSortOrder(e)}
+            >
+              <SelectTrigger className="h-10 w-[8rem] bg-white text-black">
+                <SelectValue placeholder="Order Desc.">{sortOrder}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Order Desc.">Order Desc.</SelectItem>
+                <SelectItem value="Order Asc.">Order Asc.</SelectItem>
+                <SelectItem value="Date Desc.">Date Desc.</SelectItem>
+                <SelectItem value="Date Asc.">Date Asc.</SelectItem>
+                <SelectItem value="Payment Method">Payment Method</SelectItem>
+                <SelectItem value="Total Paid Desc.">
+                  Total Paid Desc.
+                </SelectItem>
+                <SelectItem value="Total Paid Asc.">Total Paid Asc.</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
             <TableHeader>
               <TableRow>
@@ -89,7 +169,7 @@ const Orders = () => {
             </TableHeader>
 
             <TableBody>
-              {dummyOrders.map((order, index) => (
+              {sortedOrders.map((order, index) => (
                 <TableRow
                   key={index}
                   onClick={() => orderSelectHandler(order.orderNumber)}
@@ -134,7 +214,7 @@ const Orders = () => {
                         </TableHeader>
 
                         <TableBody>
-                          {dummyOrders[selectedOrder].items.map(
+                          {sortedOrders[selectedOrder].items.map(
                             (product, index) => (
                               <TableRow key={index}>
                                 <TableCell className="max-w-6 pl-6">
@@ -159,7 +239,7 @@ const Orders = () => {
                               colSpan={2}
                             >
                               {/* TODO: Make sure that the total amount lines up with the rest of the products if the decimal place changes. */}
-                              {dummyOrders[selectedOrder].total.toLocaleString(
+                              {sortedOrders[selectedOrder].total.toLocaleString(
                                 'en-US',
                                 {
                                   style: 'currency',
