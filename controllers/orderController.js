@@ -1,30 +1,72 @@
 const orderModel = require('../models/orderModel')
 const { getRequestBody } = require('../lib/requestBodyParser');
 
-//creating new order
-const createOrder = async (req, res) => {
-    try{
-        const body = await getRequestBody(req);
-        const{customerEmail,items} = body;
-        const currTime = new Date();
-        const formatDigit = (x) => x.toString().length === 1 ? '0' + x.toString() : x.toString();
-        let orderDate = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate())}`;
-        const order = await orderModel.createOrder(customerEmail,orderDate,items);
 
-        res.writeHead(200,{'Content-Type': 'application/json'});
-        res.end(JSON.stringify({order}));
-    } catch(error){
-        res.writeHead(400, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ error: error.message }));
+//get all orders with customer email
+const getAllOrder = async (req,res) => {
+  try{
+    const allOrder = await orderModel.findAllOrder();
+    if(!allOrder){
+      res.writeHead(200,{'Content-Type': 'application/json'});
+      res.end("none");
+      return; //exits if there is no order
     }
-};
+    //else show all orders
+    res.writeHead(200,{'Content-Type':'application/json'});
+    res.end(JSON.stringify(allOrder));
+  } catch (error) {
+    res.writeHead(500, {'Content-Type': 'application/json' });
+    res.end(JSON.stringify({"status": "Could not retrieve order information", "error" : error.message }));
+    }
+}
 
-//get a specific order with orderID
-const findOrder = async (req,res) => {
+const processOrder = async(req,res)=>{
+  try{
+    const body = await getRequestBody(req);
+    const {customerEmail,items} = body;
+    const currTime = new Date();
+    const formatDigit = (x) => x.toString().length === 1 ? '0' + x.toString() : x.toString();
+    let orderDate = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate())}`;
+    const order = await orderModel.addtoOrder(customerEmail,orderDate,items);
+    if(!order){
+      res.writeHead(500,{'Content-Type':"application/json"});
+      res.end(JSON.stringify({"message":`Failed to add item to order for ${customerEmail}`}));
+      return;
+    }
+    res.writeHead(200,{'Content-Type':'application/json'});
+    res.end(JSON.stringify({"message":`Successfully added items to ${customerEmail} order`,
+                            "data": order}));
+  } catch(error){
+    res.writeHead(500,{'Content-Type':'application/json'});
+    res.end(JSON.stringify({"error":error.message}));
+  }
+}
+
+const removeFromOrder = async(req,res)=>{
+  try{
+    const body = await getRequestBody(req);
+    const{customerEmail,productID,productPrice,productName,productQuantity,orderLineID} = body;
+    const fromOrder = await orderModel.deleteFromOrder(customerEmail,productID,productPrice,productQuantity,orderLineID);
+    if(!fromOrder){
+      res.writeHead(500,{'Content-Type':"application/json"});
+      res.end(JSON.stringify({"message":`Failed to remove item from cart for ${customerEmail}`}));
+      return;
+    }
+    res.writeHead(200,{'Content-Type':'application/json'});
+    res.end(JSON.stringify({"message":`Successfully remove ${productName} from ${customerEmail} cart`,
+                            "data": fromOrder}));
+  } catch(error){
+    res.writeHead(500,{'Content-Type':'application/json'});
+    res.end(JSON.stringify({"error":error.message}));
+  }
+}
+
+//get order detail with orderID
+const getOrderDetail = async (req,res) => {
   try{
     const body = await getRequestBody(req);
     const {orderID} = body;
-    const order = await orderModel.findAnOrder(orderID);
+    const order = await orderModel.findOrderDetail(orderID);
     if (!order){
       res.writeHead(200, { 'Content-Type': 'text/plain' });
       res.end("none");
@@ -35,128 +77,80 @@ const findOrder = async (req,res) => {
     res.end(JSON.stringify(order));
 
     } catch (error) {
-    res.writeHead(500, {' Content-Type': 'application/json' });
+    res.writeHead(500, {'Content-Type': 'application/json' });
     res.end(JSON.stringify({"status": "Could not retrieve order information", "error" : error.message }));
     }
 }
 
-//get all orders with customer email
-const getAllOrder = async (req,res) => {
+//get a specific order with orderID
+const getProcessedOrderWithEmail = async (req,res) => {
   try{
     const body = await getRequestBody(req);
     const {customerEmail} = body;
-    const allOrder = await orderModel.getAllOrder(customerEmail);
-    if(!allOrder){
-      res.writeHead(200,{'Content-Type': 'application/json'});
+    const order = await orderModel.findProcessedOrderbyEmail(customerEmail);
+    if (!order){
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
       res.end("none");
-      return; //exits if there is no order
+      return; //exits if order is empty
     }
-    //else show all orders
-    res.writeHead(200,{'Content-Type':'application/json'});
-    res.end(JSON.stringify(allOrder));
-  } catch (error) {
-    res.writeHead(500, {' Content-Type': 'application/json' });
+    //else shows order
+    res.writeHead(200, { 'Content-Type' : 'application/json' });
+    res.end(JSON.stringify(order));
+
+    } catch (error) {
+    res.writeHead(500, {'Content-Type': 'application/json' });
     res.end(JSON.stringify({"status": "Could not retrieve order information", "error" : error.message }));
     }
 }
 
-const addToCart = async(req,res)=>{
-  try{
-    const body = await getRequestBody(req);
-    const {customerEmail,productID,productPrice,productName,productQuantity} = body;
-    const currTime = new Date();
-    const formatDigit = (x) => x.toString().length === 1 ? '0' + x.toString() : x.toString();
-    let orderDate = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate())}`;
-    const toCart = await orderModel.insertToCart(customerEmail,orderDate,productID,productPrice,productQuantity);
-    if(!toCart){
-      res.writeHead(500,{'Content-Type':"application/json"});
-      res.end(JSON.stringify({"message":`Failed to add item to cart for ${customerEmail}`}));
-    }
-    res.writeHead(200,{'Content-Type':'application/json'});
-    res.end(JSON.stringify({"message":`Successfully added ${productName} to ${customerEmail} cart`,
-                            "data": toCart}));
-  } catch(error){
-    res.writeHead(500,{'Content-Type':'application/json'});
-    res.end(JSON.stringify({"error":error.message}));
-  }
-}
-
-const removeFromCart = async(req,res)=>{
-  try{
-    const body = await getRequestBody(req);
-    const{customerEmail,productID,productPrice,productName,productQuantity} = body;
-    const fromCart = await orderModel.deleteFromCart(customerEmail,productID,productPrice,productQuantity);
-    if(!fromCart){
-      res.writeHead(500,{'Content-Type':"application/json"});
-      res.end(JSON.stringify({"message":`Failed to remove item from cart for ${customerEmail}`}));
-    }
-    res.writeHead(200,{'Content-Type':'application/json'});
-    res.end(JSON.stringify({"message":`Successfully remove ${productName} from ${customerEmail} cart`,
-                            "data": fromCart}));
-  } catch(error){
-    res.writeHead(500,{'Content-Type':'application/json'});
-    res.end(JSON.stringify({"error":error.message}));
-  }
-}
-
-const getUnprocessedCart = async(req,res)=>{
-  try{
-    const body = await getRequestBody(req);
-    const {customerEmail}=body;
-    const queryCart = await orderModel.queryCurrentCart(customerEmail);
-    
-    res.writeHead(200,{'Content-Type':'application/json'});
-    res.end(JSON.stringify({"message":`Successfully retrieve a cart for ${customerEmail}`,
-                            "data": queryCart}));
-  } catch(error){
-    res.writeHead(500,{'Content-Type':'application/json'});
-    res.end(JSON.stringify({"error":error.message}));
-  }
-}
-
-const getUnprocessedOrder = async(req,res)=>{
+//get a specific order with orderID
+const getAllOrderWithEmail = async (req,res) => {
   try{
     const body = await getRequestBody(req);
     const {customerEmail} = body;
-    const queryOrder = await orderModel.queryUnprocessedOrder(customerEmail);
+    const order = await orderModel.findAllOrderbyEmail(customerEmail);
+    if (!order){
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.end("none");
+      return; //exits if order is empty
+    }
+    //else shows order
+    res.writeHead(200, { 'Content-Type' : 'application/json' });
+    res.end(JSON.stringify(order));
 
-    es.writeHead(200,{'Content-Type':'application/json'});
-    res.end(JSON.stringify({"message":`Successfully retrieve an unprocessed order for ${customerEmail}`,
-                            "data": queryOrder}));
-  } catch(error){
-    res.writeHead(500,{'Content-Type':'application/json'});
-    res.end(JSON.stringify({"error":error.message}));
-  }
+    } catch (error) {
+    res.writeHead(500, {'Content-Type': 'application/json' });
+    res.end(JSON.stringify({"status": "Could not retrieve order information", "error" : error.message }));
+    }
 }
 
-const processOrder = async(req,res)=>{
+//get a specific order with orderID
+const getOrderByLname = async (req,res) => {
   try{
     const body = await getRequestBody(req);
-    const {customerEmail} = body;
-    const currTime = new Date();
-    const formatDigit = (x) => x.toString().length === 1 ? '0' + x.toString() : x.toString();
-    let orderDate = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate())}`;
-    const processing = await orderModel.updateBankBanlance(customerEmail,orderDate);
-
-    if(!processing){
-      res.writeHead(500,{'Content-Type':"application/json"});
-      res.end(JSON.stringify({"message":`Failed to process order from ${customerEmail}'s cart`}));
+    const {lname} = body;
+    const order = await orderModel.findOrderByLname(lname);
+    if (!order){
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.end("none");
+      return; //exits if order is empty
     }
-    res.writeHead(200,{'Content-Type':'application/json'});
-    res.end(JSON.stringify({"message":`Successfully processing order from ${customerEmail}' cart`,
-                            "data": processing}));
-  } catch(error){
-    res.writeHead(500,{'Content-Type':'application/json'});
-    res.end(JSON.stringify({"error":error.message}));
-  }
+    //else shows order
+    res.writeHead(200, { 'Content-Type' : 'application/json' });
+    res.end(JSON.stringify(order));
+
+    } catch (error) {
+    res.writeHead(500, {'Content-Type': 'application/json' });
+    res.end(JSON.stringify({"status": "Could not retrieve order information", "error" : error.message }));
+    }
 }
+
 module.exports={
-  createOrder,
-  findOrder,
   getAllOrder,
-  addToCart,
-  removeFromCart,
-  getUnprocessedCart,
-  getUnprocessedOrder,
-  processOrder
+  processOrder,
+  removeFromOrder,
+  getOrderDetail,
+  getProcessedOrderWithEmail,
+  getAllOrderWithEmail,
+  getOrderByLname
 }
