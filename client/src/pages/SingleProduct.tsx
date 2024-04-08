@@ -194,7 +194,7 @@ const SingleProduct = () => {
               <div className="text-[28px]">
                 {calDV(
                   Number(product.nutritionFacts?.sodium?.replace(/\D/g, '')) ||
-                    0,
+                  0,
                   dV.sod
                 )}
               </div>
@@ -274,7 +274,7 @@ const SingleProduct = () => {
               <div className="text-[28px]">
                 {calDV(
                   Number(product.nutritionFacts?.calcium?.replace(/\D/g, '')) ||
-                    0,
+                  0,
                   dV.calcium
                 )}
               </div>
