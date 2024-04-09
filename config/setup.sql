@@ -20,7 +20,7 @@ CREATE TABLE product(
 
 CREATE TABLE employee(
     email varchar(100) PRIMARY KEY,
-    fname varchar(100) NOT NULL,
+    fName varchar(100) NOT NULL,
     lName varchar(100) NOT NULL,
     jobTitle varchar(50),
     phoneNumber varchar(10),
@@ -47,8 +47,7 @@ CREATE TABLE customer(
 CREATE TABLE membership(
     membershipID int PRIMARY KEY AUTO_INCREMENT,
     customerEmail varchar(100),
-    membershipType varchar(50),
-    membershipStatus varchar(50),
+    membershipStatus boolean,
     startDate date,
     endDate date,
     renewalDate date,
