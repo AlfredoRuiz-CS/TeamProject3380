@@ -637,7 +637,6 @@ const yogurt: productItem = {
     servingsPerContainer: '4',
     calories: 100,
     totalFat: '0 g',
-    totalFat: '0 g',
     sodium: '45 mg',
     totalCarbohydrates: '12 g',
     dietaryFiber: '0 g',
