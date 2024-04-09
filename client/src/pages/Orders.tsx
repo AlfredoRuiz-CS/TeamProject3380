@@ -30,6 +30,8 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+import { ScrollArea } from '@/components/ui/scroll-area';
+
 type Order = {
   orderNumber: number;
   date: string;
@@ -194,7 +196,7 @@ const Orders = () => {
           {sheetOpen ? (
             <div>
               <Sheet defaultOpen={true} onOpenChange={sheetCloseHandler}>
-                <SheetContent side="right">
+                <SheetContent side="right" className="overflow-y-auto">
                   <SheetHeader>
                     <SheetTitle>Order #{selectedOrder}</SheetTitle>
                     <SheetDescription asChild>
