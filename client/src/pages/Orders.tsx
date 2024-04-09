@@ -194,7 +194,7 @@ const Orders = () => {
           {sheetOpen ? (
             <div>
               <Sheet defaultOpen={true} onOpenChange={sheetCloseHandler}>
-                <SheetContent side="right">
+                <SheetContent side="right" className="overflow-y-auto">
                   <SheetHeader>
                     <SheetTitle>Order #{selectedOrder}</SheetTitle>
                     <SheetDescription asChild>

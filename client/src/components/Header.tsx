@@ -92,13 +92,14 @@ const Header = (props: HeaderProps) => {
             {store.loggedIn ? (
               <li className="flex items-center justify-center">
                 {textColor === 'text-white' ? (
-                  <Link to="/cart">
+                  <Link to="/cart" className="flex flex-row gap-1">
+                    <p className="">{store.cartItemsNumber}</p>
                     <IoMdCart size={20} color="white" />
                   </Link>
                 ) : (
-                  <Link to="/cart">
+                  <Link to="/cart" className="flex flex-row gap-1">
+                    <p className="">{store.cartItemsNumber}</p>
                     <IoMdCart size={20} color="primary" />
-                    <p className="">{10}</p>
                   </Link>
                 )}
               </li>
@@ -114,7 +115,7 @@ const Header = (props: HeaderProps) => {
               </li>
             )}
             {/* If User is logged in, display dropdown menu */}
-            {store.loggedIn ? (
+            {store.loggedIn && !store.isAdmin ? (
               <li className="flex items-center justify-center">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild className="focus-visible:ring-0">
@@ -152,7 +153,45 @@ const Header = (props: HeaderProps) => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </li>
-            ) : (
+            ) : store.loggedIn && store.isAdmin ? (
+              <li className="flex items-center justify-center">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild className="focus-visible:ring-0">
+                    <Button
+                      variant="link"
+                      size="sm"
+                      className={
+                        'p-0 text-[16px] font-normal focus-visible:ring-0 ' +
+                        textColor
+                      }
+                    >
+                      {store.fname}
+                      <IoIosArrowDown />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem>
+                        <Link to="/orders">Orders</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link to="/suppliers">Suppliers</Link>
+                      </DropdownMenuItem>
+
+                      <DropdownMenuItem>
+                        <Link to="/profile">Profile</Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={logoutHandler}>
+                      <Link to="/home">Logout</Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </li>
+            ): (
               <li className="flex items-center justify-center">
                 <Button asChild className="">
                   <Link to="/register">Register</Link>
