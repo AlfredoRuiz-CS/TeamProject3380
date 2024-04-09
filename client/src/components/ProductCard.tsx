@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import {
   Select,
   SelectContent,
@@ -50,6 +50,7 @@ const ProductCard = (props: ProductCardProps) => {
       {
         position: 'bottom-right',
         className: 'font-bold text-black',
+        autoClose: 2000,
       }
     );
   const listConfirmToast = () =>
@@ -94,8 +95,9 @@ const ProductCard = (props: ProductCardProps) => {
             ' per ' +
             props.product.portion}
         </h1>
-        {/* Quantity Button */}
-        <div className="mt-10 flex flex-row justify-center gap-3 px-3">
+        {/* Buttons section */}
+        <section className="mb-3 mt-auto flex flex-row items-end justify-center gap-3 px-3">
+          {/* Quantity Button */}
           {QuantityEnabled ? (
             <div className="flex flex-row gap-2">
               <Button
@@ -148,8 +150,7 @@ const ProductCard = (props: ProductCardProps) => {
           >
             Add to Cart
           </Button>
-          <ToastContainer />
-        </div>
+        </section>
       </div>
     </>
   );
