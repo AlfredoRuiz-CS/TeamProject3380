@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import {
   Select,
   SelectContent,
@@ -15,6 +15,7 @@ import { Link } from 'react-router-dom';
 import useUserStore from '@/components/store';
 interface ProductCardProps {
   product: productItem;
+  list?: boolean;
 }
 
 const ProductCard = (props: ProductCardProps) => {
@@ -49,6 +50,7 @@ const ProductCard = (props: ProductCardProps) => {
       {
         position: 'bottom-right',
         className: 'font-bold text-black',
+        autoClose: 2000,
       }
     );
   const listConfirmToast = () =>
@@ -93,8 +95,9 @@ const ProductCard = (props: ProductCardProps) => {
             ' per ' +
             props.product.portion}
         </h1>
-        {/* Quantity Button */}
-        <div className="mt-10 flex flex-row justify-center gap-3 px-3">
+        {/* Buttons section */}
+        <section className="mb-3 mt-auto flex flex-row justify-center gap-3 px-3">
+          {/* Quantity Button */}
           {QuantityEnabled ? (
             <div className="flex flex-row gap-2">
               <Button
@@ -129,12 +132,17 @@ const ProductCard = (props: ProductCardProps) => {
           )}
 
           {/* Add To List Button */}
-          <Button
-            className="text-md flex-grow rounded-lg bg-blue-500 py-5 font-jua text-black hover:bg-blue-500/90"
-            onClick={handleAddToList}
-          >
-            Add to List
-          </Button>
+          {props.list ? (
+            <Button
+              className="text-md flex-grow rounded-lg bg-blue-500 py-5 font-jua text-black hover:bg-blue-500/90"
+              onClick={handleAddToList}
+            >
+              Add to List
+            </Button>
+          ) : (
+            <></>
+          )}
+
           {/* Add to Cart Button */}
           <Button
             className="text-md flex-grow rounded-lg bg-red-500 py-5 font-jua text-black hover:bg-red-500/85"
@@ -142,8 +150,7 @@ const ProductCard = (props: ProductCardProps) => {
           >
             Add to Cart
           </Button>
-          <ToastContainer />
-        </div>
+        </section>
       </div>
     </>
   );
