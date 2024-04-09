@@ -85,7 +85,11 @@ const Login = () => {
   // }
 
   useEffect(() => {
-    if (store.loggedIn) {
+    if (store.loggedIn && store.isAdmin) {
+      console.log('User is loggin in...redirecting');
+      navigate('/admin');
+    }
+    else if (store.loggedIn) {
       console.log('User is loggin in...redirecting');
       navigate('/products');
     }

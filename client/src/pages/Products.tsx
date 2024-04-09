@@ -859,14 +859,11 @@ const Products = () => {
   // ! CHANGE TO DATABASE CALL FOR FINAL VERSION!!
   const { setProducts } = useProductsStore();
 
-  // Ensure link opens at top of page
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get(
-          'https://shastamart-api-deploy.vercel.app/api/products/getAllProducts'
-        );
+        const response = await axios.get('https://shastamart-api-deploy.vercel.app/api/products/getAllProducts');
         const productsData = await response.data;
         const transformedProducts = productsData.map(
           (product: ProductApiResponse) => ({
