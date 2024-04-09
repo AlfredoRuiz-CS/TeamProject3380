@@ -52,7 +52,7 @@ const Header = (props: HeaderProps) => {
       >
         {/* Logo */}
         <div className="pl-10 pt-5">
-          <Link to="/home">
+          <Link to="/">
             {props.color === 'blue' ? (
               <img src="/logos/logo_full_blue.svg" alt="ShastaMart Logo" />
             ) : (

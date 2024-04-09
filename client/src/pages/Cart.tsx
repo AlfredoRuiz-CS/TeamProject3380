@@ -16,8 +16,6 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 
-// import { productItem } from '@/components/store';
-import { dummyProducts } from './Products';
 import useUserStore from '@/components/store';
 import { useNavigate } from 'react-router-dom';
 
@@ -25,6 +23,11 @@ const Cart = () => {
   const store = useUserStore();
   const navigate = useNavigate();
   const shipping = 10;
+
+  const subtotal = store.cartItems.reduce(
+    (acc, product, index) => acc + product.price * store.quantity[index],
+    0
+  );
 
   // ! REPLACE POPULAR ITEMS WITH USER LIST
 
@@ -81,7 +84,7 @@ const Cart = () => {
                 </AlertDialogContent>
               </AlertDialog>
             </div>
-            {/* CARD COMPONENT HERE * NUMBER OF ITEMS IN CART */}
+            {/* Item Card Section */}
             <div className="">
               <ul className="flex flex-col gap-2">
                 {store.cartItems.map((product, index) => (
@@ -107,10 +110,12 @@ const Cart = () => {
                     <tr className="">
                       <td className="py-3 text-left text-2xl">Subtotal</td>
                       <td className="pr-2 text-right text-xl">
-                        {dummyProducts[0].price.toLocaleString('en-US', {
-                          style: 'currency',
-                          currency: 'USD',
-                        })}
+                        {subtotal > 0
+                          ? subtotal.toLocaleString('en-US', {
+                              style: 'currency',
+                              currency: 'USD',
+                            })
+                          : '--'}
                       </td>
                     </tr>
                     <tr className="border-b-2 border-darkblue">
@@ -118,10 +123,12 @@ const Cart = () => {
                         Estimated Shipping
                       </td>
                       <td className="pr-2 text-right text-xl">
-                        {shipping.toLocaleString('en-US', {
-                          style: 'currency',
-                          currency: 'USD',
-                        })}
+                        {subtotal > 0
+                          ? shipping.toLocaleString('en-US', {
+                              style: 'currency',
+                              currency: 'USD',
+                            })
+                          : '--'}
                       </td>
                     </tr>
 
@@ -130,13 +137,12 @@ const Cart = () => {
                         Estimated Total
                       </td>
                       <td className="pr-2 text-right text-xl">
-                        {(dummyProducts[0].price + shipping).toLocaleString(
-                          'en-US',
-                          {
-                            style: 'currency',
-                            currency: 'USD',
-                          }
-                        )}
+                        {subtotal > 0
+                          ? (subtotal + shipping).toLocaleString('en-US', {
+                              style: 'currency',
+                              currency: 'USD',
+                            })
+                          : '--'}
                       </td>
                     </tr>
                   </tbody>
@@ -151,17 +157,17 @@ const Cart = () => {
               </div>
             </div>
             {/* My List Section */}
-            <div className="mt-10 h-[20rem] w-[30rem] rounded-lg bg-cardwhite ">
+            <div className="mb-10 mt-10 h-[20rem] w-[30rem] rounded-lg bg-cardwhite">
               <p className="pt-5 text-center text-3xl text-darkblue">My List</p>
               <div className="flex flex-row gap-5 pl-12">
                 <div className="flex flex-col gap-10">
-                  <div className="flex flex-row gap-5">
+                  <div className="flex flex-col gap-5">
                     {store.List.map((product) => (
                       <div className="flex flex-row gap-5">
-                        <div>
+                        <div className="h-[5rem] w-[5rem] overflow-hidden rounded-[10px]">
                           <img
-                            className=" h-[5rem] w-[5rem] rounded-lg object-cover"
-                            src={product.image}
+                            className="h-full w-full object-contain"
+                            src={`../${product.image.replace(/\.(jpg|jpeg)$/, '.png')}`}
                           ></img>
                         </div>
                         <div className="flex flex-col">

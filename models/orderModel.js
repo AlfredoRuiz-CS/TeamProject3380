@@ -1,152 +1,220 @@
+const { ErrorMessage } = require("formik");
 const {pool} = require("../config/db");
 
-//createOrder should include shipping address and items???
-async function createOrder(customerEmail, orderDate, items){
+//getAllOrder used by employee
+async function findAllOrder(){
+    try{
+        const res = await pool.query(`
+        SELECT *
+        FROM purchaseOrder`,);
+        return res;
+    } catch(error){
+        console.log(error.message);
+        throw error;
+    }
+};
+
+async function addtoOrder(customerEmail,orderDate,items){
     const connection = await pool.getConnection();
     try{
         await connection.beginTransaction();
 
-        //total tax and amount
-        let totalTax = 0;
-        let totalAmount = 0;
-
-        items.forEach(item => {
-            const tax = item.quantity * item.unitPrice * 0.0825;
-            totalTax += tax;
-            totalAmount += (item.quantity * item.unitPrice) + tax;
-        });
-
-        const result = await connection.query(`
-        INSERT INTO purchaseOrder(customerEmail, orderDate, tax, totalAmount)
-        VALUES(?,?,?,?)`,[customerEmail,orderDate,totalTax,totalAmount]);
-        const orderID = result.insertId;
-        
-        for(const item of items){
-            const tax = item.quantity * item.unitPrice * 0.0825;
-            const amount = item.quantity * item.unitPrice + tax;
-            await connection.query(`
-            INSERT INTO orderLine(orderID,productID,quantity,unitPrice,tax,totalAmount)
-            VALUE(?,?,?,?,?,?)`,[orderID,item.productID,item.quantity,item.unitPrice,tax,amount]);
+        if (items.length==0){
+            return null;
         }
 
-        //fetching shipping address from customer profile
-        const [[shippingAresult]] = await connection.query(`
-        SELECT streetAddress, city, state, zipcode
-        FROM customer
-        WHERE email=?`,[customerEmail])
+        const [getOrderID] = await connection.query(`
+        SELECT*
+        FROM purchaseOrder
+        WHERE customerEmail=? AND orderProcessed=?`,[customerEmail,false]);
+        
+        let orderLineDetail =[];
 
-        await connection.commit();
-        return {orderID,customerEmail,orderDate,totalTax,totalAmount,items,shippingAresult}
+        //check if customer has an opened order then update, otherwise insert new order
+        if (getOrderID.length==0){
+            let tax = 0;
+            let total = 0;
+            for (let item of items){
+                let calTax= item.productPrice*item.productQuantity*0.0825;
+                tax += calTax;
+                total += item.productPrice*item.productQuantity + calTax;
+            }
+            const orderRes = await connection.query(`
+                INSERT INTO purchaseOrder(customerEmail,orderDate,tax,total)
+                VALUEs(?,?,?,?)`,[customerEmail,orderDate,tax,total]);
+            
+                const [rows] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
+                const lastId = rows[0].lastId;
+
+            for (let item of items){
+                let tax1 = item.productPrice*item.productQuantity*0.0825;
+                let subTotal = item.productPrice*item.productQuantity;
+                const orderLineRes = await connection.query(`
+                INSERT INTO orderLine(orderID,productID,quantity,unitPrice,tax,subTotal)
+                VALUES(?,?,?,?,?,?)`,[lastId,item.productID,item.productQuantity,item.productPrice,tax1,subTotal]);
+
+                //getting the order line information to send it back
+                const [anotherRows] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
+                const anotherID = anotherRows[0].lastId;
+
+                const res = await connection.query(`
+                SELECT*
+                FROM orderLine
+                WHERE orderLineID=?`,[anotherID]);
+                orderLineDetail.push(res);
+            }
+            
+            await connection.commit();
+            return {order: orderRes, detail: orderLineDetail};
+        } else{ //Update opened order if existed
+            let tax = 0;
+            let total = 0;
+            for (let item of items){
+                let calTax= item.productPrice*item.productQuantity*0.0825;
+                tax += calTax;
+                total += item.productPrice*item.productQuantity + calTax;
+            }
+            const updateOrder = await connection.query(`
+            UPDATE purchaseOrder
+            SET tax=tax+?, total=total+?
+            WHERE customerEmail=? AND orderProcessed=? AND orderID=?`,[tax,total,customerEmail,false,getOrderID[0].orderID]);
+
+            for (let item of items){
+                let tax1 = item.productPrice*item.productQuantity*0.0825;
+                let subTotal = item.productPrice*item.productQuantity;
+                const updateLineRes = await connection.query(`
+                INSERT INTO orderLine(orderID,productID,quantity,unitPrice,tax,subTotal)
+                VALUES(?,?,?,?,?,?)`,[getOrderID[0].orderID,item.productID,item.productQuantity,item.productPrice,tax1,subTotal]);
+
+                const [moreID] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
+                const onemore = moreID[0].lastId;
+
+                const [res] = await connection.query(`
+                SELECT*
+                FROM orderLine
+                WHERE orderLineID=?`,[onemore]);
+                orderLineDetail.push(res);
+            }
+
+            await connection.commit();
+            return {order: updateOrder, detail: orderLineDetail};
+        }
     } catch(error){
         await connection.rollback();
-        throw error;
-    } finally{
-        connection.release();
+        console.log(error.message);
+    } finally {
+        await connection.release();
     }
-};
+}
 
-async function getOrderInfo(orderID){ //searching a specific order with orderID
+
+//remove single item
+async function deleteFromOrder(customerEmail,productID,productPrice,productQuantity,orderLineID){
+    const connection = await pool.getConnection();
     try{
-        const [order] = await pool.query(`
-        Select *
+        await connection.beginTransaction();
+        let reducedTax = productPrice*productQuantity*0.0825;
+        let reducedTotal = productPrice*productQuantity+reducedTax;
+
+        const [customerOrder] = await connection.query(`
+        SELECT orderID
         FROM purchaseOrder
-        WHERE orderID =?`, [orderID]);
-        return order;
-     } catch(error) {
+        WHERE customerEmail=? AND orderProcessed=?`,[customerEmail,false]);
+
+        if (customerOrder.length>0){
+            const userOrderID = customerOrder[0].orderID;
+            const updateOrder = await connection.query(`
+            UPDATE purchaseOrder
+            SET tax=tax-?, total=total-?
+            WHERE orderID=? AND customerEmail=? AND orderProcessed=?`,[reducedTax,reducedTotal,userOrderID,customerEmail,false]);
+
+            const updateOrderLine = await connection.query(`
+            DELETE FROM orderLine
+            WHERE orderLineID=? AND orderID=? AND productID=?`,[orderLineID,userOrderID,productID]);
+
+            await connection.commit();
+            return {order: updateOrder, orderLine: updateOrderLine};
+        } else  {
+            console.log('No opened oder found to remove item')
+            return null;
+        }
+    } catch(error){
+        await connection.rollback();
         console.log(error.message);
         throw error;
-     }
-};
+    } finally {
+        await connection.release();
+    }
+}
 
-async function getAllOrder(customerEmail){
+async function findProcessedOrderbyEmail(email){
     try{
-        const [allOrder] = await pool.query(`
+        const res = await pool.query(`
         SELECT *
         FROM purchaseOrder
-        WHERE customerEmail=?`,[customerEmail]);
-        return allOrder;
+        WHERE customerEmail=? AND orderProcessed=?`,[email,true]);
+        
+        return res;
     } catch(error){
         console.log(error.message);
         throw error;
     }
-};
+}
 
-async function addItem(orderID, items){
-    const connection = await pool.getConnection();
+async function findAllOrderbyEmail(email){
     try{
-        await connection.beginTransaction();
-         //total tax and amount
-         let newTax = 0;
-         let newAmount = 0;
-         
-         for(const item of items){
-             const tax = item.quantity * item.unitPrice * 0.0825;
-             newTax += tax;
-             const amount = item.quantity * item.unitPrice + tax;
-             newAmount += amount;
-             await connection.query(`
-             INSERT INTO orderLine(orderID,productID,quantity,unitPrice,tax,totalAmount)
-             VALUE(?,?,?,?,?,?)`,[orderID,item.productID,item.quantity,item.unitPrice,tax,amount]);
-         }
+        const res = await pool.query(`
+        SELECT *
+        FROM purchaseOrder
+        WHERE customerEmail=?`,[email])
 
-         //update new tax and new total
-         await connection.query(`
-         UPDATE purchaseOrder
-         SET tax=?+tax,
-         totalAmount=?+totalAmount
-         WHERE orderID=?`,[newTax,newAmount,orderID])
-
-         await connection.commit();
-         return {orderID, itemsAdded: items.length};
+        return res;
     } catch(error){
         console.log(error.message);
         throw error;
-    } finally {
-        connection.release();
     }
-};
+}
 
-//remove item from existing order
-async function removeItem(orderID,items){
-    const connection = await pool.getConnection();
+async function findOrderByLname(lname){
     try{
-        await connection.beginTransaction();
-        let removedTax = 0;
-        let removedAmount = 0;
-        for(const item of items){
-            const [existingItem] = await connection.query(`
-            SELECT quantity, unitPrice FROM orderLine
-            WHERE orderID=?, AND productID=?`,[orderID,item.productID]);
-            if(existingItem.length){
-                const tax = existingItem[0].quantity*existingItem.unitPrice*0.0825;
-                const amount = existingItem[0].quantity*existingItem.unitPrice+tax;
-                removedTax+=tax;
-                removedAmount+=amount;
-                await connection.query(`
-                DELETE FROM orderLine
-                WHERE orderID=?, AND productID=?`,[orderID,item.productID]);
-            }
-        }
-        //update new tax and new total
-        await connection.query(`
-        UPDATE purchaseOrder
-        SET tax=tax-?,
-        totalAmount=totalAmount-?
-        WHERE orderID=?`,[removedTax,removedAmount,orderID])
-        await connection.commit();
-        return {orderID, itemsRemoved: items.length};
+        const res = await pool.query(`
+        SELECT p.orderID, p.orderDate, p.tax, p.total
+        FROM customer c 
+        JOIN purchaseOrder p
+        ON c.email = p.customerEmail
+        WHERE lname=?`,[lname]);
+
+        return res;
     } catch(error){
         console.log(error.message);
         throw error;
-    } finally {
-        connection.release();
     }
-};
+}
+
+async function findOrderDetail(orderID){
+    try{
+        const res = await pool.query(`
+        SELECT p.orderID, p.orderDate, o.productID, o.quantity, o.unitPrice, o.tax, o.subTotal
+        FROM purchaseOrder p
+        JOIN orderLine o
+        ON p.orderID = o.orderID
+        WHERE p.orderID=?`,[orderID]);
+
+        return res;
+    } catch(error){
+        console.log(error.message);
+        throw error;
+    }
+}
 
 module.exports={
-    createOrder,
-    getOrderInfo,
-    getAllOrder,
-    addItem,
-    removeItem
+    findAllOrder,
+    addtoOrder,
+    deleteFromOrder,
+    findProcessedOrderbyEmail,
+    findAllOrderbyEmail,
+    findOrderByLname,
+    findOrderDetail
 }
+
+// add orderProcessed attribute into purchaseOrder table default false

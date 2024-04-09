@@ -12,23 +12,24 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { dummyProducts } from './Products';
+// import { dummyProducts } from './Products';
 import ProductCard from '@/components/ProductCard.tsx';
 import useUserStore from '@/components/store';
+import { productItem } from '@/components/store';
 
 const ProductList = () => {
     const store = useUserStore();
     let [valueSortOrder, setValueSortOrder] = useState('Price Desc.');
     let [catSortOrder, setCatSortOrder] = useState('All');
-    const products = dummyProducts;
+    const products = store.List;
     const [orderedProducts, setOrderedProducts] = useState<productItem[]>(
-        sortProducts(dummyProducts)
+        sortProducts(products)
     );
 
     useEffect(() => {
         let sorted = sortProducts(products);
         setOrderedProducts(sorted);
-    }, [catSortOrder, valueSortOrder]);
+    }, [products, catSortOrder, valueSortOrder]);
 
     function sortProducts(p: productItem[]) {
         if (catSortOrder !== 'All') {

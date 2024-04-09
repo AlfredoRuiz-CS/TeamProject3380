@@ -5,7 +5,7 @@ module.exports = async (req, res) => {
   setCorsHeaders(req, res);
    // Handle OPTIONS method by ending the request after setting CORS headers.
    if (req.method === "OPTIONS") {
-    res.writeHead(204); // Use writeHead instead of status to stay consistent.
+    res.writeHead(204);
     res.end();
     return;
   }

@@ -12,13 +12,15 @@ import {
 
 import { productItem } from '@/components/store';
 import { Link } from 'react-router-dom';
-
+import useUserStore from '@/components/store';
 interface ProductCardProps {
   product: productItem;
+  list?: boolean;
 }
 
 const ProductCard = (props: ProductCardProps) => {
   // Impoting the product from dynamic URL
+  const user = useUserStore();
 
   // Funcitonality to toggle the quantity dropdown
   const [QuantityEnabled, setQuantityEnabled] = useState(false);
@@ -31,11 +33,15 @@ const ProductCard = (props: ProductCardProps) => {
   function handleAddToList() {
     listConfirmToast();
     console.log('Added ', quantity, ' ', props.product.name, 'to List');
+    if (user.loggedIn) {
+      user.addToList(props.product);
+    }
   }
 
   function handleAddToCart() {
     cartConfirmToast();
     console.log('Added ', quantity, ' ', props.product.name, 'to Cart');
+    user.addToCart(props.product, quantity);
   }
 
   const cartConfirmToast = () =>
@@ -124,12 +130,17 @@ const ProductCard = (props: ProductCardProps) => {
           )}
 
           {/* Add To List Button */}
-          <Button
-            className="text-md flex-grow rounded-lg bg-blue-500 py-5 font-jua text-black hover:bg-blue-500/90"
-            onClick={handleAddToList}
-          >
-            Add to List
-          </Button>
+          {props.list ? (
+            <Button
+              className="text-md flex-grow rounded-lg bg-blue-500 py-5 font-jua text-black hover:bg-blue-500/90"
+              onClick={handleAddToList}
+            >
+              Add to List
+            </Button>
+          ) : (
+            <></>
+          )}
+
           {/* Add to Cart Button */}
           <Button
             className="text-md flex-grow rounded-lg bg-red-500 py-5 font-jua text-black hover:bg-red-500/85"
