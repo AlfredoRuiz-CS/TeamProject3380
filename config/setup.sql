@@ -20,7 +20,7 @@ CREATE TABLE product(
 
 CREATE TABLE employee(
     email varchar(100) PRIMARY KEY,
-    fname varchar(100) NOT NULL,
+    fName varchar(100) NOT NULL,
     lName varchar(100) NOT NULL,
     jobTitle varchar(50),
     phoneNumber varchar(10),
@@ -47,8 +47,7 @@ CREATE TABLE customer(
 CREATE TABLE membership(
     membershipID int PRIMARY KEY AUTO_INCREMENT,
     customerEmail varchar(100),
-    membershipType varchar(50),
-    membershipStatus varchar(50),
+    membershipStatus boolean,
     startDate date,
     endDate date,
     renewalDate date,
@@ -74,8 +73,7 @@ CREATE TABLE purchaseOrder (
     orderID int PRIMARY KEY AUTO_INCREMENT,
     customerEmail varchar(100),
     orderDate date,
-    tax decimal(10, 2),
-    totalAmount decimal(10, 2),
+    total decimal(10, 2),
     FOREIGN KEY (customerEmail) REFERENCES customer(email) ON DELETE
     SET NULL
 );
@@ -84,7 +82,6 @@ CREATE TABLE payment(
     paymentID int PRIMARY KEY AUTO_INCREMENT,
     orderID int,
     paymentDate date,
-    expeditedShipping boolean,
     totalAmount decimal(10, 2),
     paymentMethod varchar(50),
     paymentStatus varchar(50),
@@ -106,8 +103,8 @@ CREATE TABLE orderLine(
     productID int,
     quantity int,
     unitPrice decimal(10, 2),
-    tax decimal(10, 2),
-    totalAmount decimal(10, 2),
+    subTotal decimal(10, 2),
+    active boolean default 1,
     FOREIGN KEY (orderID) REFERENCES purchaseOrder(orderID) ON DELETE CASCADE,
     FOREIGN KEY (productID) REFERENCES product(productID) ON DELETE
     SET NULL ON UPDATE CASCADE

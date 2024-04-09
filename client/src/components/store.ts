@@ -60,6 +60,33 @@ export const useProductsStore = create(
   })
 );
 
+export type Supplier = {
+  supplierNumber: number;
+  name: string;
+  phoneNumber: string;
+  streetAddress: string;
+  city: string;
+  state: string;
+  zipcode: string;
+};
+
+type SupplierState = {
+  suppliers: Supplier[];
+  setSuppliers: (suppliers: Supplier[]) => void;
+}
+
+const supplierStore: StateCreator<SupplierState, [['zustand/persist', unknown]]> = (set) => ({
+  suppliers: [],
+  setSuppliers: (suppliers: Supplier[]) => set({ suppliers })
+});
+
+export const useSupplierStore = create(
+  persist(supplierStore, {
+    name: 'supplier-store',
+    storage: createJSONStorage(() => localStorage)
+  })
+);
+
 type UserState = {
   // States for user login
   loggedIn: boolean;
@@ -194,7 +221,7 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
     set((state) => ({
       List: state.List.filter((item) => item !== product),
     })),
-  resetCart: () => set({ cartItemsNumber: 0, cartItems: [] }),
+  resetCart: () => set({ cartItemsNumber: 0, cartItems: [], quantity: [] }),
 });
 
 const useUserStore = create(
