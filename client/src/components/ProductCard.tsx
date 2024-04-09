@@ -96,7 +96,7 @@ const ProductCard = (props: ProductCardProps) => {
             props.product.portion}
         </h1>
         {/* Buttons section */}
-        <section className="mb-3 mt-auto flex flex-row items-end justify-center gap-3 px-3">
+        <section className="mb-3 mt-auto flex flex-row justify-center gap-3 px-3">
           {/* Quantity Button */}
           {QuantityEnabled ? (
             <div className="flex flex-row gap-2">
