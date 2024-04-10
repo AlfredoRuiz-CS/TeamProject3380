@@ -66,7 +66,8 @@ const Login = () => {
             state: userData.state,
             zip: userData.zipcode,
           },
-          accountType: userData.accountType
+          accountType: userData.accountType,
+          isMember: userData.isMember
         });
         // navigate('/profile');
       } catch (error) {

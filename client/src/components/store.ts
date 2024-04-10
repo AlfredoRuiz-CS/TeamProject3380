@@ -152,6 +152,8 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
   logout: () =>
     set({
       loggedIn: false,
+      isMember: false,
+      isAdmin: false,
       fname: '',
       lname: '',
       email: '',
@@ -160,7 +162,7 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
       cartItemsNumber: 0,
       cartItems: [],
       List: [],
-      quantity: []
+      quantity: [],
     }),
   login: (isEmployee) => {
     set((state) => ({ 
