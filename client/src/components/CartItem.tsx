@@ -12,12 +12,13 @@ const CartItem = (props: CartItemProps) => {
 
   function handleRemoveItem(e: React.MouseEvent) {
     e.preventDefault();
-    store.removeFromCart(props.product);
+    // store.removeFromCart(props.product);
+    console.log('NOTHING HAPPENED, FUNCTION ERRONEOUS');
   }
 
   function handleSubtractQuantity(e: React.MouseEvent) {
     e.preventDefault();
-    if (props.quantity == 1) store.removeFromCart(props.product);
+    // if (props.quantity == 1) store.removeFromCart(props.product);
     store.changeQuantity(props.product, props.quantity - 1);
   }
 
