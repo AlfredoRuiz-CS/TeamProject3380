@@ -820,7 +820,7 @@ export const dummyProducts: productItem[] = [
   cookies,
 ];
 
-interface ProductApiResponse {
+export interface ProductApiResponse {
   productID: number;
   productName: string;
   productDesc: string;
@@ -854,7 +854,7 @@ interface ProductApiResponse {
   weight: string;
 }
 
-enum Category {
+export enum Category {
   produce = 1,
   meat = 2,
   fish = 3,
@@ -862,7 +862,7 @@ enum Category {
   snacks = 5,
 }
 
-function mapCategory(categoryID: number): string {
+export function mapCategory(categoryID: number): string {
   return Category[categoryID] || 'Unknown Category';
 }
 

@@ -31,17 +31,19 @@ const ProductCard = (props: ProductCardProps) => {
   }
 
   function handleAddToList() {
-    listConfirmToast();
-    console.log('Added ', quantity, ' ', props.product.name, 'to List');
-    if (user.loggedIn) {
+    if (user.loggedIn && !user.isAdmin) {
+      listConfirmToast();
+      console.log('Added ', quantity, ' ', props.product.name, 'to List');
       user.addToList(props.product);
     }
   }
 
   function handleAddToCart() {
-    cartConfirmToast();
-    console.log('Added ', quantity, ' ', props.product.name, 'to Cart');
-    user.addToCart(props.product, quantity);
+    if (user.loggedIn && !user.isAdmin){
+      cartConfirmToast();
+      console.log('Added ', quantity, ' ', props.product.name, 'to Cart');
+      user.addToCart(props.product, quantity);
+    }
   }
 
   const cartConfirmToast = () =>

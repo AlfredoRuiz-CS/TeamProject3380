@@ -61,7 +61,7 @@ export const useProductsStore = create(
 );
 
 export type Supplier = {
-  supplierNumber: number;
+  supplierID: number;
   name: string;
   phoneNumber: string;
   streetAddress: string;
