@@ -12,6 +12,7 @@ interface paymentProps {
 
 const payment = (props: paymentProps) => {
   const store = useUserStore();
+  console.log('Rendered Payment Page', props.type);
 
   return (
     <>

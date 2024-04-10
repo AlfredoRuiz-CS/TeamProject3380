@@ -18,6 +18,7 @@ import {
 
 import useUserStore from '@/components/store';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const Cart = () => {
   const store = useUserStore();
@@ -152,7 +153,7 @@ const Cart = () => {
                   className="mt-10 h-[3rem] w-[12rem] self-center border-darkblue text-white hover:bg-darkblue hover:text-bgwhite"
                   onClick={handleCheckout}
                 >
-                  <a href="/payment/cart">Proceed to Checkout</a>
+                  <Link to="/payment">Proceed to Checkout</Link>
                 </Button>
               </div>
             </div>

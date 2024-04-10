@@ -32,7 +32,8 @@ function App() {
         <Route path="/cart" element={<Cart />} />
         <Route path="/list" element={<ProductList />} />
         <Route path="/membership" element={<MemberPage />} />
-        <Route path="/payment/cart" element={<Payment type={'cart'} />} />
+        <Route path="/payment" element={<Payment type={'cart'} />} />
+        {/* <Route path="/payment/cart" element={<Payment type={'cart'} />} /> */}
         <Route
           path="/payment/membership"
           element={<Payment type={'membership'} />}
