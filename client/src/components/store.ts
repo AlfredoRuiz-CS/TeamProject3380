@@ -48,7 +48,10 @@ type ProductState = {
   setProducts: (products: productItem[]) => void;
 };
 
-const productsStore: StateCreator<ProductState, [['zustand/persist', unknown]]> = (set) => ({
+const productsStore: StateCreator<
+  ProductState,
+  [['zustand/persist', unknown]]
+> = (set) => ({
   products: [],
   setProducts: (products: productItem[]) => set({ products }),
 });
@@ -73,17 +76,20 @@ export type Supplier = {
 type SupplierState = {
   suppliers: Supplier[];
   setSuppliers: (suppliers: Supplier[]) => void;
-}
+};
 
-const supplierStore: StateCreator<SupplierState, [['zustand/persist', unknown]]> = (set) => ({
+const supplierStore: StateCreator<
+  SupplierState,
+  [['zustand/persist', unknown]]
+> = (set) => ({
   suppliers: [],
-  setSuppliers: (suppliers: Supplier[]) => set({ suppliers })
+  setSuppliers: (suppliers: Supplier[]) => set({ suppliers }),
 });
 
 export const useSupplierStore = create(
   persist(supplierStore, {
     name: 'supplier-store',
-    storage: createJSONStorage(() => localStorage)
+    storage: createJSONStorage(() => localStorage),
   })
 );
 
@@ -120,6 +126,7 @@ type UserState = {
   logout: () => void;
   addToCart: (productToAdd: productItem, quantity: number) => void;
   addToList: (product: productItem) => void;
+  removeFromList: (product: productItem) => void;
   // removeFromCart: (product: productItem) => void;
   changeQuantity: (product: productItem, quantity: number) => void;
   resetCart: () => void;
@@ -160,18 +167,20 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
       cartItemsNumber: 0,
       cartItems: [],
       List: [],
-      quantity: []
+      quantity: [],
     }),
   login: (isEmployee) => {
-    set((state) => ({ 
+    set((state) => ({
       loggedIn: true,
       isAdmin: isEmployee,
-      isMember: isEmployee || state.isMember
+      isMember: isEmployee || state.isMember,
     }));
   },
-  addToCart: (productToAdd, quantity=1) =>
+  addToCart: (productToAdd, quantity = 1) =>
     set((state) => {
-      const existingProductIndex = state.cartItems.findIndex(item => item.productId === productToAdd.productId);
+      const existingProductIndex = state.cartItems.findIndex(
+        (item) => item.productId === productToAdd.productId
+      );
       let newCartItems: productItem[] = [...state.cartItems];
       let newQuantity = [...state.quantity];
 
@@ -182,19 +191,24 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
         newQuantity.push(quantity);
       }
 
-      const newCartItemsNumber = newQuantity.reduce((total, qty) => total + qty, 0);
+      const newCartItemsNumber = newQuantity.reduce(
+        (total, qty) => total + qty,
+        0
+      );
       return {
         cartItemsNumber: newCartItemsNumber,
         cartItems: newCartItems,
         quantity: newQuantity,
       };
     }),
-    addToList: (productToAdd) =>
+  addToList: (productToAdd) =>
     set((state) => {
-      const isProductInList = state.List.some(item => item.productId === productToAdd.productId);
+      const isProductInList = state.List.some(
+        (item) => item.productId === productToAdd.productId
+      );
       if (!isProductInList) {
         return {
-          List: [...state.List, productToAdd]
+          List: [...state.List, productToAdd],
         };
       }
       return {};

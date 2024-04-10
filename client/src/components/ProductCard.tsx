@@ -16,6 +16,7 @@ import useUserStore from '@/components/store';
 interface ProductCardProps {
   product: productItem;
   list?: boolean;
+  removeList?: boolean;
 }
 
 const ProductCard = (props: ProductCardProps) => {
@@ -35,6 +36,13 @@ const ProductCard = (props: ProductCardProps) => {
     console.log('Added ', quantity, ' ', props.product.name, 'to List');
     if (user.loggedIn) {
       user.addToList(props.product);
+    }
+  }
+
+  function handleRemoveFromList() {
+    console.log('Removed ', quantity, ' ', props.product.name, 'from List');
+    if (user.loggedIn) {
+      user.removeFromList(props.product);
     }
   }
 
@@ -138,6 +146,17 @@ const ProductCard = (props: ProductCardProps) => {
               onClick={handleAddToList}
             >
               Add to List
+            </Button>
+          ) : (
+            <></>
+          )}
+          {/* Remove From List Button */}
+          {props.removeList ? (
+            <Button
+              className="text-md hover:bg-blueß-500/90 flex-grow rounded-lg bg-blue-500 py-5 font-jua text-black"
+              onClick={handleRemoveFromList}
+            >
+              Remove from List
             </Button>
           ) : (
             <></>

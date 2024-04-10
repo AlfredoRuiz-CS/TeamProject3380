@@ -8,7 +8,7 @@ import Login from './pages/Login';
 import Profile from './pages/Profile';
 import Cart from './pages/Cart';
 import Orders from './pages/Orders';
-import ProductList from './pages/productList';
+import ProductList from './pages/ProductList';
 import AdminDashboard from './pages/AdminDashboard';
 import MemberPage from './pages/MemberPage';
 import Payment from './pages/Payment';
@@ -33,7 +33,10 @@ function App() {
         <Route path="/list" element={<ProductList />} />
         <Route path="/membership" element={<MemberPage />} />
         <Route path="/payment/cart" element={<Payment type={'cart'} />} />
-        <Route path="/payment/membership" element={<Payment type={'membership'} />} />
+        <Route
+          path="/payment/membership"
+          element={<Payment type={'membership'} />}
+        />
         {/* Admin Dashboard */}
         <Route path="/admin" element={<AdminDashboard />} />
         {/* Suppliers */}
