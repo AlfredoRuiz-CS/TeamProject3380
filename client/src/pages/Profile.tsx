@@ -4,6 +4,8 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { BsFillPersonLinesFill } from 'react-icons/bs';
 import { MdOutlinePersonOutline } from 'react-icons/md';
+import { MdOutlinePayments } from 'react-icons/md';
+
 import {
   Select,
   SelectContent,
@@ -17,25 +19,20 @@ import useUserStore from '@/components/store';
 import { useState } from 'react';
 import axios from 'axios';
 
-type ProfileSection =
-| 'name'
-| 'email'
-| 'password'
-| 'phone'
-| 'address';
+type ProfileSection = 'name' | 'email' | 'password' | 'phone' | 'address';
 
-type ProfileData = 
-| { currentEmail?: string; firstName: string; lastName: string; }
-| { currentEmail?: string; email: string }
-| { currentEmail?: string; password: string }
-| { currentEmail?: string; phone: string }
-| {
-    currentEmail?: string;
-    street: string;
-    city: string;
-    state: string;
-    zip: string;
-  };
+type ProfileData =
+  | { currentEmail?: string; firstName: string; lastName: string }
+  | { currentEmail?: string; email: string }
+  | { currentEmail?: string; password: string }
+  | { currentEmail?: string; phone: string }
+  | {
+      currentEmail?: string;
+      street: string;
+      city: string;
+      state: string;
+      zip: string;
+    };
 
 const Profile = () => {
   const store = useUserStore();
@@ -106,56 +103,59 @@ const Profile = () => {
     'WY',
   ];
 
-  function updateProfile(section: ProfileSection, data: ProfileData){
+  function updateProfile(section: ProfileSection, data: ProfileData) {
     const endpointMap: { [K in ProfileSection]: string } = {
-      name: "https://shastamart-api-deploy.vercel.app/api/users/update_name",
-      email: "https://shastamart-api-deploy.vercel.app/api/users/update_email",
-      password: "https://shastamart-api-deploy.vercel.app/api/users/update_password",
-      phone: "https://shastamart-api-deploy.vercel.app/api/users/update_phone",
-      address: "https://shastamart-api-deploy.vercel.app/api/users/update_address"
+      name: 'https://shastamart-api-deploy.vercel.app/api/users/update_name',
+      email: 'https://shastamart-api-deploy.vercel.app/api/users/update_email',
+      password:
+        'https://shastamart-api-deploy.vercel.app/api/users/update_password',
+      phone: 'https://shastamart-api-deploy.vercel.app/api/users/update_phone',
+      address:
+        'https://shastamart-api-deploy.vercel.app/api/users/update_address',
     };
 
     const endpoint = endpointMap[section];
-    if (endpoint){
+    if (endpoint) {
       data.currentEmail = store.email;
       console.log(data);
-      axios.post(endpoint, data)
-      .then(response => {
-        console.log(response.data);
-        switch(section){
-          case 'name':
-            store.setUserDetails({
-              fname: response.data.fName,
-              lname: response.data.lName
-            });
-            break;
-          case 'email':
-            store.setUserDetails({
-              email: response.data.email
-            });
-            break;
-          case 'phone':
-            store.setUserDetails({
-              phone: response.data.phone
-            });
-            break;
-          case 'address':
-            store.setUserDetails({
-              address: {
-                street: response.data.street,
-                city: response.data.city,
-                state: response.data.state,
-                zip: response.data.zipcode,
-              }
-            });
-            break;
-          default:
-            break;
-        }
-      })
-      .catch(error => {
-        console.log(error);
-      })
+      axios
+        .post(endpoint, data)
+        .then((response) => {
+          console.log(response.data);
+          switch (section) {
+            case 'name':
+              store.setUserDetails({
+                fname: response.data.fName,
+                lname: response.data.lName,
+              });
+              break;
+            case 'email':
+              store.setUserDetails({
+                email: response.data.email,
+              });
+              break;
+            case 'phone':
+              store.setUserDetails({
+                phone: response.data.phone,
+              });
+              break;
+            case 'address':
+              store.setUserDetails({
+                address: {
+                  street: response.data.street,
+                  city: response.data.city,
+                  state: response.data.state,
+                  zip: response.data.zipcode,
+                },
+              });
+              break;
+            default:
+              break;
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
   }
 
@@ -175,7 +175,12 @@ const Profile = () => {
     updateProfile('phone', { phone });
   }
 
-  function handleAddressChange(street: string, city: string, state: string, zip: string) {
+  function handleAddressChange(
+    street: string,
+    city: string,
+    state: string,
+    zip: string
+  ) {
     updateProfile('address', { street, city, state, zip });
   }
 
@@ -208,20 +213,27 @@ const Profile = () => {
               {store.email}
             </h2>
           </div>
-          <div className="z-0 mx-auto -mt-8 mb-[20rem] h-[45rem] w-2/5 rounded-3xl bg-darkblue">
-            <div className="flex flex-row gap-32 pt-4">
+          <div className="z-0 mx-auto -mt-8 mb-20 h-[45rem] w-2/5 rounded-3xl bg-darkblue">
+            <div className="flex flex-row justify-around pt-4">
               <section className="flex flex-col">
                 {/* Name, Phone Number, Address Fields */}
                 <div className="flex flex-row">
                   {/* Name Fields */}
                   <div className="flex flex-col items-start">
-                    <form className="flex w-1/2 flex-col gap-0 pt-10" onSubmit={(event) =>{
+                    <form
+                      className="flex w-1/2 flex-col gap-0 pt-10"
+                      onSubmit={(event) => {
                         event.preventDefault();
                         const form = event.target as HTMLFormElement;
-                        const firstName = form.elements.namedItem('firstName') as HTMLInputElement;
-                        const lastName = form.elements.namedItem('lastName') as HTMLInputElement;
+                        const firstName = form.elements.namedItem(
+                          'firstName'
+                        ) as HTMLInputElement;
+                        const lastName = form.elements.namedItem(
+                          'lastName'
+                        ) as HTMLInputElement;
                         handleNameChange(firstName.value, lastName.value);
-                    }}>
+                      }}
+                    >
                       <h3 className="pl-4 text-lg font-semibold text-white">
                         First Name
                       </h3>
@@ -250,12 +262,17 @@ const Profile = () => {
                     </form>
 
                     {/* Phone Number Field */}
-                    <form className="flex flex-col gap-3 pt-10" onSubmit={(event) =>{
+                    <form
+                      className="flex flex-col gap-3 pt-10"
+                      onSubmit={(event) => {
                         event.preventDefault();
                         const form = event.target as HTMLFormElement;
-                        const phone = form.elements.namedItem('phone') as HTMLInputElement;
+                        const phone = form.elements.namedItem(
+                          'phone'
+                        ) as HTMLInputElement;
                         handlePhoneChange(phone.value);
-                    }}>
+                      }}
+                    >
                       <div className="flex flex-col items-start">
                         <h3 className="w-full pl-4 text-lg font-semibold text-white">
                           Phone Number
@@ -277,15 +294,31 @@ const Profile = () => {
                     </form>
 
                     {/* Address Fields */}
-                    <form className="flex flex-col gap-3 pt-10"onSubmit={(event) =>{
+                    <form
+                      className="flex flex-col gap-3 pt-10"
+                      onSubmit={(event) => {
                         event.preventDefault();
                         const form = event.target as HTMLFormElement;
-                        const street = form.elements.namedItem('street') as HTMLInputElement;
-                        const city = form.elements.namedItem('city') as HTMLInputElement;
-                        const state = form.elements.namedItem('state') as HTMLInputElement;
-                        const zipcode = form.elements.namedItem('zipcode') as HTMLInputElement;
-                        handleAddressChange(street.value, city.value, state.value, zipcode.value);
-                    }}>
+                        const street = form.elements.namedItem(
+                          'street'
+                        ) as HTMLInputElement;
+                        const city = form.elements.namedItem(
+                          'city'
+                        ) as HTMLInputElement;
+                        const state = form.elements.namedItem(
+                          'state'
+                        ) as HTMLInputElement;
+                        const zipcode = form.elements.namedItem(
+                          'zipcode'
+                        ) as HTMLInputElement;
+                        handleAddressChange(
+                          street.value,
+                          city.value,
+                          state.value,
+                          zipcode.value
+                        );
+                      }}
+                    >
                       <div className="flex flex-col items-start">
                         <h3 className="w-full pl-4 text-lg font-semibold text-white">
                           Address
@@ -352,12 +385,17 @@ const Profile = () => {
                 </div>
               </section>
               <section className="flex flex-col">
-                <form className=" flex w-1/2 flex-col pt-10" onSubmit={(event) =>{
-                        event.preventDefault();
-                        const form = event.target as HTMLFormElement;
-                        const email = form.elements.namedItem('email') as HTMLInputElement;
-                        handleEmailChange(email.value);
-                    }}>
+                <form
+                  className=" flex w-1/2 flex-col pt-10"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    const form = event.target as HTMLFormElement;
+                    const email = form.elements.namedItem(
+                      'email'
+                    ) as HTMLInputElement;
+                    handleEmailChange(email.value);
+                  }}
+                >
                   <h3 className="pl-4 text-lg font-semibold text-white">
                     Email
                   </h3>
@@ -375,12 +413,17 @@ const Profile = () => {
                     Change Email
                   </Button>
                 </form>
-                <form className="flex w-1/2 flex-col pt-5" onSubmit={(event) =>{
-                        event.preventDefault();
-                        const form = event.target as HTMLFormElement;
-                        const password = form.elements.namedItem('password') as HTMLInputElement;
-                        handlePasswordChange(password.value);
-                    }}>
+                <form
+                  className="flex w-1/2 flex-col pt-5"
+                  onSubmit={(event) => {
+                    event.preventDefault();
+                    const form = event.target as HTMLFormElement;
+                    const password = form.elements.namedItem(
+                      'password'
+                    ) as HTMLInputElement;
+                    handlePasswordChange(password.value);
+                  }}
+                >
                   <h3 className="mt-2 pl-4 text-lg font-semibold text-white">
                     Password
                   </h3>
@@ -388,9 +431,7 @@ const Profile = () => {
                   <input
                     className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                     type={isPasswordVisible ? 'text' : 'password'}
-                    placeholder={
-                      '*'.repeat(10)
-                    }
+                    placeholder={'*'.repeat(10)}
                     name="password"
                   />
                   <div className="ml-4 flex w-full flex-row">
@@ -418,6 +459,18 @@ const Profile = () => {
                   </Button>
                 </form>
               </section>
+            </div>
+          </div>
+          {/* Payment Methods saved on profile */}
+          <div className="z-10 mx-auto flex h-16 w-2/5 flex-row rounded-2xl bg-xanthousyellow">
+            <MdOutlinePayments className="ml-4 mt-1 flex h-14 w-14 self-start" />
+            <h2 className="self-center pl-2 font-inter text-xl font-semibold">
+              Payment Methods
+            </h2>
+          </div>
+          <div className="z-0 mx-auto -mt-8 mb-[20rem] h-[45rem] w-2/5 rounded-3xl bg-darkblue">
+            <div className="flex flex-row gap-32 pt-4">
+              <section className="flex flex-col"></section>
             </div>
           </div>
         </div>
