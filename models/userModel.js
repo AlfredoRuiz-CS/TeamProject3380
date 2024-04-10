@@ -65,7 +65,7 @@ async function login(email, password) {
     const [result] = await pool.query(`
     SELECT *
     FROM membership
-    where email = ?`, [email]);
+    where customerEmail = ?`, [email]);
 
     if (result.length > 0){
       isMember = true;
