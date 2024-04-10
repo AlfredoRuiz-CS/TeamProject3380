@@ -91,6 +91,7 @@ const Cart = () => {
                 {store.cartItems.map((product, index) => (
                   <li key={index} className="">
                     <CartItem
+                      key={index}
                       product={product}
                       quantity={store.quantity[index]}
                     />
@@ -163,27 +164,31 @@ const Cart = () => {
               <div className="flex flex-row gap-5 pl-12">
                 <div className="flex flex-col gap-10">
                   <div className="flex flex-col gap-5">
-                    {store.List.map((product) => (
-                      <div className="flex flex-row gap-5">
-                        <div className="h-[5rem] w-[5rem] overflow-hidden rounded-[10px]">
-                          <img
-                            className="h-full w-full object-contain"
-                            src={`../${product.image.replace(/\.(jpg|jpeg)$/, '.png')}`}
-                          ></img>
-                        </div>
-                        <div className="flex flex-col">
-                          <h1 className="flex flex-row self-center pt-5 text-3xl">
-                            {product.name}
-                          </h1>
-                          {product.price.toLocaleString('en-US', {
-                            style: 'currency',
-                            currency: 'USD',
-                          }) +
-                            ' per ' +
-                            product.portion}
-                        </div>
-                      </div>
-                    ))}
+                    <ul className="disc-none">
+                      {store.List.map((product, index) => (
+                        <li key={index}>
+                          <div className="flex flex-row gap-5">
+                            <div className="h-[5rem] w-[5rem] overflow-hidden rounded-[10px]">
+                              <img
+                                className="h-full w-full object-contain"
+                                src={`../${product.image.replace(/\.(jpg|jpeg)$/, '.png')}`}
+                              ></img>
+                            </div>
+                            <div className="flex flex-col">
+                              <h1 className="flex flex-row self-center pt-5 text-3xl">
+                                {product.name}
+                              </h1>
+                              {product.price.toLocaleString('en-US', {
+                                style: 'currency',
+                                currency: 'USD',
+                              }) +
+                                ' per ' +
+                                product.portion}
+                            </div>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               </div>
