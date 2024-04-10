@@ -28,6 +28,7 @@ const Header = (props: HeaderProps) => {
   const store = useUserStore();
   // const navigate = useNavigate();
   useEffect(() => {}, [store.loggedIn]);
+  useEffect(() => {}, [store.cartItemsNumber]);
 
   let textColor = 'text-white';
   let borderColor = 'border-white';
@@ -76,7 +77,7 @@ const Header = (props: HeaderProps) => {
               <li className="flex items-center justify-center">
                 <Link to="/membership">Membership</Link>
               </li>
-            ) : store.loggedIn && store.accountType === "employee" ? (
+            ) : store.loggedIn && store.accountType === 'employee' ? (
               <li className="flex items-center justify-center">
                 <Link to="/admin">Dashboard</Link>
               </li>
@@ -98,6 +99,8 @@ const Header = (props: HeaderProps) => {
                   </Link>
                 ) : (
                   <Link to="/cart" className="flex flex-row gap-1">
+                    {/* <div className="absolute z-10 h-10 w-10 rounded-full bg-black"></div> */}
+                    {/* <p>hello</p> */}
                     <p className="">{store.cartItemsNumber}</p>
                     <IoMdCart size={20} color="primary" />
                   </Link>
@@ -191,7 +194,7 @@ const Header = (props: HeaderProps) => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </li>
-            ): (
+            ) : (
               <li className="flex items-center justify-center">
                 <Button asChild className="">
                   <Link to="/register">Register</Link>
