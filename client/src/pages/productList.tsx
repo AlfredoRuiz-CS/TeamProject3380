@@ -104,7 +104,8 @@ const ProductList = () => {
                         </Select>
                     </div>
                     {/* List of Product Items */}
-                    <div className="mx-[10rem] flex flex-row flex-wrap gap-7">
+                    {/* <div className="mx-[10rem] flex flex-row flex-wrap gap-7"> */}
+                    <div className="flex flex-row flex-wrap justify-center gap-7 pb-7">
                         {/* Display Product Cards */}
                         {orderedProducts.map((product) => (
                             <ProductCard key={product.productId} product={product} />
