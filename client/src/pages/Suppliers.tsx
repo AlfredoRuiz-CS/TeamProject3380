@@ -21,7 +21,7 @@ const supplier1: Supplier = {
     streetAddress: '1600 Main Street',
     city: 'San Francisco',
     state: 'CA',
-    zipcode: '77084'
+    zipcode: '94110'
 }
 
 const dummySuppliers: Supplier[] = [

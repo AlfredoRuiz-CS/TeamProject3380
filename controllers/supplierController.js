@@ -20,12 +20,12 @@ const insertSupplier = async (req, res) => {
         const { name, phoneNumber, streetAddress, city, state, zipcode } = body;
 
         const supplier = insertSupplier(name, phoneNumber, streetAddress, city, state, zipcode);
-        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.writeHead(201, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ "message": "Successfully added supplier to database" }));
 
     } catch (error) {
-        res.writeHead(400, { 'Content-Type' : 'application/json' })
-        res.end(JSON.stringify({ error: error.message}))
+        res.writeHead(400, { 'Content-Type' : 'application/json' });
+        res.end(JSON.stringify({ error: error.message}));
     }
 }
 
