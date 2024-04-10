@@ -19,7 +19,7 @@ const insertSupplier = async (req, res) => {
         const body = await getRequestBody(req);
         const { name, phoneNumber, streetAddress, city, state, zipcode } = body;
 
-        const supplier = insertSupplier(name, phoneNumber, streetAddress, city, state, zipcode);
+        const supplier = await supplierModel.insertSupplier(name, phoneNumber, streetAddress, city, state, zipcode);
         res.writeHead(201, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ "message": "Successfully added supplier to database" }));
 
