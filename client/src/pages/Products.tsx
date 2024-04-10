@@ -111,6 +111,7 @@ const bananas: productItem = {
     'Bunch of bananas (about 4-7 total)',
     'Ripe and ready to enjoy',
     'Convenient Fruit Snack',
+    'Convenient Fruit Snack',
   ],
   shippingDetails: {
     dimensions: {
@@ -145,6 +146,7 @@ const avocado: productItem = {
   portion: 'oz.',
   category: 'produce',
   description: [
+    'Fresh avocados with a creamy, nutty taste',
     'Fresh avocados with a creamy, nutty taste',
     'Ripe when slightly soft, yet firm',
     'Key guacamole ingredient',
@@ -183,6 +185,7 @@ const chicken: productItem = {
   portion: 'lb.',
   category: 'meat',
   description: [
+    'Fresh chicken wing portion',
     'Fresh chicken wing portion',
     'No added hormones, 100% natural',
     'Hatched, raised, and harvested in USA',
@@ -261,6 +264,8 @@ const pork: productItem = {
   description: [
     'Fresh, 100% natural pork cuts',
     'No preservatives or added hormones',
+    'Fresh, 100% natural pork cuts',
+    'No preservatives or added hormones',
     'Provided from your local butcher, Timmy’s Pork',
   ],
   shippingDetails: {
@@ -299,6 +304,7 @@ const sausage: productItem = {
     'Authentic, Texas flavor, perfect for your next cookout',
     'Made with quality cuts of beef, gluten free, no MSG',
     'An excellent main course or side dish',
+    'An excellent main course or side dish',
   ],
   shippingDetails: {
     dimensions: {
@@ -336,6 +342,7 @@ const salmon: productItem = {
   portion: 'oz.',
   category: 'fish',
   description: [
+    'Classic, fresh Atlantic salmon',
     'Classic, fresh Atlantic salmon',
     'Pre-cut into 4 portions for easy preparation',
     'Bake, grill, or pan-fry skin side down for best results',
@@ -410,6 +417,7 @@ const crab: productItem = {
   portion: 'lb.',
   category: 'fish',
   description: [
+    'Freshly caught from the Gulf of St. Laurence, Canada',
     'Freshly caught from the Gulf of St. Laurence, Canada',
     'Tender, white meat with a sweet, delicate flavor',
     'Approximately 12-14 oz average per cluster',
@@ -528,7 +536,9 @@ const twoMilk: productItem = {
   category: 'dairy',
   description: [
     'Made with 38% less fat than whole milk',
+    'Made with 38% less fat than whole milk',
     'Enriched with Vitamin E',
+    'No artificial growth hormones',
     'No artificial growth hormones',
   ],
   shippingDetails: {
@@ -570,7 +580,9 @@ const cheese: productItem = {
   category: 'dairy',
   description: [
     'Tangy, complex flavor due to longer aging',
+    'Tangy, complex flavor due to longer aging',
     'Thinly sliced for your convenience',
+    'No artificial growth hormones',
     'No artificial growth hormones',
   ],
   shippingDetails: {
@@ -636,6 +648,7 @@ const yogurt: productItem = {
   },
 };
 
+
 //Snacks
 const chips: productItem = {
   productId: 50001,
@@ -650,6 +663,7 @@ const chips: productItem = {
   description: [
     'Thin, crispy, sweet, and barbecue flavors in every bite',
     'Add an extra kick to packed lunches',
+    'No certified synthetic colors',
     'No certified synthetic colors',
   ],
   shippingDetails: {

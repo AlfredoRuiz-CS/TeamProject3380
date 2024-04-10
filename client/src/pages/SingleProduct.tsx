@@ -391,7 +391,7 @@ const SingleProduct = () => {
                 <div className="text-[28px]">
                   {calDV(
                     Number(product.nutritionFacts?.iron?.replace(/\D/g, '')) ||
-                      0,
+                    0,
                     dV.iron
                   )}
                 </div>
