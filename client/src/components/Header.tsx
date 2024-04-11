@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Button } from './ui/button.tsx';
 import 'react-toastify/dist/ReactToastify.css';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { IoMdCart } from 'react-icons/io';
 import { IoNotifications } from 'react-icons/io5';
 import { IoIosArrowDown } from 'react-icons/io';
@@ -16,12 +16,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 // Imports for state management
 import useUserStore from '@/components/store';
 // import { devtools, persist } from "zustand/middleware";
 import type {} from '@redux-devtools/extension'; // required for devtools typing
-// import { useNavigate } from 'react-router-dom';
 
 interface HeaderProps {
   color?: 'blue' | 'white';
@@ -29,6 +29,7 @@ interface HeaderProps {
 
 const Header = (props: HeaderProps) => {
   const user = useUserStore();
+  const navigate = useNavigate();
   // ! ADD BACKEND CALL TO DISPLAY THE NUMBER OF NOTIFICATIONS
   const notifNumber = 5;
   useEffect(() => {}, [user.loggedIn]);
@@ -44,16 +45,17 @@ const Header = (props: HeaderProps) => {
 
   function logoutHandler() {
     user.logout();
-    logoutToast();
+    logoutToast(() => navigate('/home'));
   }
 
-  const logoutToast = () => {
-    toast.success('You have been logged out successfully.', {
+  function logoutToast(onClose: () => void) {
+    toast.success('You have been logged out successfully...', {
       position: 'bottom-right',
       className: 'font-bold text-black',
       autoClose: 2000,
+      onClose: onClose,
     });
-  };
+  }
 
   return (
     <>
@@ -225,6 +227,7 @@ const Header = (props: HeaderProps) => {
               </li>
             )}
           </ul>
+          {/* <ToastContainer /> */}
         </div>
       </div>
     </>

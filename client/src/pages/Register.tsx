@@ -4,7 +4,7 @@ import Footer from '../components/Footer';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
 import React, { useState, useEffect } from 'react'; // reacteventhandler removed from imports
 import 'react-toastify/dist/ReactToastify.css'; // react toasts for notifications
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 // import { Button } from '../components/ui/button.tsx';
 import { useFormik } from 'formik'; // error message removed from imports
 import * as Yup from 'yup';
@@ -166,7 +166,7 @@ const Register = () => {
   useEffect(() => {
     if (store.loggedIn) {
       console.log('User is loggin in...redirecting');
-      navigate('/products');
+      registerSuccess(() => navigate('/products'));
     }
   }, [store.loggedIn, navigate]);
 
@@ -305,7 +305,7 @@ const Register = () => {
           </span>
         </h2>
       </div>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       <Footer />
     </>
   );

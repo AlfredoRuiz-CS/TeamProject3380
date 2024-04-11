@@ -13,7 +13,7 @@ import {
 
 import { productItem } from '@/components/store';
 import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { useProductsStore } from '@/components/store';
 import useUserStore from '@/components/store';
 // interface productProps {
@@ -438,7 +438,7 @@ const SingleProduct = () => {
           )}
         </div>
       </div>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       <Footer />
     </>
   );

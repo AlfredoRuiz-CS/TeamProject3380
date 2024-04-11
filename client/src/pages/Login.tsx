@@ -3,7 +3,7 @@ import Footer from '../components/Footer';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
 import { useState, useEffect } from 'react';
 import 'react-toastify/dist/ReactToastify.css';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 // import * as Yup from 'yup';
@@ -81,7 +81,16 @@ const Login = () => {
 
   // ? Toast functions
   function loginSuccess(onClose: () => void) {
-    toast.success('Log in successful!', {
+    toast.success('Log in successful... Redirecting', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      autoClose: 2000,
+      onClose: onClose,
+    });
+  }
+
+  function loginSuccessAdmin(onClose: () => void) {
+    toast.success('(ADMIN) Log in successful... Redirecting', {
       position: 'bottom-right',
       className: 'font-bold text-black',
       autoClose: 2000,
@@ -107,7 +116,7 @@ const Login = () => {
   useEffect(() => {
     if (store.loggedIn && store.isAdmin) {
       console.log('User is loggin in...redirecting');
-      loginSuccess(() => navigate('/admin'));
+      loginSuccessAdmin(() => navigate('/admin'));
     } else if (store.loggedIn) {
       console.log('User is loggin in...redirecting');
       loginSuccess(() => navigate('/products'));
@@ -173,7 +182,7 @@ const Login = () => {
             <Cursor />
           </span>
         </h2>
-        <ToastContainer />
+        {/* <ToastContainer /> */}
       </div>
       <Footer />
     </>
