@@ -8,7 +8,7 @@ import Login from './pages/Login';
 import Profile from './pages/Profile';
 import Cart from './pages/Cart';
 import Orders from './pages/Orders';
-import ProductList from './pages/productlisttemp';
+import ProductList from './pages/ProductList';
 import AdminDashboard from './pages/AdminDashboard';
 import MemberPage from './pages/MemberPage';
 import Payment from './pages/Payment';
