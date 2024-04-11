@@ -102,15 +102,18 @@ async function findAllCustomers() {
   }
 }
 
-  // async function findUserbyEmail(email){
-  //   try { 
-  //       const [rows] = await pool.query('SELECT email FROM customer as c WHERE c.email = ?', [email]);
-  //       return rows[0];
-  //   } catch (error){
-  //     console.log(error.message);
-  //     throw error;
-  //   }
-  // }
+async function findUserbyEmail(email){
+  try { 
+      const [rows] = await pool.query(`SELECT email, active FROM customer WHERE email = ?`, [email]);
+      if (rows.length === 0 || rows[0].active === 0){
+          throw new Error('Cannot find customer or customer inactive')
+      }
+      return rows[0];
+  } catch (error){
+    console.log(error.message);
+    throw error;
+  }
+}
 
 async function getUserPaymentInfo(email){
   try {
@@ -304,5 +307,5 @@ module.exports = {
     updateUserPhone,
     updateUserAddress,
     updateUserName,
-    // updateUserlName
+    findUserbyEmail
 }

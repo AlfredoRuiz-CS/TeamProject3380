@@ -116,10 +116,11 @@ const Profile = () => {
 
     const endpoint = endpointMap[section];
     if (endpoint) {
-      data.currentEmail = store.email;
+      // data.currentEmail = store.email;
+      const token = localStorage.getItem('token');
       console.log(data);
       axios
-        .post(endpoint, data)
+        .post(endpoint, data, {headers: { 'Authorization': `Bearer ${token}` }})
         .then((response) => {
           console.log(response.data);
           switch (section) {
