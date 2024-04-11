@@ -53,7 +53,8 @@ const Login = () => {
           'https://shastamart-api-deploy.vercel.app/api/users/login',
           values
         );
-        const userData = await response.data;
+        const { token, ...userData } = await response.data;
+        localStorage.setItem('token', token);
         console.log(userData);
         setUserDetails({
           fname: userData.fName,

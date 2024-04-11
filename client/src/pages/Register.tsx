@@ -125,7 +125,8 @@ const Register = () => {
           'https://shastamart-api-deploy.vercel.app/api/users/register',
           values
         );
-        const userData = await response.data;
+        const { token, ...userData } = await response.data;
+        localStorage.setItem('token', token);
         store.login(userData.accountType === 'employee');
         setUserDetails({
           fname: userData.fName,
