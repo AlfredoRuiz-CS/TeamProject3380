@@ -957,7 +957,7 @@ const Products = () => {
       case 'In List':
         return [
           ...store.List,
-          ...p.filter((product) => !store.List.includes(product)),
+          ...p.filter((product) => store.List.includes(product)),
         ];
       default:
         return p;
