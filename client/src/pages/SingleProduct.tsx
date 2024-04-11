@@ -87,6 +87,7 @@ const SingleProduct = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
   // Funcitonality to toggle the quantity dropdown
   const [QuantityEnabled, setQuantityEnabled] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -102,7 +103,7 @@ const SingleProduct = () => {
 
   const listConfirmToast = () => {
     if (product) {
-      toast.success('Added ' + quantity + ' ' + product.name + ' to List!', {
+      toast.success('Added ' + product.name + ' to List!', {
         position: 'bottom-right',
         className: 'font-bold text-black',
       });
@@ -133,7 +134,7 @@ const SingleProduct = () => {
   function handleAddToList() {
     console.log('product', product);
     if (product && user.loggedIn) {
-      console.log('Added ', quantity, ' ', product.name, 'to List');
+      console.log('Added ', product.name, ' to List');
       listConfirmToast();
       user.addToList(product);
     }
@@ -142,7 +143,7 @@ const SingleProduct = () => {
   function handleAddToCart() {
     console.log('product', product);
     if (product && user.loggedIn) {
-      console.log('Added ', quantity, ' ', product.name, 'to Cart');
+      console.log('Added ', quantity, ' ', product.name, ' to Cart');
       cartConfirmToast();
       user.addToCart(product, quantity);
     }
@@ -391,7 +392,7 @@ const SingleProduct = () => {
                 <div className="text-[28px]">
                   {calDV(
                     Number(product.nutritionFacts?.iron?.replace(/\D/g, '')) ||
-                    0,
+                      0,
                     dV.iron
                   )}
                 </div>

@@ -127,7 +127,7 @@ type UserState = {
   addToCart: (productToAdd: productItem, quantity: number) => void;
   addToList: (product: productItem) => void;
   removeFromList: (product: productItem) => void;
-  // removeFromCart: (product: productItem) => void;
+  removeFromCart: (product: productItem) => void;
   changeQuantity: (product: productItem, quantity: number) => void;
   resetCart: () => void;
 };
@@ -215,15 +215,15 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
       }
       return {};
     }),
-  // removeFromCart: (product) =>
-  //   set((state) => ({
-  //     quantity: state.quantity.filter(
-  //       (index) => state.cartItems[index] !== product
-  //     ),
-  //     cartItemsNumber: state.cartItems.filter((item) => item !== product)
-  //       .length,
-  //     cartItems: state.cartItems.filter((item) => item !== product),
-  //   })),
+  removeFromCart: (product) =>
+    set((state) => ({
+      quantity: state.quantity.filter(
+        (index) => state.cartItems[index] !== product
+      ),
+      cartItemsNumber: state.cartItems.filter((item) => item !== product)
+        .length,
+      cartItems: state.cartItems.filter((item) => item !== product),
+    })),
   changeQuantity: (product, quantity) =>
     set((state) => {
       const newQuantity = state.quantity.map((q, i) =>

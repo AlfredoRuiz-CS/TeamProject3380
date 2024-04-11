@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Button } from './ui/button.tsx';
 import { IoMdCart } from 'react-icons/io';
+import { IoNotifications } from 'react-icons/io5';
 import { IoIosArrowDown } from 'react-icons/io';
 import {
   DropdownMenu,
@@ -25,10 +26,11 @@ interface HeaderProps {
 }
 
 const Header = (props: HeaderProps) => {
-  const store = useUserStore();
-  // const navigate = useNavigate();
-  useEffect(() => {}, [store.loggedIn]);
-  useEffect(() => {}, [store.cartItemsNumber]);
+  const user = useUserStore();
+  // ! ADD BACKEND CALL TO DISPLAY THE NUMBER OF NOTIFICATIONS
+  const notifNumber = 5;
+  useEffect(() => {}, [user.loggedIn]);
+  useEffect(() => {}, [user.cartItemsNumber]);
 
   let textColor = 'text-white';
   let borderColor = 'border-white';
@@ -39,8 +41,7 @@ const Header = (props: HeaderProps) => {
   }
 
   function logoutHandler() {
-    store.logout();
-    // navigate('/home');
+    user.logout();
   }
 
   return (
@@ -69,15 +70,15 @@ const Header = (props: HeaderProps) => {
               <Link to="/">Home</Link>
             </li>
             {/* If NOT a member display Membership link */}
-            {!store.loggedIn ? (
+            {!user.loggedIn ? (
               <li className="flex items-center justify-center">
                 <Link to="/membership">Membership</Link>
               </li>
-            ) : !store.isMember ? (
+            ) : !user.isMember ? (
               <li className="flex items-center justify-center">
                 <Link to="/membership">Membership</Link>
               </li>
-            ) : store.loggedIn && store.accountType === 'employee' ? (
+            ) : user.loggedIn && user.accountType === 'employee' ? (
               <li className="flex items-center justify-center">
                 <Link to="/admin">Dashboard</Link>
               </li>
@@ -90,18 +91,29 @@ const Header = (props: HeaderProps) => {
             </li>
 
             {/* If logged in display name and cart along with dropdown for dashboard*/}
-            {store.loggedIn ? (
+            {user.loggedIn ? (
               <li className="flex items-center justify-center">
                 {textColor === 'text-white' ? (
-                  <Link to="/cart" className="flex flex-row gap-1">
-                    <p className="">{store.cartItemsNumber}</p>
-                    <IoMdCart size={20} color="white" />
+                  user.accountType === 'employee' ? (
+                    // TODO: Add notification dropdown that links to the low supply sheet
+                    <Link to="/admin" className="flex flex-row gap-1">
+                      <p className="">{notifNumber}</p>
+                      <IoNotifications size={20} color="white" />
+                    </Link>
+                  ) : (
+                    <Link to="/cart" className="flex flex-row gap-1">
+                      <p className="">{user.cartItemsNumber}</p>
+                      <IoMdCart size={20} color="white" />
+                    </Link>
+                  )
+                ) : user.accountType === 'employee' ? (
+                  <Link to="/admin" className="flex flex-row gap-1">
+                    <p className="">{notifNumber}</p>
+                    <IoNotifications size={20} color="primary" />
                   </Link>
                 ) : (
                   <Link to="/cart" className="flex flex-row gap-1">
-                    {/* <div className="absolute z-10 h-10 w-10 rounded-full bg-black"></div> */}
-                    {/* <p>hello</p> */}
-                    <p className="">{store.cartItemsNumber}</p>
+                    <p className="">{user.cartItemsNumber}</p>
                     <IoMdCart size={20} color="primary" />
                   </Link>
                 )}
@@ -118,7 +130,7 @@ const Header = (props: HeaderProps) => {
               </li>
             )}
             {/* If User is logged in, display dropdown menu */}
-            {store.loggedIn && !store.isAdmin ? (
+            {user.loggedIn && !user.isAdmin ? (
               <li className="flex items-center justify-center">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild className="focus-visible:ring-0">
@@ -130,7 +142,7 @@ const Header = (props: HeaderProps) => {
                         textColor
                       }
                     >
-                      {store.fname}
+                      {user.fname}
                       <IoIosArrowDown />
                     </Button>
                   </DropdownMenuTrigger>
@@ -156,7 +168,7 @@ const Header = (props: HeaderProps) => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </li>
-            ) : store.loggedIn && store.isAdmin ? (
+            ) : user.loggedIn && user.isAdmin ? (
               <li className="flex items-center justify-center">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild className="focus-visible:ring-0">
@@ -168,7 +180,7 @@ const Header = (props: HeaderProps) => {
                         textColor
                       }
                     >
-                      {store.fname}
+                      {user.fname}
                       <IoIosArrowDown />
                     </Button>
                   </DropdownMenuTrigger>

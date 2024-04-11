@@ -34,7 +34,7 @@ const ProductCard = (props: ProductCardProps) => {
   function handleAddToList() {
     if (user.loggedIn && !user.isAdmin) {
       listConfirmToast();
-      console.log('Added ', quantity, ' ', props.product.name, 'to List');
+      console.log('Added ', props.product.name, ' to List');
       user.addToList(props.product);
     }
   }
@@ -47,7 +47,7 @@ const ProductCard = (props: ProductCardProps) => {
   }
 
   function handleAddToCart() {
-    if (user.loggedIn && !user.isAdmin){
+    if (user.loggedIn && !user.isAdmin) {
       cartConfirmToast();
       console.log('Added ', quantity, ' ', props.product.name, 'to Cart');
       user.addToCart(props.product, quantity);
