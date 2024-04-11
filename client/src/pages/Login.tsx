@@ -2,8 +2,8 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
 import { useState, useEffect } from 'react';
-// import { Button } from '@/components/ui/button';
-// import { Sonner } from '@/components/ui/sonner';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 // import * as Yup from 'yup';
@@ -13,8 +13,6 @@ import { Link } from 'react-router-dom';
 // Imports for state management
 import useUserStore from '@/components/store';
 import type {} from '@redux-devtools/extension'; // required for devtools typing
-// import { Toaster } from 'sonner';
-// import { devtools, persist } from "zustand/middleware";
 
 // const validationSchema = Yup.object({
 //   email: Yup.string()
@@ -51,7 +49,10 @@ const Login = () => {
     onSubmit: async (values, { setSubmitting }) => {
       console.log('Form submitted:', values);
       try {
-        const response = await axios.post('https://shastamart-api-deploy.vercel.app/api/users/login',values);
+        const response = await axios.post(
+          'https://shastamart-api-deploy.vercel.app/api/users/login',
+          values
+        );
         const userData = await response.data;
         console.log(userData);
         setUserDetails({
@@ -66,17 +67,35 @@ const Login = () => {
             zip: userData.zipcode,
           },
           accountType: userData.accountType,
-          isMember: userData.isMember
+          isMember: userData.isMember,
         });
         store.login(userData.accountType === 'employee');
         // navigate('/profile');
       } catch (error) {
         console.log(error);
+        loginFail();
       }
       setSubmitting(false);
     },
-    // },
   });
+
+  // ? Toast functions
+  function loginSuccess(onClose: () => void) {
+    toast.success('Log in successful!', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      autoClose: 2000,
+      onClose: onClose,
+    });
+  }
+
+  const loginFail = () =>
+    toast.error('Invalid email or password', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      autoClose: 2000,
+    });
+
   // function handleSubmit(e: React.FormEvent) {
   //   e.preventDefault();
   //   // TODO: Add calls to backend to check if user exists
@@ -88,11 +107,10 @@ const Login = () => {
   useEffect(() => {
     if (store.loggedIn && store.isAdmin) {
       console.log('User is loggin in...redirecting');
-      navigate('/admin');
-    }
-    else if (store.loggedIn) {
+      loginSuccess(() => navigate('/admin'));
+    } else if (store.loggedIn) {
       console.log('User is loggin in...redirecting');
-      navigate('/products');
+      loginSuccess(() => navigate('/products'));
     }
   }, [store.loggedIn, navigate]);
 
@@ -155,6 +173,7 @@ const Login = () => {
             <Cursor />
           </span>
         </h2>
+        <ToastContainer />
       </div>
       <Footer />
     </>

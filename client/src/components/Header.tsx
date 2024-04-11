@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { Button } from './ui/button.tsx';
+import 'react-toastify/dist/ReactToastify.css';
+import { toast, ToastContainer } from 'react-toastify';
 import { IoMdCart } from 'react-icons/io';
 import { IoNotifications } from 'react-icons/io5';
 import { IoIosArrowDown } from 'react-icons/io';
@@ -42,7 +44,16 @@ const Header = (props: HeaderProps) => {
 
   function logoutHandler() {
     user.logout();
+    logoutToast();
   }
+
+  const logoutToast = () => {
+    toast.success('You have been logged out successfully.', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      autoClose: 2000,
+    });
+  };
 
   return (
     <>

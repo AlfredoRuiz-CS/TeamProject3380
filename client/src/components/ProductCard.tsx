@@ -63,14 +63,12 @@ const ProductCard = (props: ProductCardProps) => {
         autoClose: 2000,
       }
     );
+
   const listConfirmToast = () =>
-    toast.success(
-      'Added ' + quantity + ' ' + props.product.name + ' to List!',
-      {
-        position: 'bottom-right',
-        className: 'font-bold text-black',
-      }
-    );
+    toast.success('Added ' + props.product.name + ' to List!', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+    });
 
   return (
     <>
