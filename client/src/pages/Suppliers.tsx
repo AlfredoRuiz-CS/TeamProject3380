@@ -1,6 +1,6 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Supplier } from "@/components/store";
+// import { Supplier } from "@/components/store";
 import { useSupplierStore } from "@/components/store";
 import { useEffect } from "react";
 import axios from "axios";
@@ -12,21 +12,16 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-  } from '@/components/ui/table';
+} from '@/components/ui/table';
 
-const supplier1: Supplier = {
-    supplierNumber: 1,
-    name: 'Berry Farms',
-    phoneNumber: '1234567890',
-    streetAddress: '1600 Main Street',
-    city: 'San Francisco',
-    state: 'CA',
-    zipcode: '77084'
-}
+// import {
+//     Sheet,
+//     SheetContent,
+//     SheetDescription,
+//     SheetHeader,
+//     SheetTitle,
+// } from '@/components/ui/sheet';
 
-const dummySuppliers: Supplier[] = [
-    supplier1
-]
 
 const Suppliers = () => {
     const { setSuppliers } = useSupplierStore();
@@ -44,8 +39,7 @@ const Suppliers = () => {
         fetchSuppliers();
     }, [setSuppliers])
     
-    // const suppliers = useSupplierStore((state) => state.suppliers);   
-    const suppliers = dummySuppliers;
+    const suppliers = useSupplierStore((state) => state.suppliers);   
 
     return (
         <>
@@ -84,7 +78,7 @@ const Suppliers = () => {
                             {suppliers.map((supplier, index) => (
                                 <TableRow key={index}>
                                     <TableCell className="max-w-6 pl-6">
-                                        {supplier.supplierNumber}
+                                        {supplier.supplierID}
                                     </TableCell>
                                     <TableCell className="max-w-6">{supplier.name}</TableCell>
                                     <TableCell className="max-w-6">

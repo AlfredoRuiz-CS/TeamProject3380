@@ -54,7 +54,6 @@ const Login = () => {
         const response = await axios.post('https://shastamart-api-deploy.vercel.app/api/users/login',values);
         const userData = await response.data;
         console.log(userData);
-        store.login(userData.accountType === 'employee');
         setUserDetails({
           fname: userData.fName,
           lname: userData.lName,
@@ -66,8 +65,10 @@ const Login = () => {
             state: userData.state,
             zip: userData.zipcode,
           },
-          accountType: userData.accountType
+          accountType: userData.accountType,
+          isMember: userData.isMember
         });
+        store.login(userData.accountType === 'employee');
         // navigate('/profile');
       } catch (error) {
         console.log(error);

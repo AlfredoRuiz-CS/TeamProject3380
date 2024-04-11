@@ -64,7 +64,7 @@ export const useProductsStore = create(
 );
 
 export type Supplier = {
-  supplierNumber: number;
+  supplierID: number;
   name: string;
   phoneNumber: string;
   streetAddress: string;
@@ -159,6 +159,8 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
   logout: () =>
     set({
       loggedIn: false,
+      isMember: false,
+      isAdmin: false,
       fname: '',
       lname: '',
       email: '',

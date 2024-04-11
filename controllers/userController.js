@@ -52,7 +52,8 @@ const loginAuth = async (req, res) => {
       state: user.state,
       zipcode: user.zipcode,
       accountType: user.accountType,
-      token 
+      isMember: user.isMember,
+      token
     }));
   } catch (error) {
     if (!res.headersSent) {

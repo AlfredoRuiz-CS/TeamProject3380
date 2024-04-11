@@ -41,6 +41,7 @@ async function login(email, password) {
     
     let user;
     let accountType;
+    let isMember;
 
     // Check if user exists
     const [customers] = await pool.query(`
@@ -61,6 +62,18 @@ async function login(email, password) {
       }
     }
 
+    const [result] = await pool.query(`
+    SELECT *
+    FROM membership
+    where customerEmail = ?`, [email]);
+
+    if (result.length > 0){
+      isMember = true;
+    }
+    else {
+      isMember = false;
+    }
+
     if (!user) {
       throw Error('Incorrect email');
     }
@@ -72,7 +85,7 @@ async function login(email, password) {
       throw Error('Incorrect password');
     }
   
-    return { email: user.email, fName: user.fName, lName: user.lName, phoneNumber: user.phoneNumber, streetAddress: user.streetAddress, city: user.city, state: user.state, zipcode: user.zipcode, accountType };
+    return { email: user.email, fName: user.fName, lName: user.lName, phoneNumber: user.phoneNumber, streetAddress: user.streetAddress, city: user.city, state: user.state, zipcode: user.zipcode, accountType, isMember };
   }
 
 async function findAllCustomers() {

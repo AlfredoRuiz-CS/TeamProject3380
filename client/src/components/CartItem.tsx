@@ -31,7 +31,7 @@ const CartItem = (props: CartItemProps) => {
 
   return (
     <>
-      <div className="flex h-[8rem] flex-row items-center rounded-lg bg-cardwhite">
+      <div className="flex h-[8rem] w-[45rem] flex-row items-center rounded-lg bg-cardwhite">
         {/* Item Delete Button */}
         <button onClick={(e) => handleRemoveItem(e)}>
           <FaTrashCan className="mx-3 h-8 w-8 text-darkblue" />
