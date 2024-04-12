@@ -58,6 +58,7 @@ const AdminDashboard = () => {
             supplier: product.supplier,
             supplierStock: product.supplierStock,
             portion: product.portion,
+            supplierPrice: product.supplierPrice,
             nutritionFacts: {
               servingSize: product.servingSize,
               servingsPerContainer: product.servingsPerContainer,
@@ -228,7 +229,7 @@ const AdminDashboard = () => {
                       {Object.values(products)
                         .reduce(
                           (total, product) =>
-                            total + product.price * product.stock,
+                            total + product.supplierPrice * product.stock,
                           0
                         )
                         .toLocaleString('en-US', {

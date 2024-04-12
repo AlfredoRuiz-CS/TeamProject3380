@@ -24,6 +24,7 @@ const strawberries: productItem = {
   stock: 10,
   supplier: 'Berry Farms',
   supplierStock: 100,
+  supplierPrice: 2.68,
   portion: 'lb.',
   category: 'produce',
   description: [
@@ -66,6 +67,7 @@ const greenBeans: productItem = {
   stock: 27,
   supplier: "Josh's Beans",
   supplierStock: 120,
+  supplierPrice: 2.68,
   portion: 'oz.',
   category: 'produce',
   description: [
@@ -104,6 +106,7 @@ const bananas: productItem = {
   stock: 15,
   supplier: 'North Side Banana Co.',
   supplierStock: 100,
+  supplierPrice: 2.68,
   portion: 'lb.',
   category: 'produce',
   description: [
@@ -142,6 +145,7 @@ const avocado: productItem = {
   stock: 10,
   supplier: 'Houston Avocado Co',
   supplierStock: 50,
+  supplierPrice: 2.68,
   portion: 'oz.',
   category: 'produce',
   description: [
@@ -181,6 +185,7 @@ const chicken: productItem = {
   stock: 12,
   supplier: 'Happy Chicken Farms',
   supplierStock: 50,
+  supplierPrice: 2.68,
   portion: 'lb.',
   category: 'meat',
   description: [
@@ -220,6 +225,7 @@ const beef: productItem = {
   stock: 10,
   supplier: "Bill's Beef",
   supplierStock: 100,
+  supplierPrice: 2.68,
   portion: 'lb.',
   category: 'meat',
   description: [
@@ -258,6 +264,7 @@ const pork: productItem = {
   stock: 7,
   supplier: "Timmmy's Pork",
   supplierStock: 40,
+  supplierPrice: 2.68,
   portion: 'lb.',
   category: 'meat',
   description: [
@@ -297,6 +304,7 @@ const sausage: productItem = {
   stock: 14,
   supplier: "Bill's Beef",
   supplierStock: 50,
+  supplierPrice: 2.68,
   portion: 'oz.',
   category: 'meat',
   description: [
@@ -338,6 +346,7 @@ const salmon: productItem = {
   stock: 5,
   supplier: 'North Atlantic Seafood',
   supplierStock: 30,
+  supplierPrice: 2.68,
   portion: 'oz.',
   category: 'fish',
   description: [
@@ -376,6 +385,7 @@ const shrimp: productItem = {
   stock: 10,
   supplier: 'North Atlantic Seafood',
   supplierStock: 50,
+  supplierPrice: 2.68,
   portion: 'lb.',
   category: 'fish',
   description: [
@@ -413,6 +423,7 @@ const crab: productItem = {
   stock: 5,
   supplier: 'North Atlantic Seafood ',
   supplierStock: 20,
+  supplierPrice: 2.68,
   portion: 'lb.',
   category: 'fish',
   description: [
@@ -451,6 +462,7 @@ const cod: productItem = {
   stock: 10,
   supplier: 'North Atlantic Seafood ',
   supplierStock: 25,
+  supplierPrice: 2.68,
   portion: 'lb.',
   category: 'fish',
   description: [
@@ -490,6 +502,7 @@ const wholeMilk: productItem = {
   stock: 35,
   supplier: 'Sweet Dairy Farms',
   supplierStock: 100,
+  supplierPrice: 2.68,
   portion: 'gal.',
   category: 'dairy',
   description: [
@@ -531,6 +544,7 @@ const twoMilk: productItem = {
   stock: 35,
   supplier: 'Sweet Dairy Farms',
   supplierStock: 100,
+  supplierPrice: 2.68,
   portion: 'gal.',
   category: 'dairy',
   description: [
@@ -575,6 +589,7 @@ const cheese: productItem = {
   stock: 20,
   supplier: 'Sweet Dairy Farms',
   supplierStock: 150,
+  supplierPrice: 2.68,
   portion: 'oz.',
   category: 'dairy',
   description: [
@@ -616,6 +631,7 @@ const yogurt: productItem = {
   stock: 15,
   supplier: 'Ricky & Rich Co.',
   supplierStock: 75,
+  supplierPrice: 2.68,
   portion: 'lb.',
   category: 'dairy',
   description: [
@@ -656,6 +672,7 @@ const chips: productItem = {
   stock: 30,
   supplier: 'Cougar Chips',
   supplierStock: 200,
+  supplierPrice: 2.68,
   portion: 'oz.',
   category: 'snacks',
   description: [
@@ -694,6 +711,7 @@ const chocolate: productItem = {
   stock: 50,
   supplier: 'Berry Farms',
   supplierStock: 250,
+  supplierPrice: 2.68,
   portion: 'oz.',
   category: 'snacks',
   description: [
@@ -730,6 +748,7 @@ const pretzels: productItem = {
   stock: 15,
   supplier: 'Cougar Chips',
   supplierStock: 80,
+  supplierPrice: 2.68,
   portion: 'oz.',
   category: 'snacks',
   description: [
@@ -764,6 +783,7 @@ const cookies: productItem = {
   stock: 15,
   supplier: "Karen's Bakery",
   supplierStock: 40,
+  supplierPrice: 2.68,
   portion: 'oz.',
   category: 'snacks',
   description: [
@@ -828,6 +848,7 @@ export interface ProductApiResponse {
   image: string;
   supplier: string;
   supplierStock: number;
+  supplierPrice: number;
   portion: string;
   servingSize: string;
   servingsPerContainer: string;
@@ -890,6 +911,7 @@ const Products = () => {
             supplier: product.supplier,
             supplierStock: product.supplierStock,
             portion: product.portion,
+            supplierPrice: product.supplierPrice,
             nutritionFacts: {
               servingSize: product.servingSize,
               servingsPerContainer: product.servingsPerContainer,

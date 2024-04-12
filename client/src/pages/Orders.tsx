@@ -44,7 +44,7 @@ const dummyOrders: Order[] = Array(20)
     orderNumber: index,
     date: new Date().toDateString(),
     paymentMethod: 'Credit Card',
-    total: 100,
+    total: Math.random() * 300,
     items: dummyProducts.slice(0, 10),
   }));
 
@@ -59,7 +59,7 @@ const Orders = () => {
   let [sortOrder, setSortOrder] = useState('Order Desc.');
   // ? Search Query TO BE IMPLEMENTED USING BACKEND CALL
   const [filteredOrders, setFilteredOrders] = useState<Order[]>(dummyOrders);
-  let filterOption = 'Payment Method';
+  let [filterOption, setFilterOption] = useState('All');
 
   // let [searchQuery, setSearchQuery] = useState('');
   useEffect(() => {}, [sheetOpen]);
@@ -83,14 +83,19 @@ const Orders = () => {
 
   // ? Order Sorting Handlers
   useEffect(() => {
-    setSortedOrders(sortOrders(orders));
-    console.log('Sort Order: ', sortOrder);
-  }, [sortOrder]);
+    const sorted = sortOrders(orders);
+    const filtered = filterOrders(sorted);
+    setSortedOrders(sorted);
+    setFilteredOrders(filtered);
+    // setSortedOrders(sortOrders(orders));
+    // console.log('Sort Order: ', sortOrder);
+    // setFilteredOrders(filterOrders(filteredOrders));
+    // let processedOrders = [...orders];
+    // processedOrders = filterOrders(processedOrders);
+    // processedOrders = sortOrders(processedOrders);
+    // setDisplayOrders(processedOrders);
 
-  useEffect(() => {
-    setFilteredOrders(filterOrders(filteredOrders));
-    console.log('Filter Order: ', filterOption);
-  }, [filterOption]);
+  }, [sortOrder, filterOption, orders]);
 
   function sortOrders(o: Order[]) {
     switch (sortOrder) {
@@ -119,9 +124,9 @@ const Orders = () => {
         ).flat();
 
       case 'Total Paid Desc.':
-        return o.sort((a, b) => b.total - a.total);
-      case 'Total Paid Asc.':
         return o.sort((a, b) => a.total - b.total);
+      case 'Total Paid Asc.':
+        return o.sort((a, b) => b.total - a.total);
       default:
         return o;
     }
@@ -188,6 +193,23 @@ const Orders = () => {
                 <SelectItem value="Total Paid Asc.">Total Paid Asc.</SelectItem>
               </SelectContent>
             </Select>
+
+            <Select
+              defaultValue="Order Number"
+              onValueChange={(e) => setFilterOption(e)}
+            >
+              <SelectTrigger className="h-10 w-[8rem] bg-white text-black">
+                <SelectValue placeholder="All">{filterOption}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All">All</SelectItem>
+                <SelectItem value="Last 6 Months">Last 6 Months</SelectItem>
+                <SelectItem value="Last 2 Weeks">Last 2 Weeks</SelectItem>
+                <SelectItem value="Total Paid > 100">Total Paid {'>'} 100</SelectItem>
+                <SelectItem value="Total Paid > 250">Total Paid {'>'} 250</SelectItem>
+                <SelectItem value="Payment Method">Payment Method</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
             <TableHeader>
@@ -206,7 +228,7 @@ const Orders = () => {
             </TableHeader>
 
             <TableBody>
-              {sortedOrders.map((order, index) => (
+              {filteredOrders.map((order, index) => (
                 <TableRow
                   key={index}
                   onClick={() => orderSelectHandler(order.orderNumber)}

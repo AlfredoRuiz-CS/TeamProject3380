@@ -40,6 +40,7 @@ export type productItem = {
   stock: number;
   supplier: string;
   supplierStock: number;
+  supplierPrice: number;
   portion: 'lb.' | 'oz.' | 'item' | 'gal.';
 };
 
