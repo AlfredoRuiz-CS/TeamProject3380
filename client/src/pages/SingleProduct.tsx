@@ -13,7 +13,7 @@ import {
 
 import { productItem } from '@/components/store';
 import 'react-toastify/dist/ReactToastify.css';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { useProductsStore } from '@/components/store';
 import useUserStore from '@/components/store';
 // interface productProps {
@@ -87,6 +87,7 @@ const SingleProduct = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
   // Funcitonality to toggle the quantity dropdown
   const [QuantityEnabled, setQuantityEnabled] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -102,7 +103,7 @@ const SingleProduct = () => {
 
   const listConfirmToast = () => {
     if (product) {
-      toast.success('Added ' + quantity + ' ' + product.name + ' to List!', {
+      toast.success('Added ' + product.name + ' to List!', {
         position: 'bottom-right',
         className: 'font-bold text-black',
       });
@@ -133,7 +134,7 @@ const SingleProduct = () => {
   function handleAddToList() {
     console.log('product', product);
     if (product && user.loggedIn) {
-      console.log('Added ', quantity, ' ', product.name, 'to List');
+      console.log('Added ', product.name, ' to List');
       listConfirmToast();
       user.addToList(product);
     }
@@ -142,7 +143,7 @@ const SingleProduct = () => {
   function handleAddToCart() {
     console.log('product', product);
     if (product && user.loggedIn) {
-      console.log('Added ', quantity, ' ', product.name, 'to Cart');
+      console.log('Added ', quantity, ' ', product.name, ' to Cart');
       cartConfirmToast();
       user.addToCart(product, quantity);
     }
@@ -437,7 +438,7 @@ const SingleProduct = () => {
           )}
         </div>
       </div>
-      <ToastContainer />
+      {/* <ToastContainer /> */}
       <Footer />
     </>
   );

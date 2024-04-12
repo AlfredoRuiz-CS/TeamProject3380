@@ -6,7 +6,6 @@ import { useState, useEffect } from 'react';
 import useUserStore from '@/components/store';
 import { useProductsStore } from '@/components/store';
 import axios from 'axios';
-import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
   Select,
@@ -25,6 +24,7 @@ const strawberries: productItem = {
   stock: 10,
   supplier: 'Berry Farms',
   supplierStock: 100,
+  supplierPrice: 2.68,
   portion: 'lb.',
   category: 'produce',
   description: [
@@ -67,6 +67,7 @@ const greenBeans: productItem = {
   stock: 27,
   supplier: "Josh's Beans",
   supplierStock: 120,
+  supplierPrice: 2.68,
   portion: 'oz.',
   category: 'produce',
   description: [
@@ -105,11 +106,13 @@ const bananas: productItem = {
   stock: 15,
   supplier: 'North Side Banana Co.',
   supplierStock: 100,
+  supplierPrice: 2.68,
   portion: 'lb.',
   category: 'produce',
   description: [
     'Bunch of bananas (about 4-7 total)',
     'Ripe and ready to enjoy',
+    'Convenient Fruit Snack',
     'Convenient Fruit Snack',
   ],
   shippingDetails: {
@@ -142,9 +145,11 @@ const avocado: productItem = {
   stock: 10,
   supplier: 'Houston Avocado Co',
   supplierStock: 50,
+  supplierPrice: 2.68,
   portion: 'oz.',
   category: 'produce',
   description: [
+    'Fresh avocados with a creamy, nutty taste',
     'Fresh avocados with a creamy, nutty taste',
     'Ripe when slightly soft, yet firm',
     'Key guacamole ingredient',
@@ -180,9 +185,11 @@ const chicken: productItem = {
   stock: 12,
   supplier: 'Happy Chicken Farms',
   supplierStock: 50,
+  supplierPrice: 2.68,
   portion: 'lb.',
   category: 'meat',
   description: [
+    'Fresh chicken wing portion',
     'Fresh chicken wing portion',
     'No added hormones, 100% natural',
     'Hatched, raised, and harvested in USA',
@@ -218,6 +225,7 @@ const beef: productItem = {
   stock: 10,
   supplier: "Bill's Beef",
   supplierStock: 100,
+  supplierPrice: 2.68,
   portion: 'lb.',
   category: 'meat',
   description: [
@@ -256,9 +264,12 @@ const pork: productItem = {
   stock: 7,
   supplier: "Timmmy's Pork",
   supplierStock: 40,
+  supplierPrice: 2.68,
   portion: 'lb.',
   category: 'meat',
   description: [
+    'Fresh, 100% natural pork cuts',
+    'No preservatives or added hormones',
     'Fresh, 100% natural pork cuts',
     'No preservatives or added hormones',
     'Provided from your local butcher, Timmy’s Pork',
@@ -293,11 +304,13 @@ const sausage: productItem = {
   stock: 14,
   supplier: "Bill's Beef",
   supplierStock: 50,
+  supplierPrice: 2.68,
   portion: 'oz.',
   category: 'meat',
   description: [
     'Authentic, Texas flavor, perfect for your next cookout',
     'Made with quality cuts of beef, gluten free, no MSG',
+    'An excellent main course or side dish',
     'An excellent main course or side dish',
   ],
   shippingDetails: {
@@ -333,9 +346,11 @@ const salmon: productItem = {
   stock: 5,
   supplier: 'North Atlantic Seafood',
   supplierStock: 30,
+  supplierPrice: 2.68,
   portion: 'oz.',
   category: 'fish',
   description: [
+    'Classic, fresh Atlantic salmon',
     'Classic, fresh Atlantic salmon',
     'Pre-cut into 4 portions for easy preparation',
     'Bake, grill, or pan-fry skin side down for best results',
@@ -370,6 +385,7 @@ const shrimp: productItem = {
   stock: 10,
   supplier: 'North Atlantic Seafood',
   supplierStock: 50,
+  supplierPrice: 2.68,
   portion: 'lb.',
   category: 'fish',
   description: [
@@ -407,9 +423,11 @@ const crab: productItem = {
   stock: 5,
   supplier: 'North Atlantic Seafood ',
   supplierStock: 20,
+  supplierPrice: 2.68,
   portion: 'lb.',
   category: 'fish',
   description: [
+    'Freshly caught from the Gulf of St. Laurence, Canada',
     'Freshly caught from the Gulf of St. Laurence, Canada',
     'Tender, white meat with a sweet, delicate flavor',
     'Approximately 12-14 oz average per cluster',
@@ -444,6 +462,7 @@ const cod: productItem = {
   stock: 10,
   supplier: 'North Atlantic Seafood ',
   supplierStock: 25,
+  supplierPrice: 2.68,
   portion: 'lb.',
   category: 'fish',
   description: [
@@ -483,6 +502,7 @@ const wholeMilk: productItem = {
   stock: 35,
   supplier: 'Sweet Dairy Farms',
   supplierStock: 100,
+  supplierPrice: 2.68,
   portion: 'gal.',
   category: 'dairy',
   description: [
@@ -524,11 +544,14 @@ const twoMilk: productItem = {
   stock: 35,
   supplier: 'Sweet Dairy Farms',
   supplierStock: 100,
+  supplierPrice: 2.68,
   portion: 'gal.',
   category: 'dairy',
   description: [
     'Made with 38% less fat than whole milk',
+    'Made with 38% less fat than whole milk',
     'Enriched with Vitamin E',
+    'No artificial growth hormones',
     'No artificial growth hormones',
   ],
   shippingDetails: {
@@ -566,11 +589,14 @@ const cheese: productItem = {
   stock: 20,
   supplier: 'Sweet Dairy Farms',
   supplierStock: 150,
+  supplierPrice: 2.68,
   portion: 'oz.',
   category: 'dairy',
   description: [
     'Tangy, complex flavor due to longer aging',
+    'Tangy, complex flavor due to longer aging',
     'Thinly sliced for your convenience',
+    'No artificial growth hormones',
     'No artificial growth hormones',
   ],
   shippingDetails: {
@@ -605,6 +631,7 @@ const yogurt: productItem = {
   stock: 15,
   supplier: 'Ricky & Rich Co.',
   supplierStock: 75,
+  supplierPrice: 2.68,
   portion: 'lb.',
   category: 'dairy',
   description: [
@@ -645,11 +672,13 @@ const chips: productItem = {
   stock: 30,
   supplier: 'Cougar Chips',
   supplierStock: 200,
+  supplierPrice: 2.68,
   portion: 'oz.',
   category: 'snacks',
   description: [
     'Thin, crispy, sweet, and barbecue flavors in every bite',
     'Add an extra kick to packed lunches',
+    'No certified synthetic colors',
     'No certified synthetic colors',
   ],
   shippingDetails: {
@@ -682,6 +711,7 @@ const chocolate: productItem = {
   stock: 50,
   supplier: 'Berry Farms',
   supplierStock: 250,
+  supplierPrice: 2.68,
   portion: 'oz.',
   category: 'snacks',
   description: [
@@ -718,6 +748,7 @@ const pretzels: productItem = {
   stock: 15,
   supplier: 'Cougar Chips',
   supplierStock: 80,
+  supplierPrice: 2.68,
   portion: 'oz.',
   category: 'snacks',
   description: [
@@ -752,6 +783,7 @@ const cookies: productItem = {
   stock: 15,
   supplier: "Karen's Bakery",
   supplierStock: 40,
+  supplierPrice: 2.68,
   portion: 'oz.',
   category: 'snacks',
   description: [
@@ -806,7 +838,7 @@ export const dummyProducts: productItem[] = [
   cookies,
 ];
 
-interface ProductApiResponse {
+export interface ProductApiResponse {
   productID: number;
   productName: string;
   productDesc: string;
@@ -816,6 +848,7 @@ interface ProductApiResponse {
   image: string;
   supplier: string;
   supplierStock: number;
+  supplierPrice: number;
   portion: string;
   servingSize: string;
   servingsPerContainer: string;
@@ -840,7 +873,7 @@ interface ProductApiResponse {
   weight: string;
 }
 
-enum Category {
+export enum Category {
   produce = 1,
   meat = 2,
   fish = 3,
@@ -848,7 +881,7 @@ enum Category {
   snacks = 5,
 }
 
-function mapCategory(categoryID: number): string {
+export function mapCategory(categoryID: number): string {
   return Category[categoryID] || 'Unknown Category';
 }
 
@@ -858,8 +891,6 @@ const Products = () => {
   let [catSortOrder, setCatSortOrder] = useState('All');
   // ! CHANGE TO DATABASE CALL FOR FINAL VERSION!!
   const { setProducts } = useProductsStore();
-
-  // Ensure link opens at top of page
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -880,6 +911,7 @@ const Products = () => {
             supplier: product.supplier,
             supplierStock: product.supplierStock,
             portion: product.portion,
+            supplierPrice: product.supplierPrice,
             nutritionFacts: {
               servingSize: product.servingSize,
               servingsPerContainer: product.servingsPerContainer,
@@ -946,7 +978,7 @@ const Products = () => {
       case 'In List':
         return [
           ...store.List,
-          ...p.filter((product) => !store.List.includes(product)),
+          ...p.filter((product) => store.List.includes(product)),
         ];
       default:
         return p;
@@ -1013,7 +1045,7 @@ const Products = () => {
               <ProductCard key={index} product={product} list />
             ))}
           </div>
-          <ToastContainer />
+          {/* <ToastContainer /> */}
         </div>
       </div>
       <Footer />

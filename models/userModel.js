@@ -41,6 +41,7 @@ async function login(email, password) {
     
     let user;
     let accountType;
+    let isMember;
 
     // Check if user exists
     const [customers] = await pool.query(`
@@ -61,8 +62,24 @@ async function login(email, password) {
       }
     }
 
+    const [result] = await pool.query(`
+    SELECT *
+    FROM membership
+    where customerEmail = ?`, [email]);
+
+    if (result.length > 0){
+      isMember = true;
+    }
+    else {
+      isMember = false;
+    }
+
     if (!user) {
       throw Error('Incorrect email');
+    }
+
+    if (user.active === 0){
+      throw new Error('Customer is not active');
     }
   
     // Check if password matches
@@ -72,7 +89,7 @@ async function login(email, password) {
       throw Error('Incorrect password');
     }
   
-    return { email: user.email, fName: user.fName, lName: user.lName, phoneNumber: user.phoneNumber, streetAddress: user.streetAddress, city: user.city, state: user.state, zipcode: user.zipcode, accountType };
+    return { email: user.email, fName: user.fName, lName: user.lName, phoneNumber: user.phoneNumber, streetAddress: user.streetAddress, city: user.city, state: user.state, zipcode: user.zipcode, accountType, isMember };
   }
 
 async function findAllCustomers() {
@@ -89,15 +106,18 @@ async function findAllCustomers() {
   }
 }
 
-  // async function findUserbyEmail(email){
-  //   try { 
-  //       const [rows] = await pool.query('SELECT email FROM customer as c WHERE c.email = ?', [email]);
-  //       return rows[0];
-  //   } catch (error){
-  //     console.log(error.message);
-  //     throw error;
-  //   }
-  // }
+async function findUserbyEmail(email){
+  try { 
+      const [rows] = await pool.query(`SELECT email, active FROM customer WHERE email = ?`, [email]);
+      if (rows.length === 0 || rows[0].active === 0){
+          throw new Error('Cannot find customer or customer inactive')
+      }
+      return rows[0];
+  } catch (error){
+    console.log(error.message);
+    throw error;
+  }
+}
 
 async function getUserPaymentInfo(email){
   try {
@@ -291,5 +311,5 @@ module.exports = {
     updateUserPhone,
     updateUserAddress,
     updateUserName,
-    // updateUserlName
+    findUserbyEmail
 }

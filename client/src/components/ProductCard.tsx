@@ -16,6 +16,7 @@ import useUserStore from '@/components/store';
 interface ProductCardProps {
   product: productItem;
   list?: boolean;
+  removeList?: boolean;
 }
 
 const ProductCard = (props: ProductCardProps) => {
@@ -31,17 +32,26 @@ const ProductCard = (props: ProductCardProps) => {
   }
 
   function handleAddToList() {
-    listConfirmToast();
-    console.log('Added ', quantity, ' ', props.product.name, 'to List');
-    if (user.loggedIn) {
+    if (user.loggedIn && !user.isAdmin) {
+      listConfirmToast();
+      console.log('Added ', props.product.name, ' to List');
       user.addToList(props.product);
     }
   }
 
+  function handleRemoveFromList() {
+    console.log('Removed ', quantity, ' ', props.product.name, 'from List');
+    if (user.loggedIn) {
+      user.removeFromList(props.product);
+    }
+  }
+
   function handleAddToCart() {
-    cartConfirmToast();
-    console.log('Added ', quantity, ' ', props.product.name, 'to Cart');
-    user.addToCart(props.product, quantity);
+    if (user.loggedIn && !user.isAdmin) {
+      cartConfirmToast();
+      console.log('Added ', quantity, ' ', props.product.name, 'to Cart');
+      user.addToCart(props.product, quantity);
+    }
   }
 
   const cartConfirmToast = () =>
@@ -53,14 +63,13 @@ const ProductCard = (props: ProductCardProps) => {
         autoClose: 2000,
       }
     );
+
   const listConfirmToast = () =>
-    toast.success(
-      'Added ' + quantity + ' ' + props.product.name + ' to List!',
-      {
-        position: 'bottom-right',
-        className: 'font-bold text-black',
-      }
-    );
+    toast.success('Added' + props.product.name + ' to List!', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      autoClose: 2000,
+    });
 
   return (
     <>
@@ -130,7 +139,13 @@ const ProductCard = (props: ProductCardProps) => {
               Qty.
             </Button>
           )}
-
+          {/* Add to Cart Button */}
+          <Button
+            className="text-md flex-grow rounded-lg bg-red-500 py-5 font-jua text-black hover:bg-red-500/85"
+            onClick={handleAddToCart}
+          >
+            Add to Cart
+          </Button>
           {/* Add To List Button */}
           {props.list ? (
             <Button
@@ -142,14 +157,17 @@ const ProductCard = (props: ProductCardProps) => {
           ) : (
             <></>
           )}
-
-          {/* Add to Cart Button */}
-          <Button
-            className="text-md flex-grow rounded-lg bg-red-500 py-5 font-jua text-black hover:bg-red-500/85"
-            onClick={handleAddToCart}
-          >
-            Add to Cart
-          </Button>
+          {/* Remove From List Button */}
+          {props.removeList ? (
+            <Button
+              className="text-md hover:bg-blueß-500/90 flex-grow rounded-lg bg-blue-500 py-5 font-jua text-black"
+              onClick={handleRemoveFromList}
+            >
+              Remove from List
+            </Button>
+          ) : (
+            <></>
+          )}
         </section>
       </div>
     </>

@@ -2,6 +2,8 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { productItem } from '@/components/store';
 import { dummyProducts } from './Products';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 import { useEffect, useState } from 'react';
 
@@ -44,11 +46,12 @@ const dummyOrders: Order[] = Array(20)
     orderNumber: index,
     date: new Date().toDateString(),
     paymentMethod: 'Credit Card',
-    total: 100,
+    total: Math.random() * 300,
     items: dummyProducts.slice(0, 10),
   }));
 
 const Orders = () => {
+  const navigate = useNavigate();
   // ? Selections for the order sheet
   const [selectedOrder, setSelectedOrder] = useState<number>(0);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -58,6 +61,9 @@ const Orders = () => {
   // ? Sorting Options
   let [sortOrder, setSortOrder] = useState('Order Desc.');
   // ? Search Query TO BE IMPLEMENTED USING BACKEND CALL
+  const [filteredOrders, setFilteredOrders] = useState<Order[]>(dummyOrders);
+  let [filterOption, setFilterOption] = useState('All');
+
   // let [searchQuery, setSearchQuery] = useState('');
   useEffect(() => {}, [sheetOpen]);
 
@@ -80,9 +86,19 @@ const Orders = () => {
 
   // ? Order Sorting Handlers
   useEffect(() => {
-    setSortedOrders(sortOrders(orders));
-    console.log('Sort Order: ', sortOrder);
-  }, [sortOrder]);
+    const sorted = sortOrders(orders);
+    const filtered = filterOrders(sorted);
+    setSortedOrders(sorted);
+    setFilteredOrders(filtered);
+    // setSortedOrders(sortOrders(orders));
+    // console.log('Sort Order: ', sortOrder);
+    // setFilteredOrders(filterOrders(filteredOrders));
+    // let processedOrders = [...orders];
+    // processedOrders = filterOrders(processedOrders);
+    // processedOrders = sortOrders(processedOrders);
+    // setDisplayOrders(processedOrders);
+
+  }, [sortOrder, filterOption, orders]);
 
   function sortOrders(o: Order[]) {
     switch (sortOrder) {
@@ -111,13 +127,62 @@ const Orders = () => {
         ).flat();
 
       case 'Total Paid Desc.':
-        return o.sort((a, b) => b.total - a.total);
-      case 'Total Paid Asc.':
         return o.sort((a, b) => a.total - b.total);
+      case 'Total Paid Asc.':
+        return o.sort((a, b) => b.total - a.total);
       default:
         return o;
     }
   }
+
+  function filterOrders(orders: Order[]) {
+    switch (filterOption) {
+      case 'Last 6 Months':
+        return orders.filter((order) => {
+          const orderDate = new Date(order.date);
+          const sixMonthsAgo = new Date();
+          sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+          return orderDate >= sixMonthsAgo;
+        });
+      case 'Last 2 Weeks':
+        return orders.filter((order) => {
+          const orderDate = new Date(order.date);
+          const twoWeeksAgo = new Date();
+          twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+          return orderDate >= twoWeeksAgo;
+        });
+      case 'Payment Method':
+        // Assuming a selectedPaymentMethod state is used to store the selected payment method
+        return orders.filter((order) => order.paymentMethod);
+      case 'Total Paid > 100':
+        return orders.filter((order) => order.total > 100);
+      case 'Total Paid > 250':
+        return orders.filter((order) => order.total > 250);
+      default:
+        return orders;
+    }
+  }
+
+  useEffect(() => {
+    const verifySession = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const response = await axios.get('https://shastamart-api-deploy.vercel.app/api/users/verifySession', { 
+            headers: { 'Authorization' : `Bearer ${token}` }
+          });
+          console.log(response.data);
+        } catch (error) {
+          localStorage.removeItem('token');
+          navigate('/login')
+        }
+      } else {
+        navigate('/register');
+      }
+    }
+    verifySession();
+  }, [])
+
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite font-inter text-black">
@@ -151,6 +216,23 @@ const Orders = () => {
                 <SelectItem value="Total Paid Asc.">Total Paid Asc.</SelectItem>
               </SelectContent>
             </Select>
+
+            <Select
+              defaultValue="Order Number"
+              onValueChange={(e) => setFilterOption(e)}
+            >
+              <SelectTrigger className="h-10 w-[8rem] bg-white text-black">
+                <SelectValue placeholder="All">{filterOption}</SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="All">All</SelectItem>
+                <SelectItem value="Last 6 Months">Last 6 Months</SelectItem>
+                <SelectItem value="Last 2 Weeks">Last 2 Weeks</SelectItem>
+                <SelectItem value="Total Paid > 100">Total Paid {'>'} 100</SelectItem>
+                <SelectItem value="Total Paid > 250">Total Paid {'>'} 250</SelectItem>
+                <SelectItem value="Payment Method">Payment Method</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
             <TableHeader>
@@ -169,7 +251,7 @@ const Orders = () => {
             </TableHeader>
 
             <TableBody>
-              {sortedOrders.map((order, index) => (
+              {filteredOrders.map((order, index) => (
                 <TableRow
                   key={index}
                   onClick={() => orderSelectHandler(order.orderNumber)}

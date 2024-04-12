@@ -3,17 +3,24 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "runDev": "vercel dev"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@radix-ui/react-alert-dialog": "^1.0.5",
+    "axios": "^1.6.8",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
+    "fs": "0.0.1-security",
     "jsonwebtoken": "^9.0.2",
-    "mysql2": "^3.9.2",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.9.3",
     "nodemon": "^3.1.0",
-    "vercel": "^33.6.1"
+    "path": "^0.12.7",
+    "react-toastify": "^10.0.5",
+    "vercel": "^33.7.0"
   }
 }

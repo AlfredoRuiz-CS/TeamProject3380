@@ -10,13 +10,15 @@ interface CartItemProps {
 const CartItem = (props: CartItemProps) => {
   const store = useUserStore();
 
-  function handleRemoveItem(e: React.MouseEvent/*, product: productItem*/) {
+  function handleRemoveItem(e: React.MouseEvent) {
     e.preventDefault();
-    // store.removeFromCart(product);
+    store.removeFromCart(props.product);
+    console.log('NOTHING HAPPENED, FUNCTION ERRONEOUS');
   }
 
   function handleSubtractQuantity(e: React.MouseEvent) {
     e.preventDefault();
+    if (props.quantity == 1) store.removeFromCart(props.product);
     store.changeQuantity(props.product, props.quantity - 1);
   }
 
@@ -25,12 +27,14 @@ const CartItem = (props: CartItemProps) => {
     store.changeQuantity(props.product, props.quantity + 1);
   }
 
+  const totalCartPrice = props.product.price * props.quantity;
+
   return (
     <>
-      <div className="flex h-[8rem] flex-row items-center rounded-lg bg-cardwhite">
+      <div className="flex h-[8rem] w-[45rem] flex-row items-center rounded-lg bg-cardwhite">
         {/* Item Delete Button */}
-        <button onClick={(e) => handleRemoveItem(e/*, props.product*/)}>
-          <FaTrashCan className="mx-5 h-8 w-8 text-darkblue" />
+        <button onClick={(e) => handleRemoveItem(e)}>
+          <FaTrashCan className="mx-3 h-8 w-8 text-darkblue" />
         </button>
         <img
           src={props.product.image}
@@ -39,8 +43,8 @@ const CartItem = (props: CartItemProps) => {
         />
         {/* Product Description and Price */}
         <div className="ml-2 flex flex-col">
-          <h2 className="text-lg">{props.product.name}</h2>
-          <p className="text-sm">{props.product.description[0]}</p>
+          <h2 className="text-md">{props.product.name}</h2>
+          {/* <p className="text-sm">{props.product.description[0]}</p> */}
           <p className="text-sm">
             {props.product.price.toLocaleString('en-US', {
               style: 'currency',
@@ -52,16 +56,17 @@ const CartItem = (props: CartItemProps) => {
         </div>
 
         {/* Quantity Selector */}
-
-        <div className="ml-[3rem] flex flex-row gap-1">
+        <div className="flex flex-row content-center items-center gap-1 text-center">
           <button
             className=" h-[3rem] w-[3.2rem] rounded-full  bg-xanthousyellow text-center text-3xl text-black"
             onClick={(e) => handleSubtractQuantity(e)}
           >
             -
           </button>
-          <div className="h-[3rem] w-[9rem] rounded-3xl bg-zinc-300">
-            <p className="pr-2 pt-3 text-center text-black">{props.quantity}</p>
+          <div className="h-[3rem] w-[5rem] rounded-3xl bg-zinc-300">
+            <p className="text-md ml-1 pr-2 pt-3 text-black">
+              {props.quantity}
+            </p>
           </div>
           <button
             className=" h-[3rem] w-[3.2rem] rounded-full bg-xanthousyellow text-center text-3xl text-black"
@@ -70,8 +75,8 @@ const CartItem = (props: CartItemProps) => {
             +
           </button>
         </div>
-        <p className=" mx-auto text-3xl">
-          {(props.product.price * props.product.price).toLocaleString('en-US', {
+        <p className="mx-auto min-w-[10rem] px-4 text-3xl">
+          {totalCartPrice.toLocaleString('en-US', {
             style: 'currency',
             currency: 'USD',
           })}

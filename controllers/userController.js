@@ -52,7 +52,8 @@ const loginAuth = async (req, res) => {
       state: user.state,
       zipcode: user.zipcode,
       accountType: user.accountType,
-      token 
+      isMember: user.isMember,
+      token
     }));
   } catch (error) {
     if (!res.headersSent) {
@@ -211,7 +212,9 @@ const updateUserAddress = async (req, res) => {
 const updateUserName = async (req, res) => {
   try {
     const body = await getRequestBody(req);
-    const { currentEmail: email, firstName: fName, lastName: lName } = body;
+    const { firstName: fName, lastName: lName } = body;
+
+    const email = req.email;
 
     const updateUserName = await userModel.updateUserName(email, fName, lName);
 
@@ -226,26 +229,30 @@ const updateUserName = async (req, res) => {
   }
 }
 
-// const updateUserlName = async (req, res) => {
-//   try {
-//     const body = getRequestBody(req);
-//     const { email, lName } = body;
+const findUserbyEmail = async (req, res) => {
+  try {
+    const email = req.email;
 
-//     const updateUserfName = await userModel.updateUserfName(email, lName);
+    const user = await userModel.findUserbyEmail(email);
 
-//     res.writeHead(201, { 'Content-Type': 'application/json' });
-//     res.end(JSON.stringify({ "message": `Successfully updated last name for - ${email}` }));
-
-//   } catch (error){
-//     res.writeHead(500, { 'Content-Type': 'application/json' });
-//     res.end(JSON.stringyf({ "status": "Failed to update address", "error" : error.message }));
-//   }
-// }
+    if (user){
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ "message": "User allowed to visit route" }));
+    } else {
+      throw new Error('User not found or inactive');
+    }
+    
+  } catch (error) {
+    res.writeHead(400, { 'Content-Type' : 'application/json' })
+    res.end(JSON.stringify({ error: error.message}))
+  }
+}
 
 module.exports = { 
   registerAuth, 
   loginAuth, 
   getAllCustomers,
+  findUserbyEmail,
   getUserPaymentInfo,
   createUserPaymentInfo,
   updateUserPaymentInfo,
