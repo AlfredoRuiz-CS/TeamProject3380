@@ -150,11 +150,11 @@ const Register = () => {
     },
   });
 
-  function registerSuccess(onClose: () => void) {
+  function registerSuccess() {
     toast.success('Registration successful.', {
       position: 'bottom-right',
       className: 'font-bold text-black',
-      onClose: onClose,
+      autoClose: 2000,
     });
   }
 
@@ -162,12 +162,14 @@ const Register = () => {
     toast.error('Error registering account.', {
       position: 'bottom-right',
       className: 'font-bold text-black',
+      autoClose: 2000,
     });
 
   useEffect(() => {
     if (store.loggedIn) {
-      console.log('User is loggin in...redirecting');
-      registerSuccess(() => navigate('/products'));
+      console.log('User is loggin in... redirecting');
+      registerSuccess();
+      navigate('/products');
     }
   }, [store.loggedIn, navigate]);
 

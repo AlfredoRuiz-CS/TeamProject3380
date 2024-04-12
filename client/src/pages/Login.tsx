@@ -81,21 +81,19 @@ const Login = () => {
   });
 
   // ? Toast functions
-  function loginSuccess(onClose: () => void) {
+  function loginSuccess() {
     toast.success('Log in successful... Redirecting', {
       position: 'bottom-right',
       className: 'font-bold text-black',
       autoClose: 2000,
-      onClose: onClose,
     });
   }
 
-  function loginSuccessAdmin(onClose: () => void) {
+  function loginSuccessAdmin() {
     toast.success('(ADMIN) Log in successful... Redirecting', {
       position: 'bottom-right',
       className: 'font-bold text-black',
       autoClose: 2000,
-      onClose: onClose,
     });
   }
 
@@ -106,25 +104,18 @@ const Login = () => {
       autoClose: 2000,
     });
 
-  // function handleSubmit(e: React.FormEvent) {
-  //   e.preventDefault();
-  //   // TODO: Add calls to backend to check if user exists
-  //   // TODO: If user exists, then update the userStore
-  //   updateUserInfo();
-  //   navigate('/profile');
-  // }
-
   useEffect(() => {
     if (store.loggedIn && store.isAdmin) {
       console.log('User is loggin in...redirecting');
-      loginSuccessAdmin(() => navigate('/admin'));
+      loginSuccessAdmin();
+      navigate('/admin');
     } else if (store.loggedIn) {
       console.log('User is loggin in...redirecting');
-      loginSuccess(() => navigate('/products'));
+      loginSuccess();
+      navigate('/products');
     }
   }, [store.loggedIn, navigate]);
 
-  // console.log(store.name);
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
