@@ -14,8 +14,12 @@ import MemberPage from './pages/MemberPage';
 import Payment from './pages/Payment';
 import Suppliers from './pages/Suppliers';
 import './index.css';
+import { Navigate } from 'react-router-dom';
+import useUserStore from './components/store';
 
 function App() {
+  const user = useUserStore();
+  
   return (
     <Router>
       <Routes>
@@ -26,21 +30,21 @@ function App() {
         {/* User Auth/Account */}
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/orders" element={<Orders />} />
+        <Route path="/profile" element={user.loggedIn ? <Profile /> : <Navigate to="/register"/>} />
+        <Route path="/orders" element={user.loggedIn ? <Orders /> : <Navigate to="/register"/>} />
         {/* User Cart/Payments */}
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/list" element={<ProductList />} />
-        <Route path="/membership" element={<MemberPage />} />
-        <Route path="/payment" element={<Payment type={'cart'} />} />
+        <Route path="/cart" element={user.loggedIn ? <Cart /> : <Navigate to="/register"/>} />
+        <Route path="/list" element={user.loggedIn ? <ProductList /> : <Navigate to="/"/>} />
+        <Route path="/membership" element={!user.isMember ? <MemberPage /> : <Navigate to="/"/>} />
+        <Route path="/payment" element={user.loggedIn ? <Payment type={'cart'} /> : <Navigate to="/register"/>} />
         <Route
           path="/payment/membership"
-          element={<Payment type={'membership'} />}
+          element={user.loggedIn ? <Payment type={'membership'} /> : <Navigate to="/register"/>}
         />
         {/* Admin Dashboard */}
-        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="/admin" element={user.loggedIn && user.isAdmin ? <AdminDashboard /> : <Navigate to="/login"/>} />
         {/* Suppliers */}
-        <Route path="/suppliers" element={<Suppliers />} />
+        <Route path="/suppliers" element={user.loggedIn && user.isAdmin ? <Suppliers />: <Navigate to="/login"/>} />
         {/* Products */}
         <Route path="/products" element={<Products />} />
         <Route path="/product/:productId" element={<SingleProduct />} />

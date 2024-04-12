@@ -45,6 +45,7 @@ const Header = (props: HeaderProps) => {
 
   function logoutHandler() {
     user.logout();
+    localStorage.removeItem('token');
     logoutToast(() => navigate('/home'));
   }
 

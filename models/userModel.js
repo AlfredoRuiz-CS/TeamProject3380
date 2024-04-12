@@ -77,6 +77,10 @@ async function login(email, password) {
     if (!user) {
       throw Error('Incorrect email');
     }
+
+    if (user.active === 0){
+      throw new Error('Customer is not active');
+    }
   
     // Check if password matches
     const hashedPassword = user.password || user.empPassword;

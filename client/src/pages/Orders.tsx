@@ -2,6 +2,8 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { productItem } from '@/components/store';
 import { dummyProducts } from './Products';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 import { useEffect, useState } from 'react';
 
@@ -49,6 +51,7 @@ const dummyOrders: Order[] = Array(20)
   }));
 
 const Orders = () => {
+  const navigate = useNavigate();
   // ? Selections for the order sheet
   const [selectedOrder, setSelectedOrder] = useState<number>(0);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -159,6 +162,26 @@ const Orders = () => {
         return orders;
     }
   }
+
+  useEffect(() => {
+    const verifySession = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const response = await axios.get('https://shastamart-api-deploy.vercel.app/api/users/verifySession', { 
+            headers: { 'Authorization' : `Bearer ${token}` }
+          });
+          console.log(response.data);
+        } catch (error) {
+          localStorage.removeItem('token');
+          navigate('/login')
+        }
+      } else {
+        navigate('/register');
+      }
+    }
+    verifySession();
+  }, [])
 
   return (
     <>
