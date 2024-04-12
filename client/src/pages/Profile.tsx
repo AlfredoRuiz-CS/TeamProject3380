@@ -16,7 +16,8 @@ import {
 
 // Functionality Imports
 import useUserStore from '@/components/store';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 type ProfileSection = 'name' | 'email' | 'password' | 'phone' | 'address';
@@ -38,6 +39,7 @@ const Profile = () => {
   const store = useUserStore();
   // const [state, setState] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const navigate = useNavigate();
 
   console.log(store);
 
@@ -184,6 +186,33 @@ const Profile = () => {
   ) {
     updateProfile('address', { street, city, state, zip });
   }
+
+  // const accessFail = (onClose: () => void) =>
+  //   toast.error('Please create an account or login.', {
+  //     position: 'bottom-right',
+  //     className: 'font-bold text-black',
+  //     onClose: onClose,
+  // });
+
+  useEffect(() => {
+    const verifySession = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const response = await axios.get('https://shastamart-api-deploy.vercel.app/api/users/verifySession', { 
+            headers: { 'Authorization' : `Bearer ${token}` }
+          });
+          console.log(response.data);
+        } catch (error) {
+          localStorage.removeItem('token');
+          navigate('/login')
+        }
+      } else {
+        navigate('/register');
+      }
+    }
+    verifySession();
+  }, [])
 
   return (
     <>
