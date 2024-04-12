@@ -116,14 +116,11 @@ async function findUserbyEmail(email){
         return customerRows[0];
       }
 
-      const [employeeRows] = await pool.query(`SELECT email, active FROM employee WHERE email = ?`, [email]);
+      const [employeeRows] = await pool.query(`SELECT email FROM employee WHERE email = ?`, [email]);
       if (employeeRows.length > 0) {
-        if (employeeRows[0].active === 0) {
-          throw new Error('Employee is not active');
-        }
         return employeeRows[0];
       }
-      
+
       throw new Error('Cannot find user with the provided email');
   } catch (error){
     console.log(error.message);
