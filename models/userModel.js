@@ -108,11 +108,23 @@ async function findAllCustomers() {
 
 async function findUserbyEmail(email){
   try { 
-      const [rows] = await pool.query(`SELECT email, active FROM customer WHERE email = ?`, [email]);
-      if (rows.length === 0 || rows[0].active === 0){
-          throw new Error('Cannot find customer or customer inactive')
+      const [customerRows] = await pool.query(`SELECT email, active FROM customer WHERE email = ?`, [email]);
+      if (customerRows.length > 0){
+        if (customerRows[0].active === 0){
+          throw new Error('Customer is not active');
+        }
+        return customerRows[0];
       }
-      return rows[0];
+
+      const [employeeRows] = await pool.query(`SELECT email, active FROM employee WHERE email = ?`, [email]);
+      if (employeeRows.length > 0) {
+        if (employeeRows[0].active === 0) {
+          throw new Error('Employee is not active');
+        }
+        return employeeRows[0];
+      }
+      
+      throw new Error('Cannot find user with the provided email');
   } catch (error){
     console.log(error.message);
     throw error;
