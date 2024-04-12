@@ -85,7 +85,7 @@ const Login = () => {
     toast.success('Log in successful... Redirecting', {
       position: 'bottom-right',
       className: 'font-bold text-black',
-      autoClose: 2000,
+      autoClose: 1000,
       onClose: onClose,
     });
   }

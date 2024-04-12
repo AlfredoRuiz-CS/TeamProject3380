@@ -52,7 +52,7 @@ const Header = (props: HeaderProps) => {
     toast.success('You have been logged out successfully...', {
       position: 'bottom-right',
       className: 'font-bold text-black',
-      autoClose: 2000,
+      autoClose: 1000,
       onClose: onClose,
     });
   }
