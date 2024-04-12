@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Button } from '@/components/ui/button.tsx';
 import {
@@ -20,59 +21,16 @@ import {
   DialogTrigger,
   DialogFooter,
 } from '@/components/ui/dialog';
+
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-import { productItem } from '@/components/store';
+// import { productItem } from '@/components/store';
 // import useUserStore from '@/components/store';
 import { useProductsStore } from '@/components/store';
 import { mapCategory, ProductApiResponse } from './Products';
+import { dummyProducts } from './Products';
 
-const dummyProduct: productItem = {
-  productId: 12345,
-  name: 'Fresh Strawberries',
-  price: 3.97,
-  image: '/assets/strawberries.jpg',
-  stock: 10,
-  category: 'produce',
-  portion: 'lb.',
-  supplier: 'Bury Farms',
-  supplierStock: 100,
-  description: [
-    'Organic, locally-sourced strawberries',
-    'Grown in Gary, Indiana',
-    'good source of Vitamin C, fiber and potassium',
-  ],
-  shippingDetails: {
-    dimensions: {
-      length: '7.38 inches',
-      width: '6.38 inches',
-      height: '2.3 inches',
-    },
-    weight: '14 ounces',
-  },
-  nutritionFacts: {
-    servingSize: '8 medium strawberries',
-    servingsPerContainer: '1.5',
-    calories: 50,
-    totalFat: '0',
-    sodium: '0',
-    totalCarbohydrates: '11 g',
-    dietaryFiber: '2 g',
-    sugars: '8 g',
-    protein: '1 g',
-    potassium: '170 mg',
-    vitaminA: '1 mg',
-    vitaminC: '144 mg',
-    calcium: '24 mg',
-    iron: '0.6 mg',
-  },
-};
-const dummyProducts: productItem[] = Array(20)
-  .fill({})
-  .map(() => ({
-    ...dummyProduct,
-  }));
 dummyProducts[4].stock = 2;
 dummyProducts[4].supplierStock = 0;
 dummyProducts[6].stock = 0;
@@ -84,7 +42,9 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('https://shastamart-api-deploy.vercel.app/api/products/getAllProducts');
+        const response = await axios.get(
+          'https://shastamart-api-deploy.vercel.app/api/products/getAllProducts'
+        );
         const productsData = await response.data;
         const transformedProducts = productsData.map(
           (product: ProductApiResponse) => ({
@@ -137,7 +97,7 @@ const AdminDashboard = () => {
   }, [setProducts]);
 
   const products = useProductsStore((state) => state.products);
-
+  const navigate = useNavigate();
   const popularItem1 = products.reduce((lowest, product) => {
     return lowest.supplierStock < product.supplierStock ? lowest : product;
   }, products[0]);
@@ -147,6 +107,14 @@ const AdminDashboard = () => {
   const popularItem2 = updatedProducts.reduce((lowest, product) => {
     return lowest.supplierStock < product.supplierStock ? lowest : product;
   }, products[0]);
+
+  function itemSelectHandler(productId: number) {
+    console.log(
+      'Selected Item: ',
+      products.find((p) => p.productId === productId)
+    );
+    navigate('/suppliers');
+  }
 
   // function handleSubmitOrder(event: React.FormEvent<HTMLFormElement>) {
   //   console.log('Order Submitted');
@@ -160,7 +128,7 @@ const AdminDashboard = () => {
           {/* Individual Item Stock Table */}
           <div className="ml-20 flex flex-grow flex-col pb-10">
             <h1 className="mb-4 text-4xl text-white">Individual Item Stock</h1>
-            <Table className="min-w-[40rem] min-h-[20rem] rounded-xl bg-cardwhite">
+            <Table className="min-h-[20rem] min-w-[40rem] rounded-xl bg-cardwhite">
               <TableHeader>
                 <TableRow>
                   <TableHead className="max-w-6">Name</TableHead>
@@ -177,7 +145,10 @@ const AdminDashboard = () => {
               </TableHeader>
               <TableBody>
                 {products.map((product, index) => (
-                  <TableRow key={index}>
+                  <TableRow
+                    key={index}
+                    onClick={() => itemSelectHandler(product.productId)}
+                  >
                     <TableCell className="max-w-7">{product.name}</TableCell>
                     <TableCell className="max-w-6">{product.stock}</TableCell>
                     <TableCell className="max-w-6">
@@ -271,7 +242,7 @@ const AdminDashboard = () => {
 
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button className="flex h-[4rem] w-[8rem] flex-row self-center bg-darkblue text-lg">
+                  <Button className=" flex h-[4rem] w-[30rem] flex-row self-center bg-darkblue text-lg">
                     Order Stock?
                   </Button>
                 </DialogTrigger>
@@ -317,12 +288,14 @@ const AdminDashboard = () => {
                 <h1 className="text-center text-3xl font-medium">
                   Popular Items
                 </h1>
-                <div className="flex flex-row items-center justify-center gap-5 pl-28">
+                <div className="flex flex-row items-center justify-center gap-5 pl-10">
                   <div>
-                    <img
-                      className=" h-[10rem] max-w-[15rem] rounded-xl object-cover"
-                      src={popularItem1.image}
-                    ></img>
+                    <Link to={'/product/' + popularItem1.productId}>
+                      <img
+                        className=" h-[10rem] max-w-[15rem] rounded-xl object-cover"
+                        src={popularItem1.image}
+                      ></img>
+                    </Link>
                   </div>
                   <div className="flex flex-col">
                     <h1 className="flex flex-row self-center text-3xl">
@@ -337,12 +310,14 @@ const AdminDashboard = () => {
                   </div>
                   <div className="flex flex-col"></div>
                 </div>
-                <div className="flex flex-row items-center justify-center gap-5 pl-28 pb-12">
+                <div className="flex flex-row items-center justify-center gap-5 pb-12 pl-10">
                   <div>
-                    <img
-                      className="h-[10rem] w-[15rem] rounded-xl object-cover"
-                      src={popularItem2.image}
-                    />
+                    <Link to={'/product/' + popularItem2.productId}>
+                      <img
+                        className="h-[10rem] w-[15rem] rounded-xl object-cover"
+                        src={popularItem2.image}
+                      />
+                    </Link>
                   </div>
                   <div className="flex flex-col">
                     <h1 className="flex flex-row self-center text-3xl">
