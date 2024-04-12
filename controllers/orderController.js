@@ -101,7 +101,7 @@ const getOrderByLname = async (req,res) => {
     }
 }
 
-const getRefund = async (req,res)=>{
+const processRefund = async (req,res)=>{
   try{
     const body = await getRequestBody(req);
     const {paymentID,items,orderLineID} = body;
@@ -124,11 +124,30 @@ const getRefund = async (req,res)=>{
   }
 }
 
+const getRefund = async (req,res)=>{
+  try{
+    const body = await getRequestBody(req);
+    const{refundID} = body;
+    const refundDetail = await orderModel.findRefund(refundID);
+    if(!refundDetail){
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.end("none");
+      return; //exits if order is empty
+    }
+    //else shows order
+    res.writeHead(200, { 'Content-Type' : 'application/json' });
+    res.end(JSON.stringify(refundDetail));
+  } catch (error) {
+    res.writeHead(500, {'Content-Type': 'application/json' });
+    res.end(JSON.stringify({"status": "Could not retrieve refund detail", "error" : error.message }));
+  }
+}
 module.exports={
   getAllOrder,
   processOrder,
   getOrderDetail,
   getAllOrderWithEmail,
   getOrderByLname,
+  processRefund,
   getRefund
 }

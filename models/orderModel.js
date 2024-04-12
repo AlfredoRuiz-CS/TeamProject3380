@@ -40,6 +40,9 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod){
         const createPayment = await connection.query(`
         INSERT INTO payment(orderID,paymentDate,totalAmount,paymentMethod,paymentStatus)
         VALUE(?,?,?,?,?)`,[lastId,orderDate,total,paymentMethod,"pass"])
+        //gey paymentID for return
+        const [getPayment] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
+        const IDpayment = getPayment[0].lastId;
         //create detail order in orderLine
         for (let item of items){
             let subTotal = item.productPrice*item.productQuantity;
@@ -50,13 +53,13 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod){
             const [anotherRows] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
             const anotherID = anotherRows[0].lastId;
             const res = await connection.query(`
-            SELECT*
+            SELECT orderLineID, productID, quantity, unitPrice, subTotal
             FROM orderLine
             WHERE orderLineID=? AND active=?`,[anotherID,1]);
             orderLineDetail.push(res[0]);
         }
         await connection.commit();
-        return {order: orderRes, detail: orderLineDetail};
+        return {orderID: lastId, detail: orderLineDetail, paymentID: IDpayment};
     } catch(error){
         await connection.rollback();
         console.log(error.message);
@@ -161,13 +164,73 @@ async function refundItems(paymentID,items,refundDate,orderLineID){
         await connection.release();
 }
 }
+
+async function findRefund (refundID){
+    try{
+        const result = await pool.query(`
+        SELECT*
+        FROM refund
+        WHERE refundID=?`,[refundID]);
+
+        return result;
+    } catch(error){
+        console.log(error.message);
+        throw error;
+    }
+}
+
+
+async function findPayment (paymentID){
+    try{
+        const result = await pool.query(`
+        SELECT*
+        FROM payment
+        WHERE paymentID=?`,[paymentID]);
+
+        return result;
+    } catch(error){
+        console.log(error.message);
+        throw error
+    }
+}
+async function findAllRefund (paymentID){
+    try{
+        const [result] = await pool.query(`
+        SELECT*
+        FROM refund
+        WHERE paymentID=?`,[paymentID]);
+
+        return result[0];
+    } catch(error){
+        console.log(error.message);
+        throw error
+    }
+}
+
+async function findAllPayment (orderID){
+    try{
+        const [result] = await pool.query(`
+        SELECT*
+        FROM payment
+        WHERE orderID=?`,[orderID]);
+
+        return result[0];
+    } catch(error){
+        console.log(error.message);
+        throw error
+    }
+}
 module.exports={
     findAllOrder,
     createOrder,
     findAllOrderbyEmail,
     findOrderByLname,
     findOrderDetail,
-    refundItems
+    refundItems,
+    findRefund,
+    findPayment,
+    findAllRefund,
+    findAllPayment
 }
 
 // add orderProcessed attribute into purchaseOrder table default false
