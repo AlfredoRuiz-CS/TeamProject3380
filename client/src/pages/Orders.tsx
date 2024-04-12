@@ -58,6 +58,9 @@ const Orders = () => {
   // ? Sorting Options
   let [sortOrder, setSortOrder] = useState('Order Desc.');
   // ? Search Query TO BE IMPLEMENTED USING BACKEND CALL
+  const [filteredOrders, setFilteredOrders] = useState<Order[]>(dummyOrders);
+  let filterOption = 'Payment Method';
+
   // let [searchQuery, setSearchQuery] = useState('');
   useEffect(() => {}, [sheetOpen]);
 
@@ -83,6 +86,11 @@ const Orders = () => {
     setSortedOrders(sortOrders(orders));
     console.log('Sort Order: ', sortOrder);
   }, [sortOrder]);
+
+  useEffect(() => {
+    setFilteredOrders(filterOrders(filteredOrders));
+    console.log('Filter Order: ', filterOption);
+  }, [filterOption]);
 
   function sortOrders(o: Order[]) {
     switch (sortOrder) {
@@ -118,6 +126,35 @@ const Orders = () => {
         return o;
     }
   }
+
+  function filterOrders(orders: Order[]) {
+    switch (filterOption) {
+      case 'Last 6 Months':
+        return orders.filter((order) => {
+          const orderDate = new Date(order.date);
+          const sixMonthsAgo = new Date();
+          sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+          return orderDate >= sixMonthsAgo;
+        });
+      case 'Last 2 Weeks':
+        return orders.filter((order) => {
+          const orderDate = new Date(order.date);
+          const twoWeeksAgo = new Date();
+          twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+          return orderDate >= twoWeeksAgo;
+        });
+      case 'Payment Method':
+        // Assuming a selectedPaymentMethod state is used to store the selected payment method
+        return orders.filter((order) => order.paymentMethod);
+      case 'Total Paid > 100':
+        return orders.filter((order) => order.total > 100);
+      case 'Total Paid > 250':
+        return orders.filter((order) => order.total > 250);
+      default:
+        return orders;
+    }
+  }
+
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite font-inter text-black">
