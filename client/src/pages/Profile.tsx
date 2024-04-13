@@ -228,15 +228,15 @@ const Profile = () => {
   }
 
   function handleCollapsibleSelection(paymentMethod: PaymentMethod) {
-    // console.log('Payment Method Selected');
     setPaymentMethodSelected(paymentMethod);
-    paymentMethodChanged();
     setCollapsibleOpen(false);
   }
 
   function paymentMethodChanged() {
     toast.success(
-      'Payment method ending in ' + paymentMethodSelected?.cardNumber.slice(-4),
+      'Payment method ending in ' +
+        paymentMethodSelected?.cardNumber.slice(-4) +
+        ' selected.',
       {
         position: 'bottom-right',
         className: 'font-bold text-black',
@@ -274,6 +274,9 @@ const Profile = () => {
     verifySession();
   }, []);
 
+  useEffect(() => {
+    paymentMethodChanged();
+  }, [paymentMethodSelected]);
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
@@ -297,13 +300,13 @@ const Profile = () => {
             })}
           </div>
           {/* Forms for Updating User Information */}
-          <div className="z-10 mx-auto flex h-16 w-2/5 flex-row rounded-2xl bg-xanthousyellow">
+          <div className="z-10 mx-auto flex h-16 w-3/5 flex-row rounded-2xl bg-xanthousyellow">
             <MdOutlinePersonOutline className="ml-2 mt-1 flex h-14 w-14 self-start" />
             <h2 className="self-center pl-2 font-inter text-xl font-semibold">
               {store.email}
             </h2>
           </div>
-          <div className="z-0 mx-auto -mt-8 mb-20 h-[45rem] w-2/5 rounded-3xl bg-darkblue">
+          <div className="z-0 mx-auto -mt-8 mb-20 h-[45rem] w-3/5 rounded-3xl bg-darkblue">
             <div className="flex flex-row justify-around pt-4">
               <section className="flex flex-col">
                 {/* Name, Phone Number, Address Fields */}
@@ -504,7 +507,7 @@ const Profile = () => {
                   </Button>
                 </form>
                 <form
-                  className="flex w-1/2 flex-col pt-5"
+                  className="flex w-full flex-col pt-5"
                   onSubmit={(event) => {
                     event.preventDefault();
                     const form = event.target as HTMLFormElement;
@@ -534,7 +537,7 @@ const Profile = () => {
                     />
                     <label
                       htmlFor="show-password"
-                      className="select-none text-white"
+                      className="w-full select-none text-white"
                     >
                       Show Password
                     </label>
@@ -555,7 +558,7 @@ const Profile = () => {
 
           {store.accountType === 'customer' && !store.isAdmin ? (
             <>
-              <div className="z-10 mx-auto flex h-16 w-2/5 flex-row rounded-2xl bg-xanthousyellow">
+              <div className="z-10 mx-auto flex h-16 w-3/5 flex-row rounded-2xl bg-xanthousyellow">
                 <MdOutlinePayments className="ml-4 mt-1 flex h-14 w-14 self-start" />
                 <h2 className="self-center pl-2 font-inter text-xl font-semibold">
                   Payment Methods
@@ -564,7 +567,7 @@ const Profile = () => {
               <h2 className="self-center pl-2 font-inter text-xl font-semibold">
                 OR
               </h2>
-              <div className="z-0 mx-auto -mt-16 mb-[10rem] h-auto w-2/5 rounded-3xl bg-darkblue pb-10 pt-14">
+              <div className="z-0 mx-auto -mt-16 mb-[10rem] h-auto w-3/5 rounded-3xl bg-darkblue pb-10 pt-14">
                 <div className="mx-auto w-full pt-5 text-center">
                   <section className="flex flex-col items-center">
                     <div className="flex flex-col">
