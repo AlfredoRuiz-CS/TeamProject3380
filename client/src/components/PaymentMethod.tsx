@@ -7,8 +7,14 @@ interface PaymentMethodProps {
 
 const PaymentMethod = (props: PaymentMethodProps) => {
   return (
-    <div className="my-auto flex h-10 w-[20rem] place-content-center rounded-lg bg-slate-700">
-      <h1 className="pb-10">Payment Method #{props.cardId}</h1>
+    <div className="h-auto w-64 rounded-md border bg-cardwhite px-4 font-inter text-sm shadow-sm duration-300 ease-in-out hover:bg-cardwhite/90">
+      <button>
+        <h1 className="font-medium">
+          {'Payment Method ' + '#' + props.cardId}{' '}
+        </h1>
+        <h1>{'\nName On Card: ' + props.nameOnCard}</h1>
+        <h1>{'\nLast 4 Digits: ' + props.cardNumber.slice(-4)}</h1>
+      </button>
     </div>
   );
 };
