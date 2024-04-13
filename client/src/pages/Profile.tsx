@@ -7,6 +7,8 @@ import { BsFillPersonLinesFill } from 'react-icons/bs';
 import { MdOutlinePersonOutline } from 'react-icons/md';
 import { MdOutlinePayments } from 'react-icons/md';
 import { CaretSortIcon } from '@radix-ui/react-icons';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import {
   Select,
@@ -64,6 +66,22 @@ const Profile = () => {
     expirationDate: '01/23',
     ccv: '123',
   });
+  dummyPaymentMethods[1] = {
+    cardId: 2,
+    nameOnCard: 'Jane Doe',
+    cardNumber: '9876 5432 1098 7654',
+    expirationDate: '12/34',
+    ccv: '321',
+  };
+  dummyPaymentMethods[2] = {
+    cardId: 3,
+    nameOnCard: 'Philip Doe',
+    cardNumber: '1234 5678 9012 3454',
+    expirationDate: '01/23',
+    ccv: '123',
+  };
+  const [paymentMethodSelected, setPaymentMethodSelected] =
+    useState<PaymentMethod | null>(dummyPaymentMethods[0] || null);
 
   const states = [
     'AL',
@@ -207,6 +225,23 @@ const Profile = () => {
     zip: string
   ) {
     updateProfile('address', { street, city, state, zip });
+  }
+
+  function handleCollapsibleSelection(paymentMethod: PaymentMethod) {
+    // console.log('Payment Method Selected');
+    paymentMethodChanged();
+    setPaymentMethodSelected(paymentMethod);
+    setCollapsibleOpen(false);
+  }
+
+  function paymentMethodChanged() {
+    toast.success(
+      'Payment method ending in ' + paymentMethodSelected?.cardNumber.slice(-4),
+      {
+        position: 'bottom-right',
+        className: 'font-bold text-black',
+      }
+    );
   }
 
   // const accessFail = (onClose: () => void) =>
@@ -526,7 +561,7 @@ const Profile = () => {
           <h2 className="self-center pl-2 font-inter text-xl font-semibold">
             OR
           </h2>
-          <div className="z-0 mx-auto -mt-16 mb-[20rem] h-[45rem] w-2/5 rounded-3xl bg-darkblue pt-14">
+          <div className="z-0 mx-auto -mt-16 mb-[10rem] h-auto w-2/5 rounded-3xl bg-darkblue pb-10 pt-14">
             <div className="mx-auto w-full pt-5 text-center">
               <section className="flex flex-col items-center">
                 <div className="flex flex-col">
@@ -534,25 +569,37 @@ const Profile = () => {
                     Choose Existing Payment Method
                   </h3>
                   {/* Payment Method Component Map */}
-
                   <Collapsible
-                    className="w-48"
+                    className="flex w-64 flex-col gap-2 place-self-center"
                     open={collapsibleOpen}
                     onOpenChange={setCollapsibleOpen}
                   >
-                    <div className="flex items-center justify-between space-x-4 px-4">
-                      <h4 className="text-sm font-semibold">
-                        @peduarte starred 3 repositories
+                    <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
+                      <h4 className="h-10 text-sm font-semibold">
+                        {'Card Name: ' +
+                          paymentMethodSelected?.nameOnCard +
+                          '\nLast 4 digits: ' +
+                          paymentMethodSelected?.cardNumber.slice(-4)}
                       </h4>
                       <CollapsibleTrigger asChild>
-                        <Button variant="ghost" size="sm">
-                          <CaretSortIcon className="h-4 w-4" />
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="hover:bg-white/50"
+                        >
+                          <CaretSortIcon className="h-6 w-6 " />
                           <span className="sr-only">Toggle</span>
                         </Button>
                       </CollapsibleTrigger>
                     </div>
                     {dummyPaymentMethods.map((paymentMethod, index) => (
-                      <CollapsibleContent key={index} className="space-y-2">
+                      <CollapsibleContent
+                        key={index}
+                        className="space-y-2 duration-300 ease-in-out"
+                        onClick={() =>
+                          handleCollapsibleSelection(paymentMethod)
+                        }
+                      >
                         <PaymentMethod
                           key={index}
                           cardId={index + 1}
@@ -563,20 +610,12 @@ const Profile = () => {
                       </CollapsibleContent>
                     ))}
 
-                    <div className="font-mono rounded-md border px-4 py-2 text-sm shadow-sm">
-                      @radix-ui/primitives
-                    </div>
-                    <CollapsibleContent className="space-y-2">
-                      <div className="font-mono rounded-md border px-4 py-2 text-sm shadow-sm">
-                        @radix-ui/colors
-                      </div>
-                      <div className="font-mono rounded-md border px-4 py-2 text-sm shadow-sm">
-                        @stitches/react
-                      </div>
-                    </CollapsibleContent>
+                    <CollapsibleContent className="space-y-2"></CollapsibleContent>
                   </Collapsible>
                 </div>
-                <h3 className="pl-4 text-lg font-semibold text-white"> OR </h3>
+                <h3 className="my-2 pl-4 text-lg font-semibold text-white">
+                  OR
+                </h3>
                 <div className="flex flex-col items-start">
                   <h3 className="pl-4 text-lg font-semibold text-white">
                     Use New Payment Method
@@ -604,7 +643,7 @@ const Profile = () => {
                     size="lg"
                     type="submit"
                   >
-                    Save Changes
+                    Add New Payment Method
                   </Button>
                 </div>
               </section>

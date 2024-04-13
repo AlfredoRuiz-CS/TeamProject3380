@@ -24,13 +24,13 @@ const payment = (props: paymentProps) => {
             <h1 className="pt-16 text-center text-3xl font-medium text-white">
               Payment Summary
             </h1>
-            <section className="mt-6 flex h-[40rem] w-[40rem] flex-col justify-between place-self-center rounded-2xl bg-cardwhite">
+            <section className="mt-6 flex h-auto w-[40rem] flex-col justify-between place-self-center rounded-2xl bg-cardwhite">
               <div className="">
                 <h3 className="ml-5 mt-3 text-2xl font-medium">
                   Order Summary
                 </h3>
                 {/* Item Table */}
-                <table className="mt-2 w-full">
+                <table className="mb-5 mt-2 w-full">
                   <thead>
                     <tr>
                       <th className="pl-5 text-left">Item</th>
