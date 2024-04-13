@@ -14,6 +14,7 @@ CREATE TABLE product(
 	supplier varchar(255),
 	supplierStock int,
 	portion varchar(50),
+    supplierPrice decimal(10, 2),
     FOREIGN KEY (categoryID) REFERENCES category(categoryID) ON DELETE
     SET NULL
 );
