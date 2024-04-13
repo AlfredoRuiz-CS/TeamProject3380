@@ -102,8 +102,8 @@ const getUserPaymentInfo = async (req, res) => {
 const createUserPaymentInfo = async (req, res) => {
   try {
     const body = await getRequestBody(req);
-    const { cardnumber, expiration, cvv, cardType } = body;
-    console.log(cardnumber, expiration, cvv, cardType);
+    const { cardType, cardnumber, expiration, cvv } = body;
+    console.log( cardType, cardnumber, expiration, cvv);
     const customerEmail = req.email;
     console.log(customerEmail);
 
