@@ -44,7 +44,7 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod){
         for (let item of items){
             let subTotal = item.productPrice*item.productQuantity;
             const orderLineRes = await connection.query(`
-            INSERT INTO orderLine(orderID,productID,quantity,unitPrice,subTotal)
+            INSERT INTO orderLine(orderID,productID,quantity,unitPrice,totalAmount)
             VALUES(?,?,?,?,?)`,[lastId,item.productID,item.productQuantity,item.productPrice,subTotal]);
             //getting the order line information to send it back
             const [anotherRows] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
@@ -142,7 +142,7 @@ async function refundItems(paymentID,items,refundDate,orderLineID){
         }
        
         //This function can be deleted if we can hard-coding paymentMethod
-        const pMethod = (await connection).query(`
+        const pMethod = await connection.query(`
         SELECT paymentMethod
         FROM payment
         WHERE paymentID=?`,[paymentID]);
