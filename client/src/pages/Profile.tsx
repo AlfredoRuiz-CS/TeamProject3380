@@ -228,15 +228,15 @@ const Profile = () => {
   }
 
   function handleCollapsibleSelection(paymentMethod: PaymentMethod) {
-    // console.log('Payment Method Selected');
-    paymentMethodChanged();
     setPaymentMethodSelected(paymentMethod);
     setCollapsibleOpen(false);
   }
 
   function paymentMethodChanged() {
     toast.success(
-      'Payment method ending in ' + paymentMethodSelected?.cardNumber.slice(-4),
+      'Payment method ending in ' +
+        paymentMethodSelected?.cardNumber.slice(-4) +
+        ' selected.',
       {
         position: 'bottom-right',
         className: 'font-bold text-black',
@@ -274,6 +274,9 @@ const Profile = () => {
     verifySession();
   }, []);
 
+  useEffect(() => {
+    paymentMethodChanged();
+  }, [paymentMethodSelected]);
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
@@ -297,13 +300,13 @@ const Profile = () => {
             })}
           </div>
           {/* Forms for Updating User Information */}
-          <div className="z-10 mx-auto flex h-16 w-2/5 flex-row rounded-2xl bg-xanthousyellow">
+          <div className="z-10 mx-auto flex h-16 w-3/5 flex-row rounded-2xl bg-xanthousyellow">
             <MdOutlinePersonOutline className="ml-2 mt-1 flex h-14 w-14 self-start" />
             <h2 className="self-center pl-2 font-inter text-xl font-semibold">
               {store.email}
             </h2>
           </div>
-          <div className="z-0 mx-auto -mt-8 mb-20 h-[45rem] w-2/5 rounded-3xl bg-darkblue">
+          <div className="z-0 mx-auto -mt-8 mb-20 h-[45rem] w-3/5 rounded-3xl bg-darkblue">
             <div className="flex flex-row justify-around pt-4">
               <section className="flex flex-col">
                 {/* Name, Phone Number, Address Fields */}
@@ -504,7 +507,7 @@ const Profile = () => {
                   </Button>
                 </form>
                 <form
-                  className="flex w-1/2 flex-col pt-5"
+                  className="flex w-full flex-col pt-5"
                   onSubmit={(event) => {
                     event.preventDefault();
                     const form = event.target as HTMLFormElement;
@@ -534,7 +537,7 @@ const Profile = () => {
                     />
                     <label
                       htmlFor="show-password"
-                      className="select-none text-white"
+                      className="w-full select-none text-white"
                     >
                       Show Password
                     </label>
@@ -552,103 +555,110 @@ const Profile = () => {
             </div>
           </div>
           {/* Payment Methods saved on profile */}
-          <div className="z-10 mx-auto flex h-16 w-2/5 flex-row rounded-2xl bg-xanthousyellow">
-            <MdOutlinePayments className="ml-4 mt-1 flex h-14 w-14 self-start" />
-            <h2 className="self-center pl-2 font-inter text-xl font-semibold">
-              Payment Methods
-            </h2>
-          </div>
-          <h2 className="self-center pl-2 font-inter text-xl font-semibold">
-            OR
-          </h2>
-          <div className="z-0 mx-auto -mt-16 mb-[10rem] h-auto w-2/5 rounded-3xl bg-darkblue pb-10 pt-14">
-            <div className="mx-auto w-full pt-5 text-center">
-              <section className="flex flex-col items-center">
-                <div className="flex flex-col">
-                  <h3 className="pb-5 pl-4 text-lg font-semibold text-white">
-                    Choose Existing Payment Method
-                  </h3>
-                  {/* Payment Method Component Map */}
-                  <Collapsible
-                    className="flex w-64 flex-col gap-2 place-self-center"
-                    open={collapsibleOpen}
-                    onOpenChange={setCollapsibleOpen}
-                  >
-                    <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
-                      <h4 className="h-10 text-sm font-semibold">
-                        {'Card Name: ' +
-                          paymentMethodSelected?.nameOnCard +
-                          '\nLast 4 digits: ' +
-                          paymentMethodSelected?.cardNumber.slice(-4)}
-                      </h4>
-                      <CollapsibleTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="hover:bg-white/50"
-                        >
-                          <CaretSortIcon className="h-6 w-6 " />
-                          <span className="sr-only">Toggle</span>
-                        </Button>
-                      </CollapsibleTrigger>
-                    </div>
-                    {dummyPaymentMethods.map((paymentMethod, index) => (
-                      <CollapsibleContent
-                        key={index}
-                        className="space-y-2 duration-300 ease-in-out"
-                        onClick={() =>
-                          handleCollapsibleSelection(paymentMethod)
-                        }
-                      >
-                        <PaymentMethod
-                          key={index}
-                          cardId={index + 1}
-                          nameOnCard={paymentMethod.nameOnCard}
-                          cardNumber={paymentMethod.cardNumber}
-                          expirationDate={paymentMethod.expirationDate}
-                        />
-                      </CollapsibleContent>
-                    ))}
 
-                    <CollapsibleContent className="space-y-2"></CollapsibleContent>
-                  </Collapsible>
+          {store.accountType === 'customer' && !store.isAdmin ? (
+            <>
+              <div className="z-10 mx-auto flex h-16 w-3/5 flex-row rounded-2xl bg-xanthousyellow">
+                <MdOutlinePayments className="ml-4 mt-1 flex h-14 w-14 self-start" />
+                <h2 className="self-center pl-2 font-inter text-xl font-semibold">
+                  Payment Methods
+                </h2>
+              </div>
+              <h2 className="self-center pl-2 font-inter text-xl font-semibold">
+                OR
+              </h2>
+              <div className="z-0 mx-auto -mt-16 mb-[10rem] h-auto w-3/5 rounded-3xl bg-darkblue pb-10 pt-14">
+                <div className="mx-auto w-full pt-5 text-center">
+                  <section className="flex flex-col items-center">
+                    <div className="flex flex-col">
+                      <h3 className="pb-5 pl-4 text-lg font-semibold text-white">
+                        Choose Existing Payment Method
+                      </h3>
+                      {/* Payment Method Component Map */}
+                      <Collapsible
+                        className="flex w-64 flex-col gap-2 place-self-center"
+                        open={collapsibleOpen}
+                        onOpenChange={setCollapsibleOpen}
+                      >
+                        <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
+                          <h4 className="h-10 text-sm font-semibold">
+                            {'Card Name: ' +
+                              paymentMethodSelected?.nameOnCard +
+                              '\nLast 4 digits: ' +
+                              paymentMethodSelected?.cardNumber.slice(-4)}
+                          </h4>
+                          <CollapsibleTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="hover:bg-white/50"
+                            >
+                              <CaretSortIcon className="h-6 w-6 " />
+                              <span className="sr-only">Toggle</span>
+                            </Button>
+                          </CollapsibleTrigger>
+                        </div>
+                        {dummyPaymentMethods.map((paymentMethod, index) => (
+                          <CollapsibleContent
+                            key={index}
+                            className="space-y-2 duration-300 ease-in-out"
+                            onClick={() =>
+                              handleCollapsibleSelection(paymentMethod)
+                            }
+                          >
+                            <PaymentMethod
+                              key={index}
+                              cardId={index + 1}
+                              nameOnCard={paymentMethod.nameOnCard}
+                              cardNumber={paymentMethod.cardNumber}
+                              expirationDate={paymentMethod.expirationDate}
+                            />
+                          </CollapsibleContent>
+                        ))}
+
+                        <CollapsibleContent className="space-y-2"></CollapsibleContent>
+                      </Collapsible>
+                    </div>
+                    <h3 className="my-2 pl-4 text-lg font-semibold text-white">
+                      OR
+                    </h3>
+                    <div className="flex flex-col items-start">
+                      <h3 className="pl-4 text-lg font-semibold text-white">
+                        Use New Payment Method
+                      </h3>
+                      <input
+                        className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+                        type="text"
+                        placeholder="Card Number"
+                        name="cardNumber"
+                      />
+                      <input
+                        className="mx-4 mt-2 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+                        type="text"
+                        placeholder="Expiration Date"
+                        name="expirationDate"
+                      />
+                      <input
+                        className="mx-4 mt-2 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+                        type="text"
+                        placeholder="CVV"
+                        name="cvv"
+                      />
+                      <Button
+                        className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
+                        size="lg"
+                        type="submit"
+                      >
+                        Add New Payment Method
+                      </Button>
+                    </div>
+                  </section>
                 </div>
-                <h3 className="my-2 pl-4 text-lg font-semibold text-white">
-                  OR
-                </h3>
-                <div className="flex flex-col items-start">
-                  <h3 className="pl-4 text-lg font-semibold text-white">
-                    Use New Payment Method
-                  </h3>
-                  <input
-                    className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
-                    type="text"
-                    placeholder="Card Number"
-                    name="cardNumber"
-                  />
-                  <input
-                    className="mx-4 mt-2 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
-                    type="text"
-                    placeholder="Expiration Date"
-                    name="expirationDate"
-                  />
-                  <input
-                    className="mx-4 mt-2 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
-                    type="text"
-                    placeholder="CVV"
-                    name="cvv"
-                  />
-                  <Button
-                    className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
-                    size="lg"
-                    type="submit"
-                  >
-                    Add New Payment Method
-                  </Button>
-                </div>
-              </section>
-            </div>
-          </div>
+              </div>
+            </>
+          ) : (
+            <></>
+          )}
         </div>
       </div>
       <Footer />
