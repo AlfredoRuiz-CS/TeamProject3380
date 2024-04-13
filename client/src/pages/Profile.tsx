@@ -145,6 +145,8 @@ const Profile = () => {
     'WY',
   ];
 
+  const paymentForms = ['Debit', 'Credit'];
+
   function updateProfile(section: ProfileSection, data: ProfileData) {
     const endpointMap: { [K in ProfileSection]: string } = {
       name: 'https://shastamart-api-deploy.vercel.app/api/users/update_name',
@@ -225,6 +227,19 @@ const Profile = () => {
     zip: string
   ) {
     updateProfile('address', { street, city, state, zip });
+  }
+
+  async function handleNewPayment(cardNumber: string, expirationDate: string, cvv: string, cardType: string){
+    const data = {
+      cardNumber: cardNumber,
+      expirationDate: expirationDate,
+      cvv: parseInt(cvv, 10),
+      cardType: cardType
+    }
+    const token = localStorage.getItem('token');
+    const response = await axios.post('https://shastamart-api-deploy.vercel.app/api/users/set_card', data, { 
+      headers: { Authorization: `Bearer ${token}` } })
+    console.log(response.data);
   }
 
   function handleCollapsibleSelection(paymentMethod: PaymentMethod) {
@@ -622,36 +637,64 @@ const Profile = () => {
                     <h3 className="my-2 pl-4 text-lg font-semibold text-white">
                       OR
                     </h3>
-                    <div className="flex flex-col items-start">
-                      <h3 className="pl-4 text-lg font-semibold text-white">
-                        Use New Payment Method
-                      </h3>
-                      <input
-                        className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
-                        type="text"
-                        placeholder="Card Number"
-                        name="cardNumber"
-                      />
-                      <input
-                        className="mx-4 mt-2 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
-                        type="text"
-                        placeholder="Expiration Date"
-                        name="expirationDate"
-                      />
-                      <input
-                        className="mx-4 mt-2 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
-                        type="text"
-                        placeholder="CVV"
-                        name="cvv"
-                      />
-                      <Button
-                        className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
-                        size="lg"
-                        type="submit"
-                      >
-                        Add New Payment Method
-                      </Button>
-                    </div>
+                    <form onSubmit={(event) => {
+                      event.preventDefault();
+                      const form = event.target as HTMLFormElement;
+                      const cardNumber = form.elements.namedItem('cardNumber') as HTMLInputElement;
+                      const expirationDate = form.elements.namedItem('expirationDate') as HTMLInputElement;
+                      const cvv = form.elements.namedItem('cvv') as HTMLInputElement;
+                      const cardType = form.elements.namedItem('cardType') as HTMLInputElement;
+                      handleNewPayment(cardNumber.value, expirationDate.value, cvv.value, cardType.value)
+                    }}>
+                      <div className="flex flex-col items-start">
+                        <h3 className="pl-4 text-lg font-semibold text-white">
+                          Use New Payment Method
+                        </h3>
+                        <input
+                          className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+                          type="text"
+                          placeholder="Card Number"
+                          name="cardNumber"
+                        />
+                        <input
+                          className="mx-4 mt-2 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+                          type="text"
+                          placeholder="Expiration Date"
+                          name="expirationDate"
+                        />
+                        <input
+                          className="mx-4 mt-2 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+                          type="text"
+                          placeholder="CVV"
+                          name="cvv"
+                        />
+                        <Select
+                              defaultValue="Debit"
+                              name="cardType"
+                            >
+                              <SelectTrigger className="mx-4 mt-2 h-10 w-[15rem] max-w-md rounded-md border bg-white border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue">
+                                <SelectValue
+                                  placeholder={"Card Type"}
+                                  className="text-gray-200"
+                                />
+                              </SelectTrigger>
+                              <SelectContent side="bottom">
+                                {paymentForms.map((type, index) => (
+                                  <SelectItem key={index} value={type}>
+                                    {type}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                        <Button
+                          className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
+                          size="lg"
+                          type="submit"
+                        >
+                          Add New Payment Method
+                        </Button>
+                      </div>
+                    </form>
                   </section>
                 </div>
               </div>
