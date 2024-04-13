@@ -1,10 +1,12 @@
 // UI Imports
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import PaymentMethod from '@/components/PaymentMethod';
 import { Button } from '@/components/ui/button';
 import { BsFillPersonLinesFill } from 'react-icons/bs';
 import { MdOutlinePersonOutline } from 'react-icons/md';
 import { MdOutlinePayments } from 'react-icons/md';
+import { CaretSortIcon } from '@radix-ui/react-icons';
 
 import {
   Select,
@@ -13,6 +15,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 
 // Functionality Imports
 import useUserStore from '@/components/store';
@@ -34,14 +42,28 @@ type ProfileData =
       state: string;
       zip: string;
     };
+type PaymentMethod = {
+  cardId: number;
+  nameOnCard: string;
+  cardNumber: string;
+  expirationDate: string;
+  ccv: string;
+};
 
 const Profile = () => {
   const store = useUserStore();
   // const [state, setState] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [collapsibleOpen, setCollapsibleOpen] = useState(false);
   const navigate = useNavigate();
 
-  console.log(store);
+  const dummyPaymentMethods: PaymentMethod[] = Array(5).fill({
+    cardId: 1,
+    nameOnCard: 'John Doe',
+    cardNumber: '1234 5678 9012 3456',
+    expirationDate: '01/23',
+    ccv: '123',
+  });
 
   const states = [
     'AL',
@@ -122,7 +144,7 @@ const Profile = () => {
       const token = localStorage.getItem('token');
       console.log(data);
       axios
-        .post(endpoint, data, {headers: { 'Authorization': `Bearer ${token}` }})
+        .post(endpoint, data, { headers: { Authorization: `Bearer ${token}` } })
         .then((response) => {
           console.log(response.data);
           switch (section) {
@@ -199,20 +221,23 @@ const Profile = () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const response = await axios.get('https://shastamart-api-deploy.vercel.app/api/users/verifySession', { 
-            headers: { 'Authorization' : `Bearer ${token}` }
-          });
+          const response = await axios.get(
+            'https://shastamart-api-deploy.vercel.app/api/users/verifySession',
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
           console.log(response.data);
         } catch (error) {
           localStorage.removeItem('token');
-          navigate('/login')
+          navigate('/login');
         }
       } else {
         navigate('/register');
       }
-    }
+    };
     verifySession();
-  }, [])
+  }, []);
 
   return (
     <>
@@ -498,9 +523,91 @@ const Profile = () => {
               Payment Methods
             </h2>
           </div>
-          <div className="z-0 mx-auto -mt-8 mb-[20rem] h-[45rem] w-2/5 rounded-3xl bg-darkblue">
-            <div className="flex flex-row gap-32 pt-4">
-              <section className="flex flex-col"></section>
+          <h2 className="self-center pl-2 font-inter text-xl font-semibold">
+            OR
+          </h2>
+          <div className="z-0 mx-auto -mt-16 mb-[20rem] h-[45rem] w-2/5 rounded-3xl bg-darkblue pt-14">
+            <div className="mx-auto w-full pt-5 text-center">
+              <section className="flex flex-col items-center">
+                <div className="flex flex-col">
+                  <h3 className="pb-5 pl-4 text-lg font-semibold text-white">
+                    Choose Existing Payment Method
+                  </h3>
+                  {/* Payment Method Component Map */}
+
+                  <Collapsible
+                    className="w-48"
+                    open={collapsibleOpen}
+                    onOpenChange={setCollapsibleOpen}
+                  >
+                    <div className="flex items-center justify-between space-x-4 px-4">
+                      <h4 className="text-sm font-semibold">
+                        @peduarte starred 3 repositories
+                      </h4>
+                      <CollapsibleTrigger asChild>
+                        <Button variant="ghost" size="sm">
+                          <CaretSortIcon className="h-4 w-4" />
+                          <span className="sr-only">Toggle</span>
+                        </Button>
+                      </CollapsibleTrigger>
+                    </div>
+                    {dummyPaymentMethods.map((paymentMethod, index) => (
+                      <CollapsibleContent key={index} className="space-y-2">
+                        <PaymentMethod
+                          key={index}
+                          cardId={index + 1}
+                          nameOnCard={paymentMethod.nameOnCard}
+                          cardNumber={paymentMethod.cardNumber}
+                          expirationDate={paymentMethod.expirationDate}
+                        />
+                      </CollapsibleContent>
+                    ))}
+
+                    <div className="font-mono rounded-md border px-4 py-2 text-sm shadow-sm">
+                      @radix-ui/primitives
+                    </div>
+                    <CollapsibleContent className="space-y-2">
+                      <div className="font-mono rounded-md border px-4 py-2 text-sm shadow-sm">
+                        @radix-ui/colors
+                      </div>
+                      <div className="font-mono rounded-md border px-4 py-2 text-sm shadow-sm">
+                        @stitches/react
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+                </div>
+                <h3 className="pl-4 text-lg font-semibold text-white"> OR </h3>
+                <div className="flex flex-col items-start">
+                  <h3 className="pl-4 text-lg font-semibold text-white">
+                    Use New Payment Method
+                  </h3>
+                  <input
+                    className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+                    type="text"
+                    placeholder="Card Number"
+                    name="cardNumber"
+                  />
+                  <input
+                    className="mx-4 mt-2 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+                    type="text"
+                    placeholder="Expiration Date"
+                    name="expirationDate"
+                  />
+                  <input
+                    className="mx-4 mt-2 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+                    type="text"
+                    placeholder="CVV"
+                    name="cvv"
+                  />
+                  <Button
+                    className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
+                    size="lg"
+                    type="submit"
+                  >
+                    Save Changes
+                  </Button>
+                </div>
+              </section>
             </div>
           </div>
         </div>
