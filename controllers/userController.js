@@ -78,8 +78,7 @@ const getAllCustomers = async (req, res) => {
 
 const getUserPaymentInfo = async (req, res) => {
   try {
-    const body = await getRequestBody(req);
-    const { email } = body;
+    const email = req.email;
 
     const paymentInfoQuery = await userModel.getUserPaymentInfo(email);
     if (!paymentInfoQuery){

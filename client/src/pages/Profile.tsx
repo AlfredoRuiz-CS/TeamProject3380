@@ -45,11 +45,12 @@ type ProfileData =
       zip: string;
     };
 type PaymentMethod = {
-  cardId: number;
+  cardId?: number;
   nameOnCard: string;
   cardNumber: string;
   expirationDate: string;
-  ccv: string;
+  cvv: string;
+  cardtype?: string;
 };
 
 const Profile = () => {
@@ -64,24 +65,26 @@ const Profile = () => {
     nameOnCard: 'John Doe',
     cardNumber: '1234 5678 9012 3456',
     expirationDate: '01/23',
-    ccv: '123',
+    cvv: '123',
   });
   dummyPaymentMethods[1] = {
     cardId: 2,
     nameOnCard: 'Jane Doe',
     cardNumber: '9876 5432 1098 7654',
     expirationDate: '12/34',
-    ccv: '321',
+    cvv: '321',
   };
   dummyPaymentMethods[2] = {
     cardId: 3,
     nameOnCard: 'Philip Doe',
     cardNumber: '1234 5678 9012 3454',
     expirationDate: '01/23',
-    ccv: '123',
+    cvv: '123',
   };
+  const  [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+
   const [paymentMethodSelected, setPaymentMethodSelected] =
-    useState<PaymentMethod | null>(dummyPaymentMethods[0] || null);
+    useState<PaymentMethod | null>(paymentMethods[0] || null);
 
   const states = [
     'AL',
@@ -289,6 +292,30 @@ const Profile = () => {
     };
     verifySession();
   }, []);
+
+  useEffect(() => {
+    const fetchPayments = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get("https://shastamart-api-deploy.vercel.app/api/users/payments", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log(response.data);
+        const paymentData = await response.data;
+        const transformedPayments = paymentData.map(
+          (paymentMethod: PaymentMethod) => ({
+            nameOnCard: store.fname + " " + store.lname,
+            cardNumber: paymentMethod.cardNumber,
+            expirationDate: paymentMethod.expirationDate,
+            cvv: paymentMethod.cvv
+        }))
+        setPaymentMethods(transformedPayments);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchPayments();
+  }, [setPaymentMethods]);
 
   useEffect(() => {
     paymentMethodChanged();
@@ -614,7 +641,7 @@ const Profile = () => {
                             </Button>
                           </CollapsibleTrigger>
                         </div>
-                        {dummyPaymentMethods.map((paymentMethod, index) => (
+                        {paymentMethods.map((paymentMethod, index) => (
                           <CollapsibleContent
                             key={index}
                             className="space-y-2 duration-300 ease-in-out"
