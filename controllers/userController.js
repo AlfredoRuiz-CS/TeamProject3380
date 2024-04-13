@@ -85,13 +85,13 @@ const getUserPaymentInfo = async (req, res) => {
       res.writeHead(200, { 'Content-Type': 'text/plain' });
       res.end("none");
     }
-
-    let paymentInfo = paymentInfo[0]; //Should it be paymentInfoQuery
-    let expirationDate = `${paymentInfo.expiration.getMonth() + 1}-${paymentInfo.expiration.getDate()}-${paymentInfo.expiration.getFullYear()}`;
-    paymentInfo.expiration = expirationDate;
+    console.log(paymentInfoQuery);
+    // let paymentInfo = paymentInfo[0]; //Should it be paymentInfoQuery
+    // let expirationDate = `${paymentInfo.expiration.getMonth() + 1}-${paymentInfo.expiration.getDate()}-${paymentInfo.expiration.getFullYear()}`;
+    // paymentInfo.expiration = expirationDate;
 
     res.writeHead(200, { 'Content-Type' : 'application/json' });
-    res.end(JSON.stringify(paymentInfo));
+    res.end(JSON.stringify(paymentInfoQuery));
 
   } catch (error) {
     res.writeHead(500, {' Content-Type': 'application/json' });
