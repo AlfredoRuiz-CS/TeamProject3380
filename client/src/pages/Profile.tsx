@@ -237,6 +237,7 @@ const Profile = () => {
       cardType: cardType
     }
     const token = localStorage.getItem('token');
+    console.log(data);
     const response = await axios.post('https://shastamart-api-deploy.vercel.app/api/users/set_card', data, { 
       headers: { Authorization: `Bearer ${token}` } })
     console.log(response.data);

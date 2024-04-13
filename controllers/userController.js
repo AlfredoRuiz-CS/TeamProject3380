@@ -104,7 +104,9 @@ const createUserPaymentInfo = async (req, res) => {
   try {
     const body = await getRequestBody(req);
     const { cardtype, cardnumber, cvv, expiration } = body;
+    console.log(cardtype, cardnumber, cvv, expiration);
     const customerEmail = req.email;
+    console.log(customerEmail);
 
     let addInfo = await userModel.createUserPaymentInfo(customerEmail, cardtype, cardnumber, cvv, expiration);
     res.writeHead(201, { 'Content-Type': 'application/json' });
