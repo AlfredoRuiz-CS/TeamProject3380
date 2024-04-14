@@ -13,7 +13,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import MemberPage from './pages/MemberPage';
 import Payment from './pages/Payment';
 import Suppliers from './pages/Suppliers';
-import ShippingInformation from './pages/ShippingInfo';
+import ShippingInformation from './pages/Shipping';
 import './index.css';
 import { Navigate } from 'react-router-dom';
 import useUserStore from './components/store';

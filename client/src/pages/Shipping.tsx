@@ -14,9 +14,10 @@ import {
 } from '@/components/ui/table';
 
 
-const ShippingInformation = () => {
+export const ShippingInformation = () => {
     // const navigate = useNavigate();
     // const [shippingData, setShippingData] = useState([]);
+
 
     useEffect(() => {
         const fetchShippingData = async () => {
@@ -65,4 +66,3 @@ const ShippingInformation = () => {
 };
 
 export default ShippingInformation;
-
