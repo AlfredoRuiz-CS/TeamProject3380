@@ -44,12 +44,14 @@ type ProfileData =
       state: string;
       zip: string;
     };
+
 type PaymentMethod = {
-  cardId: number;
+  cardId?: number;
   nameOnCard: string;
-  cardNumber: string;
-  expirationDate: string;
-  ccv: string;
+  cardnumber: string;
+  expiration: string;
+  cvv: string;
+  cardtype?: string;
 };
 
 const Profile = () => {
@@ -62,26 +64,28 @@ const Profile = () => {
   const dummyPaymentMethods: PaymentMethod[] = Array(5).fill({
     cardId: 1,
     nameOnCard: 'John Doe',
-    cardNumber: '1234 5678 9012 3456',
-    expirationDate: '01/23',
-    ccv: '123',
+    cardnumber: '1234 5678 9012 3456',
+    expiration: '01/23',
+    cvv: '123',
   });
   dummyPaymentMethods[1] = {
     cardId: 2,
     nameOnCard: 'Jane Doe',
-    cardNumber: '9876 5432 1098 7654',
-    expirationDate: '12/34',
-    ccv: '321',
+    cardnumber: '9876 5432 1098 7654',
+    expiration: '12/34',
+    cvv: '321',
   };
   dummyPaymentMethods[2] = {
     cardId: 3,
     nameOnCard: 'Philip Doe',
-    cardNumber: '1234 5678 9012 3454',
-    expirationDate: '01/23',
-    ccv: '123',
+    cardnumber: '1234 5678 9012 3454',
+    expiration: '01/23',
+    cvv: '123',
   };
+  const  [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+
   const [paymentMethodSelected, setPaymentMethodSelected] =
-    useState<PaymentMethod | null>(dummyPaymentMethods[0] || null);
+    useState<PaymentMethod | null>(null);
 
   const states = [
     'AL',
@@ -229,14 +233,15 @@ const Profile = () => {
     updateProfile('address', { street, city, state, zip });
   }
 
-  async function handleNewPayment(cardNumber: string, expirationDate: string, cvv: string, cardType: string){
+  async function handleNewPayment(cardnumber: string, expiration: string, cvv: string, cardType: string){
     const data = {
-      cardNumber: cardNumber,
-      expirationDate: expirationDate,
+      cardnumber: cardnumber,
+      expiration: expiration,
       cvv: parseInt(cvv, 10),
       cardType: cardType
     }
     const token = localStorage.getItem('token');
+    console.log(data);
     const response = await axios.post('https://shastamart-api-deploy.vercel.app/api/users/set_card', data, { 
       headers: { Authorization: `Bearer ${token}` } })
     console.log(response.data);
@@ -250,7 +255,7 @@ const Profile = () => {
   function paymentMethodChanged() {
     toast.success(
       'Payment method ending in ' +
-        paymentMethodSelected?.cardNumber.slice(-4) +
+        paymentMethodSelected?.cardnumber.slice(-4) +
         ' selected.',
       {
         position: 'bottom-right',
@@ -288,6 +293,37 @@ const Profile = () => {
     };
     verifySession();
   }, []);
+
+  useEffect(() => {
+    const fetchPayments = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get("https://shastamart-api-deploy.vercel.app/api/users/payments", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log(response.data);
+        const paymentData = await response.data;
+        const transformedPayments = paymentData.map(
+          (paymentMethod: PaymentMethod) => ({
+            nameOnCard: store.fname + " " + store.lname,
+            cardnumber: paymentMethod.cardnumber,
+            expiration: paymentMethod.expiration,
+            cvv: paymentMethod.cvv
+        }))
+        console.log(transformedPayments);
+        setPaymentMethods(transformedPayments);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchPayments();
+  }, [setPaymentMethods]);
+
+  useEffect(() => {
+    if (paymentMethods.length > 0) {
+      setPaymentMethodSelected(paymentMethods[0]);
+    }
+  }, [paymentMethods]);
 
   useEffect(() => {
     paymentMethodChanged();
@@ -595,12 +631,12 @@ const Profile = () => {
                         open={collapsibleOpen}
                         onOpenChange={setCollapsibleOpen}
                       >
-                        <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
+                        { paymentMethodSelected ? (<div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
                           <h4 className="h-10 text-sm font-semibold">
                             {'Card Name: ' +
                               paymentMethodSelected?.nameOnCard +
                               '\nLast 4 digits: ' +
-                              paymentMethodSelected?.cardNumber.slice(-4)}
+                              paymentMethodSelected?.cardnumber.slice(-4)}
                           </h4>
                           <CollapsibleTrigger asChild>
                             <Button
@@ -612,8 +648,8 @@ const Profile = () => {
                               <span className="sr-only">Toggle</span>
                             </Button>
                           </CollapsibleTrigger>
-                        </div>
-                        {dummyPaymentMethods.map((paymentMethod, index) => (
+                        </div>) : <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">Loading payment methods...</div> }
+                        {paymentMethods.map((paymentMethod, index) => (
                           <CollapsibleContent
                             key={index}
                             className="space-y-2 duration-300 ease-in-out"
@@ -625,8 +661,9 @@ const Profile = () => {
                               key={index}
                               cardId={index + 1}
                               nameOnCard={paymentMethod.nameOnCard}
-                              cardNumber={paymentMethod.cardNumber}
-                              expirationDate={paymentMethod.expirationDate}
+                              cardNumber={paymentMethod.cardnumber}
+                              expirationDate={paymentMethod.expiration}
+                              cvv={paymentMethod.cvv}
                             />
                           </CollapsibleContent>
                         ))}
@@ -640,11 +677,11 @@ const Profile = () => {
                     <form onSubmit={(event) => {
                       event.preventDefault();
                       const form = event.target as HTMLFormElement;
-                      const cardNumber = form.elements.namedItem('cardNumber') as HTMLInputElement;
-                      const expirationDate = form.elements.namedItem('expirationDate') as HTMLInputElement;
+                      const cardnumber = form.elements.namedItem('cardnumber') as HTMLInputElement;
+                      const expiration = form.elements.namedItem('expiration') as HTMLInputElement;
                       const cvv = form.elements.namedItem('cvv') as HTMLInputElement;
                       const cardType = form.elements.namedItem('cardType') as HTMLInputElement;
-                      handleNewPayment(cardNumber.value, expirationDate.value, cvv.value, cardType.value)
+                      handleNewPayment(cardnumber.value, expiration.value, cvv.value, cardType.value)
                     }}>
                       <div className="flex flex-col items-start">
                         <h3 className="pl-4 text-lg font-semibold text-white">
@@ -654,13 +691,13 @@ const Profile = () => {
                           className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                           type="text"
                           placeholder="Card Number"
-                          name="cardNumber"
+                          name="cardnumber"
                         />
                         <input
                           className="mx-4 mt-2 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                           type="text"
                           placeholder="Expiration Date"
-                          name="expirationDate"
+                          name="expiration"
                         />
                         <input
                           className="mx-4 mt-2 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"

@@ -3,6 +3,8 @@ interface PaymentMethodProps {
   nameOnCard: string;
   cardNumber: string;
   expirationDate: string;
+  cvv: string;
+  cardtype?: string;
 }
 
 const PaymentMethod = (props: PaymentMethodProps) => {
