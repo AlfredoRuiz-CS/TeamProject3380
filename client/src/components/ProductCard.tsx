@@ -78,8 +78,7 @@ const ProductCard = (props: ProductCardProps) => {
         <Link to={`/product/${props.product.productId}`}>
           <img
             src={props.product.image}
-            className="mx-auto mt-8 h-[15rem] w-[20rem] rounded-xl object-cover"
-          ></img>
+            className="mx-auto mt-8 h-[15rem] w-[20rem] rounded-xl object-cover"></img>
         </Link>
         {/* Product Name */}
         <h2 className="ml-6 mr-auto pt-4 text-left font-jua text-xl hover:underline hover:underline-offset-4">
@@ -111,14 +110,12 @@ const ProductCard = (props: ProductCardProps) => {
             <div className="flex flex-row gap-2">
               <Button
                 className="text-md w-14 rounded-lg bg-[#48C9E5] py-5 font-jua text-black hover:bg-[#48C9E5]/85"
-                onClick={quantityDropdownToggle}
-              >
+                onClick={quantityDropdownToggle}>
                 Qty.
               </Button>
               <Select
                 defaultValue="1"
-                onValueChange={(e) => setQuantity(parseInt(e))}
-              >
+                onValueChange={(e) => setQuantity(parseInt(e))}>
                 <SelectTrigger className="h-10 w-[3rem] flex-grow border border-black bg-gray-200">
                   <SelectValue placeholder="1" />
                 </SelectTrigger>
@@ -134,24 +131,21 @@ const ProductCard = (props: ProductCardProps) => {
           ) : (
             <Button
               className="text-md w-14 rounded-lg bg-quantityblue py-5 font-jua text-black hover:bg-quantityblue/85"
-              onClick={quantityDropdownToggle}
-            >
+              onClick={quantityDropdownToggle}>
               Qty.
             </Button>
           )}
           {/* Add to Cart Button */}
           <Button
             className="text-md flex-grow rounded-lg bg-red-500 py-5 font-jua text-black hover:bg-red-500/85"
-            onClick={handleAddToCart}
-          >
+            onClick={handleAddToCart}>
             Add to Cart
           </Button>
           {/* Add To List Button */}
           {props.list ? (
             <Button
               className="text-md flex-grow rounded-lg bg-blue-500 py-5 font-jua text-black hover:bg-blue-500/90"
-              onClick={handleAddToList}
-            >
+              onClick={handleAddToList}>
               Add to List
             </Button>
           ) : (
@@ -161,8 +155,7 @@ const ProductCard = (props: ProductCardProps) => {
           {props.removeList ? (
             <Button
               className="text-md hover:bg-blueß-500/90 flex-grow rounded-lg bg-blue-500 py-5 font-jua text-black"
-              onClick={handleRemoveFromList}
-            >
+              onClick={handleRemoveFromList}>
               Remove from List
             </Button>
           ) : (

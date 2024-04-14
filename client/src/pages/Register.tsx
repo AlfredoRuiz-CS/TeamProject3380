@@ -191,8 +191,7 @@ const Register = () => {
         <Header />
         <form
           className="flex w-full flex-col items-center gap-5 py-5"
-          onSubmit={formik.handleSubmit}
-        >
+          onSubmit={formik.handleSubmit}>
           <h1 className="mb-5 font-jua text-8xl">Register</h1>
           <Link to="/login" className="mb-5 font-jua text-5xl text-darkblue">
             Already have an account?
@@ -240,8 +239,7 @@ const Register = () => {
           <Select
             onValueChange={(value) => formik.setFieldValue('state', value)}
             defaultValue={store.address.state}
-            name="state"
-          >
+            name="state">
             <SelectTrigger className="h-10 w-full max-w-md border border-gray-300 bg-white px-4 focus:border-logoblue focus:ring-logoblue">
               <SelectValue
                 // placeholder={store.address.state}
@@ -295,8 +293,7 @@ const Register = () => {
           </div>
           <button
             className="inline-flex h-10 select-none items-center justify-center whitespace-nowrap rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-            type="submit"
-          >
+            type="submit">
             <p>Register</p>
           </button>
         </form>

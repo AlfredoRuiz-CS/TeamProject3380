@@ -1003,8 +1003,7 @@ const Products = () => {
             {/* Sort Dropdown for category */}
             <Select
               defaultValue="All"
-              onValueChange={(e) => setCatSortOrder(e)}
-            >
+              onValueChange={(e) => setCatSortOrder(e)}>
               <SelectTrigger className="h-10 w-[8rem] bg-white text-black ">
                 <SelectValue placeholder="All" />
               </SelectTrigger>
@@ -1025,8 +1024,7 @@ const Products = () => {
             {/* Select Dropdown for sorting products by value */}
             <Select
               defaultValue="Price Desc."
-              onValueChange={(e) => setValueSortOrder(e)}
-            >
+              onValueChange={(e) => setValueSortOrder(e)}>
               <SelectTrigger className="h-10 w-[10rem] bg-white text-black ">
                 <SelectValue placeholder="Price Desc." />
               </SelectTrigger>

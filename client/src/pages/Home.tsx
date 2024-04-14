@@ -26,8 +26,7 @@ const Home = () => {
                 asChild
                 variant="outline"
                 className="border-primary bg-transparent"
-                size="lg"
-              >
+                size="lg">
                 <Link to="/login">Login</Link>
               </Button>
               <Button asChild className="" size="lg">

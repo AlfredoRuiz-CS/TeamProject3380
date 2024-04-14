@@ -416,8 +416,7 @@ const Profile = () => {
                           'lastName'
                         ) as HTMLInputElement;
                         handleNameChange(firstName.value, lastName.value);
-                      }}
-                    >
+                      }}>
                       <h3 className="pl-4 text-lg font-semibold text-white">
                         First Name
                       </h3>
@@ -434,13 +433,11 @@ const Profile = () => {
                         className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                         type="text"
                         placeholder={store.lname}
-                        name="lastName"
-                      ></input>
+                        name="lastName"></input>
                       <Button
                         className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
                         size="lg"
-                        type="submit"
-                      >
+                        type="submit">
                         Save Changes
                       </Button>
                     </form>
@@ -455,8 +452,7 @@ const Profile = () => {
                           'phone'
                         ) as HTMLInputElement;
                         handlePhoneChange(phone.value);
-                      }}
-                    >
+                      }}>
                       <div className="flex flex-col items-start">
                         <h3 className="w-full pl-4 text-lg font-semibold text-white">
                           Phone Number
@@ -465,13 +461,11 @@ const Profile = () => {
                           className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                           type="tel"
                           placeholder={store.phone}
-                          name="phone"
-                        ></input>
+                          name="phone"></input>
                         <Button
                           className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
                           size="lg"
-                          type="submit"
-                        >
+                          type="submit">
                           Save Changes
                         </Button>
                       </div>
@@ -501,8 +495,7 @@ const Profile = () => {
                           state.value,
                           zipcode.value
                         );
-                      }}
-                    >
+                      }}>
                       <div className="flex flex-col items-start">
                         <h3 className="w-full pl-4 text-lg font-semibold text-white">
                           Address
@@ -516,13 +509,11 @@ const Profile = () => {
                                 ? store.address.street
                                 : 'Address'
                             }
-                            name="street"
-                          ></input>
+                            name="street"></input>
                           <Select
                             // onValueChange={(e) => setState(e)}
                             defaultValue={store.address.state}
-                            name="state"
-                          >
+                            name="state">
                             <SelectTrigger className="h-10 w-[5rem] flex-grow border-none bg-gray-200 text-gray-500">
                               <SelectValue
                                 placeholder={store.address.state}
@@ -545,22 +536,19 @@ const Profile = () => {
                             placeholder={
                               store.address.city ? store.address.city : 'City'
                             }
-                            name="city"
-                          ></input>
+                            name="city"></input>
                           <input
                             className="mt-2 h-10 w-[6.5rem] rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                             type="zipcode"
                             placeholder={
                               store.address.zip ? store.address.zip : 'Zip Code'
                             }
-                            name="zipcode"
-                          ></input>
+                            name="zipcode"></input>
                         </div>
                         <Button
                           className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
                           size="lg"
-                          type="submit"
-                        >
+                          type="submit">
                           Save Changes
                         </Button>
                       </div>
@@ -578,8 +566,7 @@ const Profile = () => {
                       'email'
                     ) as HTMLInputElement;
                     handleEmailChange(email.value);
-                  }}
-                >
+                  }}>
                   <h3 className="pl-4 text-lg font-semibold text-white">
                     Email
                   </h3>
@@ -592,8 +579,7 @@ const Profile = () => {
                   <Button
                     className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
                     size="lg"
-                    type="submit"
-                  >
+                    type="submit">
                     Change Email
                   </Button>
                 </form>
@@ -606,8 +592,7 @@ const Profile = () => {
                       'password'
                     ) as HTMLInputElement;
                     handlePasswordChange(password.value);
-                  }}
-                >
+                  }}>
                   <h3 className="mt-2 pl-4 text-lg font-semibold text-white">
                     Password
                   </h3>
@@ -628,8 +613,7 @@ const Profile = () => {
                     />
                     <label
                       htmlFor="show-password"
-                      className="w-full select-none text-white"
-                    >
+                      className="w-full select-none text-white">
                       Show Password
                     </label>
                   </div>
@@ -637,15 +621,13 @@ const Profile = () => {
                   <Button
                     className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
                     size="lg"
-                    type="submit"
-                  >
+                    type="submit">
                     Change Password
                   </Button>
                 </form>
                 <Button
                   className="mr-4 mt-10 bg-red-500 hover:bg-red-500/90"
-                  onClick={handleDeleteAccount}
-                >
+                  onClick={handleDeleteAccount}>
                   Delete Account
                 </Button>
               </section>
@@ -672,8 +654,7 @@ const Profile = () => {
                       <Collapsible
                         className="flex w-64 flex-col gap-2 place-self-center"
                         open={collapsibleOpen}
-                        onOpenChange={setCollapsibleOpen}
-                      >
+                        onOpenChange={setCollapsibleOpen}>
                         {paymentMethodSelected ? (
                           <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
                             <h4 className="h-10 text-sm font-semibold">
@@ -686,8 +667,7 @@ const Profile = () => {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="hover:bg-white/50"
-                              >
+                                className="hover:bg-white/50">
                                 <CaretSortIcon className="h-6 w-6" />
                                 <span className="sr-only">Toggle</span>
                               </Button>
@@ -706,8 +686,7 @@ const Profile = () => {
                         {paymentMethods.map((paymentMethod, index) => (
                           <CollapsibleContent
                             key={index}
-                            className="space-y-2 duration-300 ease-in-out"
-                          >
+                            className="space-y-2 duration-300 ease-in-out">
                             <PaymentMethod
                               key={index}
                               cardId={index + 1}
@@ -744,8 +723,7 @@ const Profile = () => {
                           cvv.value,
                           cardType.value
                         );
-                      }}
-                    >
+                      }}>
                       <div className="flex flex-col items-start gap-2">
                         <h3 className="pl-4 text-lg font-semibold text-white">
                           Use New Payment Method
@@ -792,8 +770,7 @@ const Profile = () => {
                         <Button
                           className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
                           size="lg"
-                          type="submit"
-                        >
+                          type="submit">
                           Add New Payment Method
                         </Button>
                       </div>

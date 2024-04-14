@@ -61,8 +61,7 @@ const Cart = () => {
                 <AlertDialogTrigger asChild>
                   <Button
                     variant="outline"
-                    className="border border-darkblue bg-transparent text-darkblue hover:bg-darkblue hover:text-bgwhite"
-                  >
+                    className="border border-darkblue bg-transparent text-darkblue hover:bg-darkblue hover:text-bgwhite">
                     <FaTrashCan className="mr-2 h-4 w-4" />
                     Empty Cart
                   </Button>
@@ -152,8 +151,7 @@ const Cart = () => {
 
                 <Button
                   className="mt-10 h-[3rem] w-[12rem] self-center border-darkblue text-white hover:bg-darkblue hover:text-bgwhite"
-                  onClick={handleCheckout}
-                >
+                  onClick={handleCheckout}>
                   <Link to="/payment">Proceed to Checkout</Link>
                 </Button>
               </div>
@@ -171,8 +169,7 @@ const Cart = () => {
                             <div className="h-[5rem] w-[5rem] overflow-hidden rounded-[10px]">
                               <img
                                 className="h-full w-full object-contain"
-                                src={`../${product.image.replace(/\.(jpg|jpeg)$/, '.png')}`}
-                              ></img>
+                                src={`../${product.image.replace(/\.(jpg|jpeg)$/, '.png')}`}></img>
                             </div>
                             <div className="flex flex-col">
                               <h1 className="flex flex-row self-center pt-5 text-3xl">

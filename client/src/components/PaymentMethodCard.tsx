@@ -24,14 +24,12 @@ const PaymentMethodCard = (props: PaymentMethodProps) => {
       <div className="mx-auto w-full flex-row pt-2">
         <Button
           className="mr-2 bg-blue-500 text-black"
-          onClick={() => props.onSelect(props.passedPaymentMethod)}
-        >
+          onClick={() => props.onSelect(props.passedPaymentMethod)}>
           Select
         </Button>
         <Button
           className="bg-red-500 text-black"
-          onClick={() => props.onDelete(props.passedPaymentMethod)}
-        >
+          onClick={() => props.onDelete(props.passedPaymentMethod)}>
           Delete
         </Button>
       </div>

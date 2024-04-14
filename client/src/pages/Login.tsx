@@ -122,8 +122,7 @@ const Login = () => {
         <Header />
         <form
           className="flex w-full flex-col items-center gap-5 py-5"
-          onSubmit={formik.handleSubmit}
-        >
+          onSubmit={formik.handleSubmit}>
           <h1 className="mb-10 font-jua text-8xl">Login</h1>
           <p className="mb-10 font-jua text-5xl">
             Don't have an account?{' '}
@@ -161,8 +160,7 @@ const Login = () => {
           </div>
           <button
             className="inline-flex h-10 select-none items-center justify-center whitespace-nowrap rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-            type="submit"
-          >
+            type="submit">
             <p>Log in</p>
           </button>
         </form>
