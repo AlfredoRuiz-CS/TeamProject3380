@@ -49,7 +49,7 @@ function App() {
         {/* Products */}
         <Route path="/products" element={<Products />} />
         <Route path="/product/:productId" element={<SingleProduct />} />
-        {/* test */}
+        {/* Shipping */}
         <Route path="/shipping" element={<ShippingInformation />} />
         {/* Any non-valid URL returns to home */}
         <Route path="*" element={<Home />} />
