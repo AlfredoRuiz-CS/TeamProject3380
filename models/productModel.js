@@ -100,9 +100,33 @@ async function insertShippingDetails(connection, productID, shippingDetails){
     }
 }
 
+async function insertInventory(connection,productID,productInfo){
+    try{
+        const [row] = await connection.execute(`
+        SELECT supplierID
+        FROM supplier s
+        WHERE s.name=?`,[productInfo.supplier]);
+
+        if (row.length === 0) {
+            // No supplier found, handle the error appropriately
+            throw new Error(`No supplier found with name: ${productInfo.supplier}`);
+        }
+
+       const [result] = await connection.execute(`
+       INSERT INTO inventory (productID,supplierID,quantity,purchasePrice)
+       VALUES(?,?,?,?)`,[productID,row[0].supplierID,productInfo.stockQuantity,productInfo.productPrice*0.5]);
+
+        return result;
+    } catch (error){
+        console.log(error);
+        throw error;
+    }
+}
+
 module.exports = {
     getAllProducts,
     insertProduct,
     insertNutritionFacts,
-    insertShippingDetails
+    insertShippingDetails,
+    insertInventory
 }

@@ -4,7 +4,7 @@ const {pool} = require("../config/db");
 //getAllOrder used by employee
 async function findAllOrder(){
     try{
-        const res = await pool.query(`
+        const [res] = await pool.query(`
         SELECT *
         FROM purchaseOrder`,);
         return res;
@@ -20,13 +20,30 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod){
         await connection.beginTransaction();
 
         if (items.length==0){
-            return null;
+            throw new Error(`No item was found`);
         }
         
         let orderLineDetail =[];
         let total = 0;
-        //calculate the total for the purchaseOrder
+        //calculate the total for the purchaseOrder, check if any item has 
+        //exceeded quantity
         for (let item of items){
+            const [res] = await connection.query(`
+            SELECT quantity
+            FROM inventory
+            WHERE productID=?`,[item.productID]);
+            if (item.productQuantity > res[0].quantity){
+                throw new Error(`Not enough inventory for item: ${item.productName}`);
+            }
+            await connection.query(`
+            UPDATE product
+            SET stockQuantity=stockQuantity-?
+            WHERE productID=?`,[item.productQuantity,item.productID]);
+            await connection.query(`
+            UPDATE inventory
+            SET quantity=quantity-?
+            WHERE productID=?`,[item.productQuantity,item.productID]);
+
             total += item.productPrice*item.productQuantity;
         }
         //create new order
@@ -53,9 +70,10 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod){
             const [anotherRows] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
             const anotherID = anotherRows[0].lastId;
             const res = await connection.query(`
-            SELECT orderLineID, productID, quantity, unitPrice, subTotal
-            FROM orderLine
-            WHERE orderLineID=? AND active=?`,[anotherID,1]);
+            SELECT productName, quantity, unitPrice, subTotal
+            FROM orderLine o
+            JOIN product p 
+            WHERE orderLineID=? AND active=? AND o.productID = p.productID`,[anotherID,1]);
             orderLineDetail.push(res[0]);
         }
         await connection.commit();
@@ -70,7 +88,7 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod){
 
 async function findAllOrderbyEmail(email){
     try{
-        const res = await pool.query(`
+        const [res] = await pool.query(`
         SELECT *
         FROM purchaseOrder
         WHERE customerEmail=?`,[email])
@@ -84,8 +102,8 @@ async function findAllOrderbyEmail(email){
 
 async function findOrderByLname(lname){
     try{
-        const res = await pool.query(`
-        SELECT p.orderID, p.orderDate, p.total
+        const [res] = await pool.query(`
+        SELECT p.orderID, p.customerEmail, p.orderDate, p.total
         FROM customer c 
         JOIN purchaseOrder p
         ON c.email = p.customerEmail
@@ -100,21 +118,21 @@ async function findOrderByLname(lname){
 
 async function findOrderDetail(orderID){
     try{
-        const res = await pool.query(`
-        SELECT p.orderID, p.orderDate, o.productID, o.quantity, o.unitPrice, o.subTotal
+        const [res] = await pool.query(`
+        SELECT o.productID, o.quantity, o.unitPrice, o.subTotal
         FROM purchaseOrder p
         JOIN orderLine o
         ON p.orderID = o.orderID
         WHERE p.orderID=? AND o.active=?`,[orderID,1]);
 
-        return res[0];
+        return res;
     } catch(error){
         console.log(error.message);
         throw error;
     }
 }
 
-async function refundItems(paymentID,items,refundDate,orderLineID){
+async function refundItems(orderID,items,refundDate){
     const connection = await pool.getConnection()
     try{
         await connection.beginTransaction();
@@ -124,39 +142,44 @@ async function refundItems(paymentID,items,refundDate,orderLineID){
         let amount = 0;
         let removedItems = [];
 
-        //calculate total amount of refund for record, add refunded items' names into a list, and update orderLine
+        //calculate total amount of refund for record, add refunded items into a list, and update orderLine
         for(let item of items){
             amount += item.productPrice*item.productQuantity;
             const [res] = await connection.query(`
-            SELECT productName
-            FROM product p
-            JOIN orderLine o
-            ON o.productID = p.productID
-            WHERE o.orderLineID IN(?) AND o.productID=?`,[orderLineID,item.productID]);
+            SELECT productName, orderLineID
+            FROM purchaseOrder p 
+            JOIN orderLine o 
+            ON p.orderID = o.orderID
+            JOIN product
+            ON o.productID = product.productID
+            WHERE p.orderID=? AND o.productID=?`,[orderID,item.productID]);
 
             //store refunded items
-            removedItems.push(res.productName);
+            if (res.length > 0) {
+                removedItems.push(res[0].productName);
+              } else {
+                console.log("No product found for this orderID and productID:", orderID, item.productID);
+              }
 
             //update order line by hiding refunded items: active = 0
-            const updateLine = await connection.query(`
+            const [updateLine] = await connection.query(`
             UPDATE orderLine
             SET active=0
-            WHERE orderLineID IN(?)`,[orderLineID]);
+            WHERE orderLineID=?`,[res[0].orderLineID]);
         }
        
-        //This function can be deleted if we can hard-coding paymentMethod
-        const pMethod = (await connection).query(`
-        SELECT paymentMethod
+        const [payment] = await connection.query(`
+        SELECT paymentMethod, paymentID
         FROM payment
-        WHERE paymentID=?`,[paymentID]);
+        WHERE orderID=?`,[orderID]);
 
         //record the refund
-        const createRefund = await connection.query(`
+        const [createRefund] = await connection.query(`
         INSERT INTO refund(paymentID,refundDate,amount,refundMethod,refundStatus)
-        VALUES(?,?,?,?,?)`,[paymentID,refundDate,amount,pMethod[0],"pass"]);
+        VALUES(?,?,?,?,?)`,[payment[0].paymentID,refundDate,amount,payment.paymentMethod,"pass"]);
 
         await connection.commit();
-        return {refund: createRefund, refundedItems: removedItems};
+        return {refund: createRefund,refundedItems: removedItems};
     } catch(error){
         await connection.rollback();
         console.log(error.message);
@@ -167,7 +190,7 @@ async function refundItems(paymentID,items,refundDate,orderLineID){
 
 async function findRefund (refundID){
     try{
-        const result = await pool.query(`
+        const [result] = await pool.query(`
         SELECT*
         FROM refund
         WHERE refundID=?`,[refundID]);
@@ -182,7 +205,7 @@ async function findRefund (refundID){
 
 async function findPayment (paymentID){
     try{
-        const result = await pool.query(`
+        const [result] = await pool.query(`
         SELECT*
         FROM payment
         WHERE paymentID=?`,[paymentID]);
@@ -200,7 +223,7 @@ async function findAllRefund (paymentID){
         FROM refund
         WHERE paymentID=?`,[paymentID]);
 
-        return result[0];
+        return result;
     } catch(error){
         console.log(error.message);
         throw error
@@ -214,7 +237,7 @@ async function findAllPayment (orderID){
         FROM payment
         WHERE orderID=?`,[orderID]);
 
-        return result[0];
+        return result;
     } catch(error){
         console.log(error.message);
         throw error

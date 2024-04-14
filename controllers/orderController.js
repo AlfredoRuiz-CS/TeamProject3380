@@ -104,11 +104,11 @@ const getOrderByLname = async (req,res) => {
 const processRefund = async (req,res)=>{
   try{
     const body = await getRequestBody(req);
-    const {paymentID,items,orderLineID} = body;
+    const {orderID,items} = body;
     const currTime = new Date();
     const formatDigit = (x) => x.toString().length === 1 ? '0' + x.toString() : x.toString();
     let refundDate = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate())}`;
-    const refund = await orderModel.refundItems(paymentID,items,refundDate,orderLineID);
+    const refund = await orderModel.refundItems(orderID,items,refundDate);
     if (!refund){
       res.writeHead(200, { 'Content-Type': 'text/plain' });
       res.end("none");

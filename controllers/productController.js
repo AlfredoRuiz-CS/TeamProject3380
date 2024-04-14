@@ -29,6 +29,8 @@ const insertProductInfo = async (req, res) => {
         const prodID = await productModel.insertProduct(connection, productInfo);
         const nutritionF = await productModel.insertNutritionFacts(connection, prodID, nutritionFacts);
         const shipDetails = await productModel.insertShippingDetails(connection, prodID, shippingDetails);
+        //add to inventory
+        const inventory = await productModel.insertInventory(connection,prodID,productInfo);
 
         await connection.commit();
         res.writeHead(200, { 'Content-Type': 'application/json' });
