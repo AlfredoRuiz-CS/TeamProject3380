@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CartItem from '@/components/CartItem';
+import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
 import { FaTrashCan } from 'react-icons/fa6';
 
@@ -46,6 +47,15 @@ const Cart = () => {
     navigate('/payment');
   }
 
+  function emptyCart() {
+    store.resetCart();
+    toast.success('Cart has been emptied!', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      duration: 2000,
+    });
+  }
+
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
@@ -77,7 +87,7 @@ const Cart = () => {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={store.resetCart}>
+                    <AlertDialogAction onClick={emptyCart}>
                       Confirm
                     </AlertDialogAction>
                   </AlertDialogFooter>

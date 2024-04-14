@@ -131,6 +131,7 @@ type UserState = {
   removeFromCart: (product: productItem) => void;
   changeQuantity: (product: productItem, quantity: number) => void;
   resetCart: () => void;
+  resetList: () => void;
 };
 
 const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
@@ -237,6 +238,7 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
       List: state.List.filter((item) => item !== product),
     })),
   resetCart: () => set({ cartItemsNumber: 0, cartItems: [], quantity: [] }),
+  resetList: () => set({ List: [] }),
 });
 
 const useUserStore = create(

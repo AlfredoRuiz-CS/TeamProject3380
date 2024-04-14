@@ -6,8 +6,7 @@ import { BsFillPersonLinesFill } from 'react-icons/bs';
 import { MdOutlinePersonOutline } from 'react-icons/md';
 import { MdOutlinePayments } from 'react-icons/md';
 import { CaretSortIcon } from '@radix-ui/react-icons';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import toast from 'react-hot-toast';
 
 import {
   Select,
@@ -390,7 +389,7 @@ const Profile = () => {
           </div>
           {/* Forms for Updating User Information */}
 
-          <div className="z-0 mx-auto mb-20 mt-4 h-auto w-2/5 rounded-3xl bg-darkblue pb-5">
+          <div className="z-0 mx-auto mb-20 mt-4 h-auto w-3/5 rounded-3xl bg-darkblue pb-5 ">
             {/* Yellow background title section */}
             <div className="z-10 mx-auto mr-10 flex h-16 min-w-full flex-row rounded-2xl bg-xanthousyellow">
               <MdOutlinePersonOutline className="ml-2 mt-1 flex h-14 w-14 self-start" />
@@ -626,7 +625,7 @@ const Profile = () => {
                   </Button>
                 </form>
                 <Button
-                  className="mr-4 mt-10 bg-red-500 hover:bg-red-500/90"
+                  className=" mt-10 bg-red-500 hover:bg-red-500/90"
                   onClick={handleDeleteAccount}>
                   Delete Account
                 </Button>
@@ -637,7 +636,7 @@ const Profile = () => {
 
           {store.accountType === 'customer' && !store.isAdmin ? (
             <>
-              <div className="z-0 mx-auto mb-20 mt-4 h-auto w-2/5 rounded-3xl bg-darkblue pb-5">
+              <div className="z-0 mx-auto mb-20 mt-4 h-auto w-3/5 rounded-3xl bg-darkblue pb-5">
                 <div className="z-10 mx-auto flex h-16 w-full flex-row rounded-2xl bg-xanthousyellow">
                   <MdOutlinePayments className="ml-4 mt-1 flex h-14 w-14 self-start" />
                   <h2 className="self-center pl-2 font-inter text-xl font-semibold">

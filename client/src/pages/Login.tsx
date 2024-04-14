@@ -2,8 +2,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
 import { useState, useEffect } from 'react';
-import 'react-toastify/dist/ReactToastify.css';
-import { toast } from 'react-toastify';
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 // import * as Yup from 'yup';
@@ -85,7 +84,7 @@ const Login = () => {
     toast.success('Log in successful... Redirecting', {
       position: 'bottom-right',
       className: 'font-bold text-black',
-      autoClose: 2000,
+      duration: 2000,
     });
   }
 
@@ -93,7 +92,7 @@ const Login = () => {
     toast.success('(ADMIN) Log in successful... Redirecting', {
       position: 'bottom-right',
       className: 'font-bold text-black',
-      autoClose: 2000,
+      duration: 2000,
     });
   }
 
@@ -101,7 +100,7 @@ const Login = () => {
     toast.error('Invalid email or password', {
       position: 'bottom-right',
       className: 'font-bold text-black',
-      autoClose: 2000,
+      duration: 2000,
     });
 
   useEffect(() => {
@@ -172,7 +171,6 @@ const Login = () => {
             <Cursor />
           </span>
         </h2>
-        {/* <ToastContainer /> */}
       </div>
       <Footer />
     </>

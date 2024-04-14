@@ -3,8 +3,7 @@ import Footer from '../components/Footer';
 // import ErrorText from '../components/ErrorText';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
 import React, { useState, useEffect } from 'react'; // reacteventhandler removed from imports
-import 'react-toastify/dist/ReactToastify.css'; // react toasts for notifications
-import { toast } from 'react-toastify';
+import toast from 'react-hot-toast'; // react toasts for notifications
 // import { Button } from '../components/ui/button.tsx';
 import { useFormik } from 'formik'; // error message removed from imports
 import * as Yup from 'yup';
@@ -154,7 +153,7 @@ const Register = () => {
     toast.success('Registration successful.', {
       position: 'bottom-right',
       className: 'font-bold text-black',
-      autoClose: 2000,
+      duration: 2000,
     });
   }
 
@@ -162,7 +161,7 @@ const Register = () => {
     toast.error('Error registering account.', {
       position: 'bottom-right',
       className: 'font-bold text-black',
-      autoClose: 2000,
+      duration: 2000,
     });
 
   useEffect(() => {
@@ -305,7 +304,6 @@ const Register = () => {
           </span>
         </h2>
       </div>
-      {/* <ToastContainer /> */}
       <Footer />
     </>
   );

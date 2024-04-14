@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
-import 'react-toastify/dist/ReactToastify.css';
-import { toast } from 'react-toastify';
+import toast from 'react-hot-toast';
 import {
   Select,
   SelectContent,
@@ -60,7 +59,7 @@ const ProductCard = (props: ProductCardProps) => {
       {
         position: 'bottom-right',
         className: 'font-bold text-black',
-        autoClose: 2000,
+        duration: 2000,
       }
     );
 
@@ -68,7 +67,7 @@ const ProductCard = (props: ProductCardProps) => {
     toast.success('Added ' + props.product.name + ' to List!', {
       position: 'bottom-right',
       className: 'font-bold text-black',
-      autoClose: 2000,
+      duration: 2000,
     });
 
   return (

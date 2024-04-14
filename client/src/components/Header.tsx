@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { Button } from './ui/button.tsx';
-import 'react-toastify/dist/ReactToastify.css';
-import { toast } from 'react-toastify';
+import toast from 'react-hot-toast';
 import { IoMdCart } from 'react-icons/io';
 import { IoNotifications } from 'react-icons/io5';
 import { IoIosArrowDown } from 'react-icons/io';
@@ -46,16 +45,16 @@ const Header = (props: HeaderProps) => {
   function logoutHandler() {
     user.logout();
     localStorage.removeItem('token');
-    logoutToast(() => navigate('/home'));
+    logoutToast();
   }
 
-  function logoutToast(onClose: () => void) {
+  function logoutToast() {
     toast.success('You have been logged out successfully...', {
       position: 'bottom-right',
       className: 'font-bold text-black',
-      autoClose: 1000,
-      onClose: onClose,
+      duration: 2000,
     });
+    navigate('/home');
   }
 
   return (
@@ -64,8 +63,7 @@ const Header = (props: HeaderProps) => {
         className={
           'flex h-16 w-full justify-between overflow-x-hidden bg-transparent font-inter ' +
           textColor
-        }
-      >
+        }>
         {/* Logo */}
         <div className="pl-10 pt-5">
           <Link to="/">
@@ -137,8 +135,7 @@ const Header = (props: HeaderProps) => {
                 <Button
                   asChild
                   variant="outline"
-                  className={'bg-transparent ' + textColor + ' ' + borderColor}
-                >
+                  className={'bg-transparent ' + textColor + ' ' + borderColor}>
                   <Link to="/login">Login</Link>
                 </Button>
               </li>
@@ -154,8 +151,7 @@ const Header = (props: HeaderProps) => {
                       className={
                         'p-0 text-[16px] font-normal focus-visible:ring-0 ' +
                         textColor
-                      }
-                    >
+                      }>
                       {user.fname}
                       <IoIosArrowDown />
                     </Button>
@@ -192,8 +188,7 @@ const Header = (props: HeaderProps) => {
                       className={
                         'p-0 text-[16px] font-normal focus-visible:ring-0 ' +
                         textColor
-                      }
-                    >
+                      }>
                       {user.fname}
                       <IoIosArrowDown />
                     </Button>
