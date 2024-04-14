@@ -13,7 +13,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import MemberPage from './pages/MemberPage';
 import Payment from './pages/Payment';
 import Suppliers from './pages/Suppliers';
-import ShippingInformation from './pages/shippingInfo';
+import ShippingInformation from './pages/ShippingInfo';
 import './index.css';
 import { Navigate } from 'react-router-dom';
 import useUserStore from './components/store';
@@ -50,7 +50,7 @@ function App() {
         <Route path="/products" element={<Products />} />
         <Route path="/product/:productId" element={<SingleProduct />} />
         {/* test */}
-        <Route path="/test" element={<ShippingInformation />} />
+        <Route path="/shipping" element={<ShippingInformation />} />
         {/* Any non-valid URL returns to home */}
         <Route path="*" element={<Home />} />
       </Routes>

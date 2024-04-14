@@ -1,7 +1,7 @@
-import React from 'react';
+// import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import {
@@ -15,8 +15,8 @@ import {
 
 
 const ShippingInformation = () => {
-    const navigate = useNavigate();
-    const [shippingData, setShippingData] = useState([]);
+    // const navigate = useNavigate();
+    // const [shippingData, setShippingData] = useState([]);
 
     useEffect(() => {
         const fetchShippingData = async () => {
@@ -24,7 +24,7 @@ const ShippingInformation = () => {
                 const response = await axios.get(
                     'https://shastamart-api-deploy.vercel.app/api/shipping/getAllShippingInformation'
                 );
-                setShippingData(response.data);
+                // setShippingData(response.data);
             } catch (error) {
                 console.error('Error fetching shipping data:', error);
             }

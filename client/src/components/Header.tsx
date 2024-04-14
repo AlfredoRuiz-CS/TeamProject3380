@@ -208,7 +208,9 @@ const Header = (props: HeaderProps) => {
                       <DropdownMenuItem>
                         <Link to="/suppliers">Suppliers</Link>
                       </DropdownMenuItem>
-
+                      <DropdownMenuItem>
+                        <Link to="/shipping">Shipping</Link>
+                      </DropdownMenuItem>
                       <DropdownMenuItem>
                         <Link to="/profile">Profile</Link>
                       </DropdownMenuItem>
