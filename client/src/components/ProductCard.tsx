@@ -65,7 +65,7 @@ const ProductCard = (props: ProductCardProps) => {
     );
 
   const listConfirmToast = () =>
-    toast.success('Added' + props.product.name + ' to List!', {
+    toast.success('Added ' + props.product.name + ' to List!', {
       position: 'bottom-right',
       className: 'font-bold text-black',
       autoClose: 2000,

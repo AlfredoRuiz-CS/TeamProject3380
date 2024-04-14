@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 // import { productItem } from '@/components/store';
 import useUserStore from '@/components/store';
+// import { ReactElement, ReactEventHandler } from 'react';
 // import React from 'react';
 
 interface paymentProps {
@@ -13,6 +14,29 @@ interface paymentProps {
 const payment = (props: paymentProps) => {
   const store = useUserStore();
   console.log('Rendered Payment Page', props.type);
+
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (props.type === 'cart') {
+      const cartOrderDetails = {
+        items: store.cartItems.map((item, index) => ({
+          productID: item.productId,
+          productName: item.name,
+          productQuantity: store.quantity[index],
+          productPrice: item.price,
+        })), 
+        paymentMethod: "3564 Debit"
+      }
+      console.log(cartOrderDetails);
+    }
+    else if (props.type === 'membership'){
+      const data = {
+        email: store.email
+      }
+      console.log(data);
+    }
+  }
 
   return (
     <>
@@ -24,13 +48,13 @@ const payment = (props: paymentProps) => {
             <h1 className="pt-16 text-center text-3xl font-medium text-white">
               Payment Summary
             </h1>
-            <section className="mt-6 flex h-[40rem] w-[40rem] flex-col justify-between place-self-center rounded-2xl bg-cardwhite">
+            <section className="mt-6 flex h-auto w-[40rem] flex-col justify-between place-self-center rounded-2xl bg-cardwhite">
               <div className="">
                 <h3 className="ml-5 mt-3 text-2xl font-medium">
                   Order Summary
                 </h3>
                 {/* Item Table */}
-                <table className="mt-2 w-full">
+                <table className="mb-5 mt-2 w-full">
                   <thead>
                     <tr>
                       <th className="pl-5 text-left">Item</th>
@@ -85,7 +109,7 @@ const payment = (props: paymentProps) => {
 
               {/* Name Fields */}
               <div className="flex flex-col items-center ">
-                <form className="flex w-full flex-col gap-0 pt-5">
+                <form className="flex w-full flex-col gap-0 pt-5" onSubmit={handleSubmit}>
                   <div className="self-center">
                     <h3 className=" pl-5 text-lg font-semibold text-darkblue">
                       Card Number
@@ -180,7 +204,7 @@ const payment = (props: paymentProps) => {
 
               {/* Name Fields */}
               <div className="flex flex-col items-center ">
-                <form className="flex w-full flex-col gap-0 pt-5">
+                <form className="flex w-full flex-col gap-0 pt-5" onSubmit={handleSubmit}>
                   <div className="self-center">
                     <h3 className=" pl-5 text-lg font-semibold text-darkblue">
                       Card Number

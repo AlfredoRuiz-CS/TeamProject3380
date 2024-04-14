@@ -1,5 +1,6 @@
 import { productItem } from './store';
 import { FaTrashCan } from 'react-icons/fa6';
+import { Link } from 'react-router-dom';
 import useUserStore from './store';
 
 interface CartItemProps {
@@ -43,7 +44,11 @@ const CartItem = (props: CartItemProps) => {
         />
         {/* Product Description and Price */}
         <div className="ml-2 flex flex-col">
-          <h2 className="text-md">{props.product.name}</h2>
+          <Link to={`/product/${props.product.productId}`}>
+            <h2 className="text-md underline-offset-2 hover:underline">
+              {props.product.name}
+            </h2>
+          </Link>
           {/* <p className="text-sm">{props.product.description[0]}</p> */}
           <p className="text-sm">
             {props.product.price.toLocaleString('en-US', {
