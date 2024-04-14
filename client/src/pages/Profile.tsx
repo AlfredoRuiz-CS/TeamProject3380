@@ -28,7 +28,6 @@ import useUserStore from '@/components/store';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import payment from './Payment';
 
 type ProfileSection = 'name' | 'email' | 'password' | 'phone' | 'address';
 
