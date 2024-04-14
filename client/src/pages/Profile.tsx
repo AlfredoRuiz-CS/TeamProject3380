@@ -1,7 +1,6 @@
-// UI Imports
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import PaymentMethod from '@/components/PaymentMethod';
+import PaymentMethod from '@/components/PaymentMethodCard';
 import { Button } from '@/components/ui/button';
 import { BsFillPersonLinesFill } from 'react-icons/bs';
 import { MdOutlinePersonOutline } from 'react-icons/md';
@@ -29,6 +28,7 @@ import useUserStore from '@/components/store';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import payment from './Payment';
 
 type ProfileSection = 'name' | 'email' | 'password' | 'phone' | 'address';
 
@@ -45,13 +45,13 @@ type ProfileData =
       zip: string;
     };
 
-type PaymentMethod = {
+export type PaymentMethod = {
   cardId?: number;
   nameOnCard: string;
-  cardnumber: string;
-  expiration: string;
-  cvv: string;
-  cardtype?: string;
+  cardType: 'Debit' | 'Credit';
+  cardNumber: string;
+  expirationDate: string;
+  ccv: string;
 };
 
 const Profile = () => {
@@ -64,28 +64,30 @@ const Profile = () => {
   const dummyPaymentMethods: PaymentMethod[] = Array(5).fill({
     cardId: 1,
     nameOnCard: 'John Doe',
-    cardnumber: '1234 5678 9012 3456',
-    expiration: '01/23',
-    cvv: '123',
+    cardNumber: '1234 5678 9012 3456',
+    expirationDate: '01/23',
+    ccv: '123',
+    cardType: 'Debit',
   });
   dummyPaymentMethods[1] = {
     cardId: 2,
     nameOnCard: 'Jane Doe',
-    cardnumber: '9876 5432 1098 7654',
-    expiration: '12/34',
-    cvv: '321',
+    cardNumber: '9876 5432 1098 7654',
+    expirationDate: '12/34',
+    ccv: '321',
+    cardType: 'Credit',
   };
   dummyPaymentMethods[2] = {
     cardId: 3,
     nameOnCard: 'Philip Doe',
-    cardnumber: '1234 5678 9012 3454',
-    expiration: '01/23',
-    cvv: '123',
+    cardNumber: '1234 5678 9012 3454',
+    expirationDate: '01/23',
+    ccv: '123',
+    cardType: 'Debit',
   };
-  const  [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
-
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [paymentMethodSelected, setPaymentMethodSelected] =
-    useState<PaymentMethod | null>(null);
+    useState<PaymentMethod | null>(paymentMethods[0] || null);
 
   const states = [
     'AL',
@@ -233,35 +235,53 @@ const Profile = () => {
     updateProfile('address', { street, city, state, zip });
   }
 
-  async function handleNewPayment(cardnumber: string, expiration: string, cvv: string, cardType: string){
-    const data = {
-      cardnumber: cardnumber,
-      expiration: expiration,
-      cvv: parseInt(cvv, 10),
-      cardType: cardType
-    }
-    const token = localStorage.getItem('token');
-    console.log(data);
-    const response = await axios.post('https://shastamart-api-deploy.vercel.app/api/users/set_card', data, { 
-      headers: { Authorization: `Bearer ${token}` } })
-    console.log(response.data);
+  function handleSelectPaymentMethod(p: PaymentMethod) {
+    setCollapsibleOpen(!collapsibleOpen);
+    setPaymentMethodSelected(p);
+    console.log('Payment Method Changed');
   }
 
-  function handleCollapsibleSelection(paymentMethod: PaymentMethod) {
-    setPaymentMethodSelected(paymentMethod);
-    setCollapsibleOpen(false);
+  function handleDeletePaymentMethod() {
+    return;
   }
 
-  function paymentMethodChanged() {
+  function handleDeleteAccount() {
+    return;
+  }
+
+  function paymentMethodSelectedToast() {
     toast.success(
       'Payment method ending in ' +
-        paymentMethodSelected?.cardnumber.slice(-4) +
+        paymentMethodSelected?.cardNumber.slice(-4) +
         ' selected.',
       {
         position: 'bottom-right',
         className: 'font-bold text-black',
       }
     );
+  }
+
+  async function handleNewPayment(
+    cardNumber: string,
+    expirationDate: string,
+    cvv: string,
+    cardType: string
+  ) {
+    const data = {
+      cardNumber: cardNumber,
+      expirationDate: expirationDate,
+      cvv: parseInt(cvv, 10),
+      cardType: cardType,
+    };
+    const token = localStorage.getItem('token');
+    const response = await axios.post(
+      'https://shastamart-api-deploy.vercel.app/api/users/set_card',
+      data,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    console.log(response.data);
   }
 
   // const accessFail = (onClose: () => void) =>
@@ -298,36 +318,53 @@ const Profile = () => {
     const fetchPayments = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get("https://shastamart-api-deploy.vercel.app/api/users/payments", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(
+          'https://shastamart-api-deploy.vercel.app/api/users/payments',
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         console.log(response.data);
         const paymentData = await response.data;
         const transformedPayments = paymentData.map(
           (paymentMethod: PaymentMethod) => ({
-            nameOnCard: store.fname + " " + store.lname,
-            cardnumber: paymentMethod.cardnumber,
-            expiration: paymentMethod.expiration,
-            cvv: paymentMethod.cvv
-        }))
+            nameOnCard: store.fname + ' ' + store.lname,
+            cardnumber: paymentMethod.cardNumber,
+            expiration: paymentMethod.expirationDate,
+            cvv: paymentMethod.ccv,
+          })
+        );
         console.log(transformedPayments);
         setPaymentMethods(transformedPayments);
       } catch (error) {
         console.log(error);
       }
-    }
+    };
     fetchPayments();
   }, [setPaymentMethods]);
 
   useEffect(() => {
-    if (paymentMethods.length > 0) {
-      setPaymentMethodSelected(paymentMethods[0]);
+    if (store.accountType === 'customer' && !store.isAdmin) {
+      if (paymentMethods.length > 0) {
+        setPaymentMethodSelected(paymentMethods[0]);
+        return;
+      }
+      setPaymentMethodSelected(null);
     }
-  }, [paymentMethods]);
+  }, [setPaymentMethods]);
 
   useEffect(() => {
-    paymentMethodChanged();
+    if (store.accountType === 'customer' && !store.isAdmin) {
+      if (paymentMethods.length > 0) {
+        setPaymentMethodSelected(paymentMethods[0]);
+        if (paymentMethodSelected != paymentMethods[0])
+          paymentMethodSelectedToast();
+        return;
+      }
+      setPaymentMethodSelected(null);
+    }
   }, [paymentMethodSelected]);
+
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
@@ -339,7 +376,9 @@ const Profile = () => {
             Profile
           </h1>
           <BsFillPersonLinesFill className="h-[20rem] w-[20rem]" />
-          <div className=" pt-2 font-jua text-6xl">{store.fname}</div>
+          <div className=" pt-2 font-jua text-6xl">
+            {store.fname + ' ' + store.lname}
+          </div>
 
           {/* Member Since: AccountCreatedDate */}
           <div className="pb-6 pt-4 font-inter text-3xl">
@@ -351,21 +390,23 @@ const Profile = () => {
             })}
           </div>
           {/* Forms for Updating User Information */}
-          <div className="z-10 mx-auto flex h-16 w-3/5 flex-row rounded-2xl bg-xanthousyellow">
-            <MdOutlinePersonOutline className="ml-2 mt-1 flex h-14 w-14 self-start" />
-            <h2 className="self-center pl-2 font-inter text-xl font-semibold">
-              {store.email}
-            </h2>
-          </div>
-          <div className="z-0 mx-auto -mt-8 mb-20 h-[45rem] w-3/5 rounded-3xl bg-darkblue">
-            <div className="flex flex-row justify-around pt-4">
+
+          <div className="z-0 mx-auto mb-20 mt-4 h-auto w-2/5 rounded-3xl bg-darkblue pb-5">
+            {/* Yellow background title section */}
+            <div className="z-10 mx-auto mr-10 flex h-16 min-w-full flex-row rounded-2xl bg-xanthousyellow">
+              <MdOutlinePersonOutline className="ml-2 mt-1 flex h-14 w-14 self-start" />
+              <h2 className="self-center pl-2 font-inter text-xl font-semibold">
+                {store.email}
+              </h2>
+            </div>
+            <div className="flex justify-evenly pt-0">
               <section className="flex flex-col">
                 {/* Name, Phone Number, Address Fields */}
                 <div className="flex flex-row">
                   {/* Name Fields */}
                   <div className="flex flex-col items-start">
                     <form
-                      className="flex w-1/2 flex-col gap-0 pt-10"
+                      className="flex w-1/2 flex-col pt-5"
                       onSubmit={(event) => {
                         event.preventDefault();
                         const form = event.target as HTMLFormElement;
@@ -530,7 +571,7 @@ const Profile = () => {
               </section>
               <section className="flex flex-col">
                 <form
-                  className=" flex w-1/2 flex-col pt-10"
+                  className=" flex w-1/2 flex-col pt-5"
                   onSubmit={(event) => {
                     event.preventDefault();
                     const form = event.target as HTMLFormElement;
@@ -602,6 +643,12 @@ const Profile = () => {
                     Change Password
                   </Button>
                 </form>
+                <Button
+                  className="mr-4 mt-10 bg-red-500 hover:bg-red-500/90"
+                  onClick={handleDeleteAccount}
+                >
+                  Delete Account
+                </Button>
               </section>
             </div>
           </div>
@@ -609,16 +656,13 @@ const Profile = () => {
 
           {store.accountType === 'customer' && !store.isAdmin ? (
             <>
-              <div className="z-10 mx-auto flex h-16 w-3/5 flex-row rounded-2xl bg-xanthousyellow">
-                <MdOutlinePayments className="ml-4 mt-1 flex h-14 w-14 self-start" />
-                <h2 className="self-center pl-2 font-inter text-xl font-semibold">
-                  Payment Methods
-                </h2>
-              </div>
-              <h2 className="self-center pl-2 font-inter text-xl font-semibold">
-                OR
-              </h2>
-              <div className="z-0 mx-auto -mt-16 mb-[10rem] h-auto w-3/5 rounded-3xl bg-darkblue pb-10 pt-14">
+              <div className="z-0 mx-auto mb-20 mt-4 h-auto w-2/5 rounded-3xl bg-darkblue pb-5">
+                <div className="z-10 mx-auto flex h-16 w-full flex-row rounded-2xl bg-xanthousyellow">
+                  <MdOutlinePayments className="ml-4 mt-1 flex h-14 w-14 self-start" />
+                  <h2 className="self-center pl-2 font-inter text-xl font-semibold">
+                    Payment Methods
+                  </h2>
+                </div>
                 <div className="mx-auto w-full pt-5 text-center">
                   <section className="flex flex-col items-center">
                     <div className="flex flex-col">
@@ -631,98 +675,121 @@ const Profile = () => {
                         open={collapsibleOpen}
                         onOpenChange={setCollapsibleOpen}
                       >
-                        { paymentMethodSelected ? (<div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
-                          <h4 className="h-10 text-sm font-semibold">
-                            {'Card Name: ' +
-                              paymentMethodSelected?.nameOnCard +
-                              '\nLast 4 digits: ' +
-                              paymentMethodSelected?.cardnumber.slice(-4)}
-                          </h4>
-                          <CollapsibleTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="hover:bg-white/50"
-                            >
-                              <CaretSortIcon className="h-6 w-6 " />
-                              <span className="sr-only">Toggle</span>
-                            </Button>
-                          </CollapsibleTrigger>
-                        </div>) : <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">Loading payment methods...</div> }
+                        {paymentMethodSelected ? (
+                          <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
+                            <h4 className="h-10 text-sm font-semibold">
+                              {'Card Name: ' +
+                                paymentMethodSelected?.nameOnCard +
+                                '\nLast 4 digits: ' +
+                                paymentMethodSelected?.cardNumber.slice(-4)}
+                            </h4>
+                            <CollapsibleTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="hover:bg-white/50"
+                              >
+                                <CaretSortIcon className="h-6 w-6" />
+                                <span className="sr-only">Toggle</span>
+                              </Button>
+                            </CollapsibleTrigger>
+                          </div>
+                        ) : paymentMethods.length === 0 ? (
+                          <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
+                            {' '}
+                            No Previous Payment Methods
+                          </div>
+                        ) : (
+                          <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
+                            Loading payment methods...
+                          </div>
+                        )}
                         {paymentMethods.map((paymentMethod, index) => (
                           <CollapsibleContent
                             key={index}
                             className="space-y-2 duration-300 ease-in-out"
-                            onClick={() =>
-                              handleCollapsibleSelection(paymentMethod)
-                            }
                           >
                             <PaymentMethod
                               key={index}
                               cardId={index + 1}
-                              nameOnCard={paymentMethod.nameOnCard}
-                              cardNumber={paymentMethod.cardnumber}
-                              expirationDate={paymentMethod.expiration}
-                              cvv={paymentMethod.cvv}
+                              passedPaymentMethod={paymentMethod}
+                              onDelete={handleDeletePaymentMethod}
+                              onSelect={handleSelectPaymentMethod}
                             />
                           </CollapsibleContent>
                         ))}
-
-                        <CollapsibleContent className="space-y-2"></CollapsibleContent>
                       </Collapsible>
                     </div>
                     <h3 className="my-2 pl-4 text-lg font-semibold text-white">
                       OR
                     </h3>
-                    <form onSubmit={(event) => {
-                      event.preventDefault();
-                      const form = event.target as HTMLFormElement;
-                      const cardnumber = form.elements.namedItem('cardnumber') as HTMLInputElement;
-                      const expiration = form.elements.namedItem('expiration') as HTMLInputElement;
-                      const cvv = form.elements.namedItem('cvv') as HTMLInputElement;
-                      const cardType = form.elements.namedItem('cardType') as HTMLInputElement;
-                      handleNewPayment(cardnumber.value, expiration.value, cvv.value, cardType.value)
-                    }}>
-                      <div className="flex flex-col items-start">
+                    <form
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        const form = event.target as HTMLFormElement;
+                        const cardnumber = form.elements.namedItem(
+                          'cardnumber'
+                        ) as HTMLInputElement;
+                        const expiration = form.elements.namedItem(
+                          'expiration'
+                        ) as HTMLInputElement;
+                        const cvv = form.elements.namedItem(
+                          'cvv'
+                        ) as HTMLInputElement;
+                        const cardType = form.elements.namedItem(
+                          'cardType'
+                        ) as HTMLInputElement;
+                        handleNewPayment(
+                          cardnumber.value,
+                          expiration.value,
+                          cvv.value,
+                          cardType.value
+                        );
+                      }}
+                    >
+                      <div className="flex flex-col items-start gap-2">
                         <h3 className="pl-4 text-lg font-semibold text-white">
                           Use New Payment Method
                         </h3>
                         <input
-                          className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+                          className="mx-4  h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+                          type="text"
+                          placeholder="Name On Card"
+                          name="cardName"
+                        />
+                        <input
+                          className="mx-4  h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                           type="text"
                           placeholder="Card Number"
                           name="cardnumber"
                         />
                         <input
-                          className="mx-4 mt-2 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+                          className="mx-4  h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                           type="text"
                           placeholder="Expiration Date"
                           name="expiration"
                         />
                         <input
-                          className="mx-4 mt-2 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+                          className="mx-4  h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                           type="text"
                           placeholder="CVV"
                           name="cvv"
                         />
-                        <Select
-                              defaultValue="Debit"
-                              name="cardType"
-                            >
-                              <SelectTrigger className="mx-4 mt-2 h-10 w-[15rem] max-w-md rounded-md border bg-white border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue">
-                                <SelectValue
-                                  placeholder={"Card Type"}
-                                  className="text-gray-200"
-                                />
-                              </SelectTrigger>
-                              <SelectContent side="bottom">
-                                {paymentForms.map((type, index) => (
-                                  <SelectItem key={index} value={type}>
-                                    {type}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                        <Select defaultValue="Debit" name="cardType">
+                          <SelectTrigger className="mx-4  h-10 w-[15rem] max-w-md rounded-md border border-gray-300 bg-white px-4 focus:border-logoblue focus:ring-logoblue">
+                            <SelectValue
+                              placeholder={'Card Type'}
+                              className="text-gray-200"
+                            />
+                          </SelectTrigger>
+                          <SelectContent side="bottom">
+                            {paymentForms.map((type, index) => (
+                              <SelectItem key={index} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <Button
                           className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
                           size="lg"
