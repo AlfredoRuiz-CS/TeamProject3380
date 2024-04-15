@@ -1,4 +1,4 @@
-const {pool} = require("../config/db");
+const { pool } = require("../config/db");
 
 //getAllOrder used by employee
 async function findAllOrder(){
