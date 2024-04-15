@@ -2,8 +2,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
 import { useState, useEffect } from 'react';
-import 'react-toastify/dist/ReactToastify.css';
-import { toast } from 'react-toastify';
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 // import * as Yup from 'yup';
@@ -85,7 +84,7 @@ const Login = () => {
     toast.success('Log in successful... Redirecting', {
       position: 'bottom-right',
       className: 'font-bold text-black',
-      autoClose: 2000,
+      duration: 2000,
     });
   }
 
@@ -93,7 +92,7 @@ const Login = () => {
     toast.success('(ADMIN) Log in successful... Redirecting', {
       position: 'bottom-right',
       className: 'font-bold text-black',
-      autoClose: 2000,
+      duration: 2000,
     });
   }
 
@@ -101,7 +100,7 @@ const Login = () => {
     toast.error('Invalid email or password', {
       position: 'bottom-right',
       className: 'font-bold text-black',
-      autoClose: 2000,
+      duration: 2000,
     });
 
   useEffect(() => {
@@ -122,8 +121,7 @@ const Login = () => {
         <Header />
         <form
           className="flex w-full flex-col items-center gap-5 py-5"
-          onSubmit={formik.handleSubmit}
-        >
+          onSubmit={formik.handleSubmit}>
           <h1 className="mb-10 font-jua text-8xl">Login</h1>
           <p className="mb-10 font-jua text-5xl">
             Don't have an account?{' '}
@@ -161,8 +159,7 @@ const Login = () => {
           </div>
           <button
             className="inline-flex h-10 select-none items-center justify-center whitespace-nowrap rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-            type="submit"
-          >
+            type="submit">
             <p>Log in</p>
           </button>
         </form>
@@ -174,7 +171,6 @@ const Login = () => {
             <Cursor />
           </span>
         </h2>
-        {/* <ToastContainer /> */}
       </div>
       <Footer />
     </>

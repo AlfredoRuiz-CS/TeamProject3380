@@ -10,10 +10,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import toast from 'react-hot-toast';
 
 import { productItem } from '@/components/store';
-import 'react-toastify/dist/ReactToastify.css';
-import { toast } from 'react-toastify';
 import { useProductsStore } from '@/components/store';
 import useUserStore from '@/components/store';
 // interface productProps {
@@ -180,14 +179,12 @@ const SingleProduct = () => {
                     <div className="flex flex-shrink gap-2">
                       <Button
                         className="flex h-12 flex-shrink rounded-lg bg-quantityblue px-3 py-2 font-jua text-3xl text-black hover:bg-quantityblue/85"
-                        onClick={quantityDropdownToggle}
-                      >
+                        onClick={quantityDropdownToggle}>
                         Qty.
                       </Button>
                       <Select
                         defaultValue="1"
-                        onValueChange={(e) => setQuantity(parseInt(e))}
-                      >
+                        onValueChange={(e) => setQuantity(parseInt(e))}>
                         <SelectTrigger className="h-12 w-[3rem] flex-grow border border-black bg-gray-200">
                           <SelectValue placeholder="1" />
                         </SelectTrigger>
@@ -203,23 +200,20 @@ const SingleProduct = () => {
                   ) : (
                     <Button
                       className="flex h-12 flex-shrink rounded-lg bg-quantityblue px-3 py-2 font-jua text-3xl text-black hover:bg-quantityblue/85"
-                      onClick={quantityDropdownToggle}
-                    >
+                      onClick={quantityDropdownToggle}>
                       Qty.
                     </Button>
                   )}
                   <Button
                     className="flex h-12 w-full flex-grow items-center justify-center place-self-end rounded-lg bg-blue-500 px-2 py-3 text-4xl text-black hover:bg-blue-500/70"
-                    onClick={handleAddToList}
-                  >
+                    onClick={handleAddToList}>
                     {/* text-md flex-grow rounded-lg bg-blue-500 py-5 font-jua text-black hover:bg-blue-500/90 */}
                     Add to list
                   </Button>
                 </div>
                 <Button
                   className="flex h-12 w-full flex-grow items-center justify-center rounded-lg bg-red-500 px-2 py-3 text-4xl text-black hover:bg-red-500/85"
-                  onClick={handleAddToCart}
-                >
+                  onClick={handleAddToCart}>
                   Add to cart
                 </Button>
               </div>
@@ -438,7 +432,6 @@ const SingleProduct = () => {
           )}
         </div>
       </div>
-      {/* <ToastContainer /> */}
       <Footer />
     </>
   );

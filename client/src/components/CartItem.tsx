@@ -64,8 +64,7 @@ const CartItem = (props: CartItemProps) => {
         <div className="flex flex-row content-center items-center gap-1 text-center">
           <button
             className=" h-[3rem] w-[3.2rem] rounded-full  bg-xanthousyellow text-center text-3xl text-black"
-            onClick={(e) => handleSubtractQuantity(e)}
-          >
+            onClick={(e) => handleSubtractQuantity(e)}>
             -
           </button>
           <div className="h-[3rem] w-[5rem] rounded-3xl bg-zinc-300">
@@ -75,8 +74,7 @@ const CartItem = (props: CartItemProps) => {
           </div>
           <button
             className=" h-[3rem] w-[3.2rem] rounded-full bg-xanthousyellow text-center text-3xl text-black"
-            onClick={(e) => handleAddQuantity(e)}
-          >
+            onClick={(e) => handleAddQuantity(e)}>
             +
           </button>
         </div>

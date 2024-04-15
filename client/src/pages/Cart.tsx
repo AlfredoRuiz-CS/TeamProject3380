@@ -1,6 +1,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import CartItem from '@/components/CartItem';
+import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
 import { FaTrashCan } from 'react-icons/fa6';
 
@@ -17,12 +18,10 @@ import {
 } from '@/components/ui/alert-dialog';
 
 import useUserStore from '@/components/store';
-import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
 const Cart = () => {
   const store = useUserStore();
-  const navigate = useNavigate();
   const shipping = 10;
 
   const subtotal = store.cartItems.reduce(
@@ -42,8 +41,13 @@ const Cart = () => {
   //   return lowest.supplierStock < product.supplierStock ? lowest : product;
   // }, dummyProducts[0]);
 
-  function handleCheckout() {
-    navigate('/payment');
+  function emptyCart() {
+    store.resetCart();
+    toast.success('Cart has been emptied!', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      duration: 2000,
+    });
   }
 
   return (
@@ -61,8 +65,7 @@ const Cart = () => {
                 <AlertDialogTrigger asChild>
                   <Button
                     variant="outline"
-                    className="border border-darkblue bg-transparent text-darkblue hover:bg-darkblue hover:text-bgwhite"
-                  >
+                    className="border border-darkblue bg-transparent text-darkblue hover:bg-darkblue hover:text-bgwhite">
                     <FaTrashCan className="mr-2 h-4 w-4" />
                     Empty Cart
                   </Button>
@@ -78,7 +81,7 @@ const Cart = () => {
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={store.resetCart}>
+                    <AlertDialogAction onClick={emptyCart}>
                       Confirm
                     </AlertDialogAction>
                   </AlertDialogFooter>
@@ -149,13 +152,18 @@ const Cart = () => {
                     </tr>
                   </tbody>
                 </table>
-
-                <Button
-                  className="mt-10 h-[3rem] w-[12rem] self-center border-darkblue text-white hover:bg-darkblue hover:text-bgwhite"
-                  onClick={handleCheckout}
-                >
-                  <Link to="/payment">Proceed to Checkout</Link>
-                </Button>
+                {store.cartItemsNumber > 0 ? (
+                  <Button className="mt-10 h-[3rem] w-[12rem] self-center border-darkblue text-white hover:bg-darkblue hover:text-bgwhite">
+                    <Link to="/payment">Proceed to Checkout</Link>
+                  </Button>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    disabled
+                    className="mt-10 h-[3rem] w-[12rem] self-center border-darkblue bg-gray-600 text-white hover:bg-gray-600 hover:text-white">
+                    Proceed to Checkout
+                  </Button>
+                )}
               </div>
             </div>
             {/* My List Section */}
@@ -171,8 +179,7 @@ const Cart = () => {
                             <div className="h-[5rem] w-[5rem] overflow-hidden rounded-[10px]">
                               <img
                                 className="h-full w-full object-contain"
-                                src={`../${product.image.replace(/\.(jpg|jpeg)$/, '.png')}`}
-                              ></img>
+                                src={`../${product.image.replace(/\.(jpg|jpeg)$/, '.png')}`}></img>
                             </div>
                             <div className="flex flex-col">
                               <h1 className="flex flex-row self-center pt-5 text-3xl">

@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-// import { Button } from "@/components/ui/button.tsx"; // Import Button component
-// import { useParams } from 'react-router-dom';
-// import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import toast from 'react-hot-toast';
+import { Button } from '@/components/ui/button';
+import { FaTrashCan } from 'react-icons/fa6';
 import {
   Select,
   SelectContent,
@@ -12,6 +11,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+
 // import { dummyProducts } from './Products';
 import ProductCard from '@/components/ProductCard.tsx';
 import useUserStore from '@/components/store';
@@ -25,6 +36,15 @@ const ProductList = () => {
   const [orderedProducts, setOrderedProducts] = useState<productItem[]>(
     sortProducts(products)
   );
+
+  function emptyList() {
+    store.resetList();
+    toast.success('List has been emptied!', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      duration: 2000,
+    });
+  }
 
   useEffect(() => {
     let sorted = sortProducts(products);
@@ -68,8 +88,7 @@ const ProductList = () => {
             {/* Sort Dropdown for category */}
             <Select
               defaultValue="All"
-              onValueChange={(e) => setCatSortOrder(e)}
-            >
+              onValueChange={(e) => setCatSortOrder(e)}>
               <SelectTrigger className="h-10 w-[8rem] bg-white text-black ">
                 <SelectValue placeholder="All" />
               </SelectTrigger>
@@ -90,8 +109,7 @@ const ProductList = () => {
             {/* Select Dropdown for sorting products by value */}
             <Select
               defaultValue="Price Desc."
-              onValueChange={(e) => setValueSortOrder(e)}
-            >
+              onValueChange={(e) => setValueSortOrder(e)}>
               <SelectTrigger className="h-10 w-[10rem] bg-white text-black ">
                 <SelectValue placeholder="Price Desc." />
               </SelectTrigger>
@@ -102,6 +120,30 @@ const ProductList = () => {
                 <SelectItem value="Alpha Asc.">Alphabetical Asc.</SelectItem>
               </SelectContent>
             </Select>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="my-auto ml-5 border border-darkblue bg-transparent text-center text-darkblue hover:bg-darkblue hover:text-bgwhite">
+                  <FaTrashCan className="mr-2 h-4 w-4" />
+                  Empty List
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action will clear every item in your list.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={emptyList}>
+                    Confirm
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
           {/* List of Product Items */}
           {/* <div className="mx-[10rem] flex flex-row flex-wrap gap-7"> */}

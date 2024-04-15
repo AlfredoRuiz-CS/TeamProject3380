@@ -78,21 +78,20 @@ const getAllCustomers = async (req, res) => {
 
 const getUserPaymentInfo = async (req, res) => {
   try {
-    const body = await getRequestBody(req);
-    const { email } = body;
+    const email = req.email;
 
     const paymentInfoQuery = await userModel.getUserPaymentInfo(email);
     if (!paymentInfoQuery){
       res.writeHead(200, { 'Content-Type': 'text/plain' });
       res.end("none");
     }
-
-    let paymentInfo = paymentInfo[0]; //Should it be paymentInfoQuery
-    let expirationDate = `${paymentInfo.expiration.getMonth() + 1}-${paymentInfo.expiration.getDate()}-${paymentInfo.expiration.getFullYear()}`;
-    paymentInfo.expiration = expirationDate;
+    console.log(paymentInfoQuery);
+    // let paymentInfo = paymentInfo[0]; //Should it be paymentInfoQuery
+    // let expirationDate = `${paymentInfo.expiration.getMonth() + 1}-${paymentInfo.expiration.getDate()}-${paymentInfo.expiration.getFullYear()}`;
+    // paymentInfo.expiration = expirationDate;
 
     res.writeHead(200, { 'Content-Type' : 'application/json' });
-    res.end(JSON.stringify(paymentInfo));
+    res.end(JSON.stringify(paymentInfoQuery));
 
   } catch (error) {
     res.writeHead(500, {' Content-Type': 'application/json' });
@@ -103,10 +102,12 @@ const getUserPaymentInfo = async (req, res) => {
 const createUserPaymentInfo = async (req, res) => {
   try {
     const body = await getRequestBody(req);
-    const { cardtype, cardnumber, cvv, expiration } = body;
+    const { cardType, cardnumber, expiration, cvv } = body;
+    console.log( cardType, cardnumber, expiration, cvv);
     const customerEmail = req.email;
+    console.log(customerEmail);
 
-    let addInfo = await userModel.createUserPaymentInfo(customerEmail, cardtype, cardnumber, cvv, expiration);
+    let addInfo = await userModel.createUserPaymentInfo(customerEmail, cardType, cardnumber, cvv, expiration);
     res.writeHead(201, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ "message": `Successfully added payment information for ${customerEmail}` }));
 

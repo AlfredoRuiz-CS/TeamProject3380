@@ -6,7 +6,6 @@ import { useState, useEffect } from 'react';
 import useUserStore from '@/components/store';
 import { useProductsStore } from '@/components/store';
 import axios from 'axios';
-import 'react-toastify/dist/ReactToastify.css';
 import {
   Select,
   SelectContent,
@@ -1003,8 +1002,7 @@ const Products = () => {
             {/* Sort Dropdown for category */}
             <Select
               defaultValue="All"
-              onValueChange={(e) => setCatSortOrder(e)}
-            >
+              onValueChange={(e) => setCatSortOrder(e)}>
               <SelectTrigger className="h-10 w-[8rem] bg-white text-black ">
                 <SelectValue placeholder="All" />
               </SelectTrigger>
@@ -1025,8 +1023,7 @@ const Products = () => {
             {/* Select Dropdown for sorting products by value */}
             <Select
               defaultValue="Price Desc."
-              onValueChange={(e) => setValueSortOrder(e)}
-            >
+              onValueChange={(e) => setValueSortOrder(e)}>
               <SelectTrigger className="h-10 w-[10rem] bg-white text-black ">
                 <SelectValue placeholder="Price Desc." />
               </SelectTrigger>
@@ -1045,7 +1042,6 @@ const Products = () => {
               <ProductCard key={index} product={product} list />
             ))}
           </div>
-          {/* <ToastContainer /> */}
         </div>
       </div>
       <Footer />

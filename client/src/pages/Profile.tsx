@@ -1,14 +1,11 @@
-// UI Imports
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import PaymentMethod from '@/components/PaymentMethod';
 import { Button } from '@/components/ui/button';
 import { BsFillPersonLinesFill } from 'react-icons/bs';
 import { MdOutlinePersonOutline } from 'react-icons/md';
 import { MdOutlinePayments } from 'react-icons/md';
 import { CaretSortIcon } from '@radix-ui/react-icons';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import toast from 'react-hot-toast';
 
 import {
   Select,
@@ -26,6 +23,7 @@ import {
 
 // Functionality Imports
 import useUserStore from '@/components/store';
+import PaymentMethodCard from '@/components/PaymentMethodCard';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -44,44 +42,51 @@ type ProfileData =
       state: string;
       zip: string;
     };
-type PaymentMethod = {
-  cardId: number;
+
+export type PaymentMethod = {
+  cardId?: number;
   nameOnCard: string;
-  cardNumber: string;
-  expirationDate: string;
-  ccv: string;
+  cardType: 'Debit' | 'Credit';
+  cardnumber: string;
+  expiration: string;
+  cvv: string;
 };
 
 const Profile = () => {
   const store = useUserStore();
   // const [state, setState] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [collapsibleOpen, setCollapsibleOpen] = useState(false);
   const navigate = useNavigate();
 
   const dummyPaymentMethods: PaymentMethod[] = Array(5).fill({
     cardId: 1,
     nameOnCard: 'John Doe',
-    cardNumber: '1234 5678 9012 3456',
-    expirationDate: '01/23',
-    ccv: '123',
+    cardnumber: '1234 5678 9012 3456',
+    expiration: '01/23',
+    cvv: '123',
+    cardType: 'Debit',
   });
   dummyPaymentMethods[1] = {
     cardId: 2,
     nameOnCard: 'Jane Doe',
-    cardNumber: '9876 5432 1098 7654',
-    expirationDate: '12/34',
-    ccv: '321',
+    cardnumber: '9876 5432 1098 7654',
+    expiration: '12/34',
+    cvv: '321',
+    cardType: 'Credit',
   };
   dummyPaymentMethods[2] = {
     cardId: 3,
     nameOnCard: 'Philip Doe',
-    cardNumber: '1234 5678 9012 3454',
-    expirationDate: '01/23',
-    ccv: '123',
+    cardnumber: '1234 5678 9012 3454',
+    expiration: '01/23',
+    cvv: '123',
+    cardType: 'Debit',
   };
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [paymentMethodSelected, setPaymentMethodSelected] =
-    useState<PaymentMethod | null>(dummyPaymentMethods[0] || null);
+    useState<PaymentMethod>(paymentMethods[0]);
 
   const states = [
     'AL',
@@ -229,34 +234,54 @@ const Profile = () => {
     updateProfile('address', { street, city, state, zip });
   }
 
-  async function handleNewPayment(cardNumber: string, expirationDate: string, cvv: string, cardType: string){
-    const data = {
-      cardNumber: cardNumber,
-      expirationDate: expirationDate,
-      cvv: parseInt(cvv, 10),
-      cardType: cardType
-    }
-    const token = localStorage.getItem('token');
-    const response = await axios.post('https://shastamart-api-deploy.vercel.app/api/users/set_card', data, { 
-      headers: { Authorization: `Bearer ${token}` } })
-    console.log(response.data);
+  function handleSelectPaymentMethod(p: PaymentMethod) {
+    setCollapsibleOpen(!collapsibleOpen);
+    paymentMethodSelectedToast(p);
+    setPaymentMethodSelected(p);
+    console.log('Payment Method Changed');
   }
 
-  function handleCollapsibleSelection(paymentMethod: PaymentMethod) {
-    setPaymentMethodSelected(paymentMethod);
-    setCollapsibleOpen(false);
+  // ! NEEDS TO BE CONNECTED TO BACKEND ! //
+  function handleDeletePaymentMethod() {
+    return;
   }
 
-  function paymentMethodChanged() {
+  // ! NEEDS TO BE CONNECTED TO BACKEND ! //
+  function handleDeleteAccount() {
+    return;
+  }
+
+  function paymentMethodSelectedToast(p: PaymentMethod) {
     toast.success(
-      'Payment method ending in ' +
-        paymentMethodSelected?.cardNumber.slice(-4) +
-        ' selected.',
+      'Payment method ending in ' + p.cardnumber.slice(-4) + ' selected.',
       {
         position: 'bottom-right',
         className: 'font-bold text-black',
       }
     );
+  }
+
+  async function handleNewPayment(
+    cardNumber: string,
+    expirationDate: string,
+    cvv: string,
+    cardType: string
+  ) {
+    const data = {
+      cardNumber: cardNumber,
+      expirationDate: expirationDate,
+      cvv: parseInt(cvv, 10),
+      cardType: cardType,
+    };
+    const token = localStorage.getItem('token');
+    const response = await axios.post(
+      'https://shastamart-api-deploy.vercel.app/api/users/set_card',
+      data,
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    );
+    console.log(response.data);
   }
 
   // const accessFail = (onClose: () => void) =>
@@ -290,8 +315,45 @@ const Profile = () => {
   }, []);
 
   useEffect(() => {
-    paymentMethodChanged();
-  }, [paymentMethodSelected]);
+    const fetchPayments = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(
+          'https://shastamart-api-deploy.vercel.app/api/users/payments',
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        console.log(response.data);
+        const paymentData = await response.data;
+        const transformedPayments = paymentData.map(
+          (paymentMethod: PaymentMethod) => ({
+            nameOnCard: store.fname + ' ' + store.lname,
+            cardnumber: paymentMethod.cardnumber,
+            expiration: paymentMethod.expiration,
+            cvv: paymentMethod.cvv,
+          })
+        );
+        console.log(transformedPayments);
+        setPaymentMethods(transformedPayments);
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchPayments();
+  }, [setPaymentMethods]);
+
+  useEffect(() => {
+    if (store.accountType === 'customer' && !store.isAdmin) {
+      if (paymentMethods.length > 0) {
+        setPaymentMethodSelected(paymentMethods[0]);
+        return;
+      }
+      // setPaymentMethodSelected(null);
+    }
+  }, [paymentMethods, setPaymentMethods, isLoading]);
+
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
@@ -303,7 +365,9 @@ const Profile = () => {
             Profile
           </h1>
           <BsFillPersonLinesFill className="h-[20rem] w-[20rem]" />
-          <div className=" pt-2 font-jua text-6xl">{store.fname}</div>
+          <div className=" pt-2 font-jua text-6xl">
+            {store.fname + ' ' + store.lname}
+          </div>
 
           {/* Member Since: AccountCreatedDate */}
           <div className="pb-6 pt-4 font-inter text-3xl">
@@ -315,21 +379,23 @@ const Profile = () => {
             })}
           </div>
           {/* Forms for Updating User Information */}
-          <div className="z-10 mx-auto flex h-16 w-3/5 flex-row rounded-2xl bg-xanthousyellow">
-            <MdOutlinePersonOutline className="ml-2 mt-1 flex h-14 w-14 self-start" />
-            <h2 className="self-center pl-2 font-inter text-xl font-semibold">
-              {store.email}
-            </h2>
-          </div>
-          <div className="z-0 mx-auto -mt-8 mb-20 h-[45rem] w-3/5 rounded-3xl bg-darkblue">
-            <div className="flex flex-row justify-around pt-4">
+
+          <div className="z-0 mx-auto mb-20 mt-4 h-auto w-3/5 rounded-3xl bg-darkblue pb-5 ">
+            {/* Yellow background title section */}
+            <div className="z-10 mx-auto mr-10 flex h-16 min-w-full flex-row rounded-2xl bg-xanthousyellow">
+              <MdOutlinePersonOutline className="ml-2 mt-1 flex h-14 w-14 self-start" />
+              <h2 className="self-center pl-2 font-inter text-xl font-semibold">
+                {store.email}
+              </h2>
+            </div>
+            <div className="flex justify-evenly pt-0">
               <section className="flex flex-col">
                 {/* Name, Phone Number, Address Fields */}
                 <div className="flex flex-row">
                   {/* Name Fields */}
                   <div className="flex flex-col items-start">
                     <form
-                      className="flex w-1/2 flex-col gap-0 pt-10"
+                      className="flex w-1/2 flex-col pt-5"
                       onSubmit={(event) => {
                         event.preventDefault();
                         const form = event.target as HTMLFormElement;
@@ -340,8 +406,7 @@ const Profile = () => {
                           'lastName'
                         ) as HTMLInputElement;
                         handleNameChange(firstName.value, lastName.value);
-                      }}
-                    >
+                      }}>
                       <h3 className="pl-4 text-lg font-semibold text-white">
                         First Name
                       </h3>
@@ -358,13 +423,11 @@ const Profile = () => {
                         className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                         type="text"
                         placeholder={store.lname}
-                        name="lastName"
-                      ></input>
+                        name="lastName"></input>
                       <Button
                         className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
                         size="lg"
-                        type="submit"
-                      >
+                        type="submit">
                         Save Changes
                       </Button>
                     </form>
@@ -379,8 +442,7 @@ const Profile = () => {
                           'phone'
                         ) as HTMLInputElement;
                         handlePhoneChange(phone.value);
-                      }}
-                    >
+                      }}>
                       <div className="flex flex-col items-start">
                         <h3 className="w-full pl-4 text-lg font-semibold text-white">
                           Phone Number
@@ -389,13 +451,11 @@ const Profile = () => {
                           className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                           type="tel"
                           placeholder={store.phone}
-                          name="phone"
-                        ></input>
+                          name="phone"></input>
                         <Button
                           className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
                           size="lg"
-                          type="submit"
-                        >
+                          type="submit">
                           Save Changes
                         </Button>
                       </div>
@@ -425,8 +485,7 @@ const Profile = () => {
                           state.value,
                           zipcode.value
                         );
-                      }}
-                    >
+                      }}>
                       <div className="flex flex-col items-start">
                         <h3 className="w-full pl-4 text-lg font-semibold text-white">
                           Address
@@ -440,13 +499,11 @@ const Profile = () => {
                                 ? store.address.street
                                 : 'Address'
                             }
-                            name="street"
-                          ></input>
+                            name="street"></input>
                           <Select
                             // onValueChange={(e) => setState(e)}
                             defaultValue={store.address.state}
-                            name="state"
-                          >
+                            name="state">
                             <SelectTrigger className="h-10 w-[5rem] flex-grow border-none bg-gray-200 text-gray-500">
                               <SelectValue
                                 placeholder={store.address.state}
@@ -469,22 +526,19 @@ const Profile = () => {
                             placeholder={
                               store.address.city ? store.address.city : 'City'
                             }
-                            name="city"
-                          ></input>
+                            name="city"></input>
                           <input
                             className="mt-2 h-10 w-[6.5rem] rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                             type="zipcode"
                             placeholder={
                               store.address.zip ? store.address.zip : 'Zip Code'
                             }
-                            name="zipcode"
-                          ></input>
+                            name="zipcode"></input>
                         </div>
                         <Button
                           className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
                           size="lg"
-                          type="submit"
-                        >
+                          type="submit">
                           Save Changes
                         </Button>
                       </div>
@@ -494,7 +548,7 @@ const Profile = () => {
               </section>
               <section className="flex flex-col">
                 <form
-                  className=" flex w-1/2 flex-col pt-10"
+                  className=" flex w-1/2 flex-col pt-5"
                   onSubmit={(event) => {
                     event.preventDefault();
                     const form = event.target as HTMLFormElement;
@@ -502,8 +556,7 @@ const Profile = () => {
                       'email'
                     ) as HTMLInputElement;
                     handleEmailChange(email.value);
-                  }}
-                >
+                  }}>
                   <h3 className="pl-4 text-lg font-semibold text-white">
                     Email
                   </h3>
@@ -516,8 +569,7 @@ const Profile = () => {
                   <Button
                     className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
                     size="lg"
-                    type="submit"
-                  >
+                    type="submit">
                     Change Email
                   </Button>
                 </form>
@@ -530,8 +582,7 @@ const Profile = () => {
                       'password'
                     ) as HTMLInputElement;
                     handlePasswordChange(password.value);
-                  }}
-                >
+                  }}>
                   <h3 className="mt-2 pl-4 text-lg font-semibold text-white">
                     Password
                   </h3>
@@ -552,8 +603,7 @@ const Profile = () => {
                     />
                     <label
                       htmlFor="show-password"
-                      className="w-full select-none text-white"
-                    >
+                      className="w-full select-none text-white">
                       Show Password
                     </label>
                   </div>
@@ -561,11 +611,15 @@ const Profile = () => {
                   <Button
                     className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
                     size="lg"
-                    type="submit"
-                  >
+                    type="submit">
                     Change Password
                   </Button>
                 </form>
+                <Button
+                  className=" mt-10 bg-red-500 hover:bg-red-500/90"
+                  onClick={handleDeleteAccount}>
+                  Delete Account
+                </Button>
               </section>
             </div>
           </div>
@@ -573,16 +627,13 @@ const Profile = () => {
 
           {store.accountType === 'customer' && !store.isAdmin ? (
             <>
-              <div className="z-10 mx-auto flex h-16 w-3/5 flex-row rounded-2xl bg-xanthousyellow">
-                <MdOutlinePayments className="ml-4 mt-1 flex h-14 w-14 self-start" />
-                <h2 className="self-center pl-2 font-inter text-xl font-semibold">
-                  Payment Methods
-                </h2>
-              </div>
-              <h2 className="self-center pl-2 font-inter text-xl font-semibold">
-                OR
-              </h2>
-              <div className="z-0 mx-auto -mt-16 mb-[10rem] h-auto w-3/5 rounded-3xl bg-darkblue pb-10 pt-14">
+              <div className="z-0 mx-auto mb-20 mt-4 h-auto w-3/5 rounded-3xl bg-darkblue pb-5">
+                <div className="z-10 mx-auto flex h-16 w-full flex-row rounded-2xl bg-xanthousyellow">
+                  <MdOutlinePayments className="ml-4 mt-1 flex h-14 w-14 self-start" />
+                  <h2 className="self-center pl-2 font-inter text-xl font-semibold">
+                    Payment Methods
+                  </h2>
+                </div>
                 <div className="mx-auto w-full pt-5 text-center">
                   <section className="flex flex-col items-center">
                     <div className="flex flex-col">
@@ -591,106 +642,128 @@ const Profile = () => {
                       </h3>
                       {/* Payment Method Component Map */}
                       <Collapsible
-                        className="flex w-64 flex-col gap-2 place-self-center"
+                        className="flex w-72 flex-grow flex-col gap-2 place-self-center"
                         open={collapsibleOpen}
-                        onOpenChange={setCollapsibleOpen}
-                      >
-                        <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
-                          <h4 className="h-10 text-sm font-semibold">
-                            {'Card Name: ' +
-                              paymentMethodSelected?.nameOnCard +
-                              '\nLast 4 digits: ' +
-                              paymentMethodSelected?.cardNumber.slice(-4)}
-                          </h4>
-                          <CollapsibleTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="hover:bg-white/50"
-                            >
-                              <CaretSortIcon className="h-6 w-6 " />
-                              <span className="sr-only">Toggle</span>
-                            </Button>
-                          </CollapsibleTrigger>
-                        </div>
-                        {dummyPaymentMethods.map((paymentMethod, index) => (
+                        onOpenChange={setCollapsibleOpen}>
+                        {!isLoading ? (
+                          paymentMethods.length > 0 ? (
+                            <div className="flex w-auto flex-grow items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
+                              <h4 className="flex w-auto flex-grow text-center text-sm font-semibold">
+                                {'Card Name: ' +
+                                  paymentMethodSelected?.nameOnCard +
+                                  '\nLast 4 digits: ' +
+                                  paymentMethodSelected?.cardnumber.slice(-4)}
+                              </h4>
+                              <CollapsibleTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="hover:bg-white/50">
+                                  <CaretSortIcon className="h-6 w-6" />
+                                  <span className="sr-only">Toggle</span>
+                                </Button>
+                              </CollapsibleTrigger>
+                            </div>
+                          ) : (
+                            <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
+                              {' '}
+                              No Previous Payment Methods
+                            </div>
+                          )
+                        ) : (
+                          <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
+                            Loading payment methods...
+                          </div>
+                        )}
+                        {paymentMethods.map((paymentMethod, index) => (
                           <CollapsibleContent
                             key={index}
-                            className="space-y-2 duration-300 ease-in-out"
-                            onClick={() =>
-                              handleCollapsibleSelection(paymentMethod)
-                            }
-                          >
-                            <PaymentMethod
+                            className="space-y-2 duration-300 ease-in-out">
+                            <PaymentMethodCard
                               key={index}
                               cardId={index + 1}
-                              nameOnCard={paymentMethod.nameOnCard}
-                              cardNumber={paymentMethod.cardNumber}
-                              expirationDate={paymentMethod.expirationDate}
+                              variant="profile"
+                              passedPaymentMethod={paymentMethod}
+                              onDelete={handleDeletePaymentMethod}
+                              onSelect={handleSelectPaymentMethod}
                             />
                           </CollapsibleContent>
                         ))}
-
-                        <CollapsibleContent className="space-y-2"></CollapsibleContent>
                       </Collapsible>
                     </div>
                     <h3 className="my-2 pl-4 text-lg font-semibold text-white">
                       OR
                     </h3>
-                    <form onSubmit={(event) => {
-                      event.preventDefault();
-                      const form = event.target as HTMLFormElement;
-                      const cardNumber = form.elements.namedItem('cardNumber') as HTMLInputElement;
-                      const expirationDate = form.elements.namedItem('expirationDate') as HTMLInputElement;
-                      const cvv = form.elements.namedItem('cvv') as HTMLInputElement;
-                      const cardType = form.elements.namedItem('cardType') as HTMLInputElement;
-                      handleNewPayment(cardNumber.value, expirationDate.value, cvv.value, cardType.value)
-                    }}>
-                      <div className="flex flex-col items-start">
+                    <form
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        const form = event.target as HTMLFormElement;
+                        const cardnumber = form.elements.namedItem(
+                          'cardnumber'
+                        ) as HTMLInputElement;
+                        const expiration = form.elements.namedItem(
+                          'expiration'
+                        ) as HTMLInputElement;
+                        const cvv = form.elements.namedItem(
+                          'cvv'
+                        ) as HTMLInputElement;
+                        const cardType = form.elements.namedItem(
+                          'cardType'
+                        ) as HTMLInputElement;
+                        handleNewPayment(
+                          cardnumber.value,
+                          expiration.value,
+                          cvv.value,
+                          cardType.value
+                        );
+                      }}>
+                      <div className="flex flex-col items-start gap-2">
                         <h3 className="pl-4 text-lg font-semibold text-white">
                           Use New Payment Method
                         </h3>
                         <input
-                          className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+                          className="mx-4  h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+                          type="text"
+                          placeholder="Name On Card"
+                          name="cardName"
+                        />
+                        <input
+                          className="mx-4  h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                           type="text"
                           placeholder="Card Number"
-                          name="cardNumber"
+                          name="cardnumber"
                         />
                         <input
-                          className="mx-4 mt-2 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+                          className="mx-4  h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                           type="text"
                           placeholder="Expiration Date"
-                          name="expirationDate"
+                          name="expiration"
                         />
                         <input
-                          className="mx-4 mt-2 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+                          className="mx-4  h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                           type="text"
                           placeholder="CVV"
                           name="cvv"
                         />
-                        <Select
-                              defaultValue="Debit"
-                              name="cardType"
-                            >
-                              <SelectTrigger className="mx-4 mt-2 h-10 w-[15rem] max-w-md rounded-md border bg-white border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue">
-                                <SelectValue
-                                  placeholder={"Card Type"}
-                                  className="text-gray-200"
-                                />
-                              </SelectTrigger>
-                              <SelectContent side="bottom">
-                                {paymentForms.map((type, index) => (
-                                  <SelectItem key={index} value={type}>
-                                    {type}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
+                        <Select defaultValue="Debit" name="cardType">
+                          <SelectTrigger className="mx-4  h-10 w-[15rem] max-w-md rounded-md border border-gray-300 bg-white px-4 focus:border-logoblue focus:ring-logoblue">
+                            <SelectValue
+                              placeholder={'Card Type'}
+                              className="text-gray-200"
+                            />
+                          </SelectTrigger>
+                          <SelectContent side="bottom">
+                            {paymentForms.map((type, index) => (
+                              <SelectItem key={index} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                         <Button
                           className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
                           size="lg"
-                          type="submit"
-                        >
+                          type="submit">
                           Add New Payment Method
                         </Button>
                       </div>

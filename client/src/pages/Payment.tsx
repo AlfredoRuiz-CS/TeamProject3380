@@ -1,11 +1,21 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-
 import { Button } from '@/components/ui/button';
+import { CaretSortIcon } from '@radix-ui/react-icons';
+import PaymentMethodCard from '@/components/PaymentMethodCard';
+import toast from 'react-hot-toast';
+
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 // import { productItem } from '@/components/store';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import useUserStore from '@/components/store';
-// import { ReactElement, ReactEventHandler } from 'react';
-// import React from 'react';
+import { PaymentMethod } from '@/pages/Profile';
+import axios from 'axios';
 
 interface paymentProps {
   type: 'cart' | 'membership';
@@ -13,8 +23,32 @@ interface paymentProps {
 
 const payment = (props: paymentProps) => {
   const store = useUserStore();
-  console.log('Rendered Payment Page', props.type);
+  const [collapsibleOpen, setCollapsibleOpen] = useState(false);
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const [paymentMethodSelected, setPaymentMethodSelected] =
+    useState<PaymentMethod | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
+  function paymentMethodSelectedToast(p: PaymentMethod) {
+    toast.success(
+      'Payment method ending in ' + p.cardnumber.slice(-4) + ' selected.',
+      {
+        position: 'bottom-right',
+        className: 'font-bold text-black',
+      }
+    );
+  }
+
+  function handleSelectPaymentMethod(p: PaymentMethod) {
+    setPaymentMethodSelected(p);
+    paymentMethodSelectedToast(p);
+    console.log('Selected Payment Method');
+  }
+
+  function handleDeletePaymentMethod() {
+    console.log('Deleted Payment Method');
+  }
+  console.log('Rendered Payment Page', props.type);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -25,18 +59,56 @@ const payment = (props: paymentProps) => {
           productName: item.name,
           productQuantity: store.quantity[index],
           productPrice: item.price,
-        })), 
-        paymentMethod: "3564 Debit"
-      }
+        })),
+        paymentMethod: '3564 Debit',
+      };
       console.log(cartOrderDetails);
-    }
-    else if (props.type === 'membership'){
+    } else if (props.type === 'membership') {
       const data = {
-        email: store.email
-      }
+        email: store.email,
+      };
       console.log(data);
     }
-  }
+  };
+
+  useEffect(() => {
+    const fetchPayments = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(
+          'https://shastamart-api-deploy.vercel.app/api/users/payments',
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        console.log(response.data);
+        const paymentData = await response.data;
+        const transformedPayments = paymentData.map(
+          (paymentMethod: PaymentMethod) => ({
+            nameOnCard: store.fname + ' ' + store.lname,
+            cardnumber: paymentMethod.cardnumber,
+            expiration: paymentMethod.expiration,
+            cvv: paymentMethod.cvv,
+          })
+        );
+        console.log(transformedPayments);
+        setPaymentMethods(transformedPayments);
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchPayments();
+  }, [setPaymentMethods]);
+
+  useEffect(() => {
+    if (store.accountType === 'customer' && !store.isAdmin) {
+      if (paymentMethods.length > 0) {
+        setPaymentMethodSelected(paymentMethods[0]);
+        return;
+      }
+    }
+  }, [paymentMethods, setPaymentMethods, isLoading]);
 
   return (
     <>
@@ -102,14 +174,70 @@ const payment = (props: paymentProps) => {
                 </tbody>
               </table>
             </section>
-            <section className="mt-6 h-[30rem] w-[40rem] place-self-center rounded-2xl bg-cardwhite">
-              <h3 className="ml-5 mt-5 text-2xl font-medium">
-                Payment Details
+            <section className="mb-[20rem] mt-6 flex h-auto w-[40rem] flex-col items-center place-self-center rounded-2xl bg-cardwhite py-6">
+              <h3 className="mt-5 flex flex-row justify-center text-2xl font-medium">
+                Select A Previous Payment Method
+              </h3>
+              {/* Payment Method Component Map */}
+              <div className="flex flex-col pt-5">
+                <Collapsible
+                  className="flex w-72 flex-grow flex-col gap-2 place-self-center"
+                  open={collapsibleOpen}
+                  onOpenChange={setCollapsibleOpen}>
+                  {!isLoading ? (
+                    paymentMethods.length > 0 ? (
+                      <div className="flex w-auto flex-grow items-center justify-between space-x-4 rounded-lg bg-slate-300 px-4 text-black">
+                        <h4 className="flex w-auto flex-grow text-center text-sm font-semibold">
+                          {'Card Name: ' +
+                            paymentMethodSelected?.nameOnCard +
+                            '\nLast 4 digits: ' +
+                            paymentMethodSelected?.cardnumber.slice(-4)}
+                        </h4>
+                        <CollapsibleTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="hover:bg-white/50">
+                            <CaretSortIcon className="h-6 w-6" />
+                            <span className="sr-only">Toggle</span>
+                          </Button>
+                        </CollapsibleTrigger>
+                      </div>
+                    ) : (
+                      <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
+                        {' '}
+                        No Previous Payment Methods
+                      </div>
+                    )
+                  ) : (
+                    <div className="mx-auto flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
+                      Loading payment methods...
+                    </div>
+                  )}
+                  {paymentMethods.map((paymentMethod, index) => (
+                    <CollapsibleContent key={index} className="">
+                      <PaymentMethodCard
+                        key={index}
+                        cardId={index + 1}
+                        passedPaymentMethod={paymentMethod}
+                        variant="payment"
+                        onDelete={handleDeletePaymentMethod}
+                        onSelect={handleSelectPaymentMethod}
+                      />
+                    </CollapsibleContent>
+                  ))}
+                </Collapsible>
+              </div>
+
+              <h3 className="mt-5 flex flex-row justify-center text-2xl font-medium">
+                New Payment Details
               </h3>
 
               {/* Name Fields */}
               <div className="flex flex-col items-center ">
-                <form className="flex w-full flex-col gap-0 pt-5" onSubmit={handleSubmit}>
+                <form
+                  className="flex w-full flex-col gap-0 pt-5"
+                  onSubmit={handleSubmit}>
                   <div className="self-center">
                     <h3 className=" pl-5 text-lg font-semibold text-darkblue">
                       Card Number
@@ -127,8 +255,7 @@ const payment = (props: paymentProps) => {
                       className="mx-4 h-10 w-[30rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                       type="text"
                       placeholder="e.g. John Doe"
-                      name="cardName"
-                    ></input>
+                      name="cardName"></input>
                   </div>
                   <div className="flex w-[30rem] flex-row gap-0 self-center">
                     <div>
@@ -139,8 +266,7 @@ const payment = (props: paymentProps) => {
                         className="ml-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                         type="text"
                         placeholder="MM/YY"
-                        name="expirationDate"
-                      ></input>
+                        name="expirationDate"></input>
                     </div>
                     <div className="">
                       <h3 className="pl-2 pt-2 text-left text-lg font-semibold text-darkblue">
@@ -150,16 +276,14 @@ const payment = (props: paymentProps) => {
                         className="ml-2 h-10 w-[12.5rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                         type="text"
                         placeholder="CVC"
-                        name="cvc"
-                      ></input>
+                        name="cvc"></input>
                     </div>
                   </div>
                   <Button
-                    className="ml-4 mr-4 mt-5 self-center bg-slate-500 px-44 py-6 hover:bg-slate-600"
+                    className="ml-4 mr-4 mt-5 self-center bg-blue-400 px-44 py-6 hover:bg-slate-600"
                     size="lg"
-                    type="submit"
-                  >
-                    Place Order
+                    type="submit">
+                    <Link to={'/orders/'}>Place Order</Link>
                   </Button>
                 </form>
               </div>
@@ -204,7 +328,9 @@ const payment = (props: paymentProps) => {
 
               {/* Name Fields */}
               <div className="flex flex-col items-center ">
-                <form className="flex w-full flex-col gap-0 pt-5" onSubmit={handleSubmit}>
+                <form
+                  className="flex w-full flex-col gap-0 pt-5"
+                  onSubmit={handleSubmit}>
                   <div className="self-center">
                     <h3 className=" pl-5 text-lg font-semibold text-darkblue">
                       Card Number
@@ -222,8 +348,7 @@ const payment = (props: paymentProps) => {
                       className="mx-4 h-10 w-[30rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                       type="text"
                       placeholder="e.g. John Doe"
-                      name="cardName"
-                    ></input>
+                      name="cardName"></input>
                   </div>
                   <div className="flex w-[30rem] flex-row gap-0 self-center">
                     <div>
@@ -234,8 +359,7 @@ const payment = (props: paymentProps) => {
                         className="ml-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                         type="text"
                         placeholder="MM/YY"
-                        name="expirationDate"
-                      ></input>
+                        name="expirationDate"></input>
                     </div>
                     <div className="">
                       <h3 className="pl-2 pt-2 text-left text-lg font-semibold text-darkblue">
@@ -245,15 +369,13 @@ const payment = (props: paymentProps) => {
                         className="ml-2 h-10 w-[12.5rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                         type="text"
                         placeholder="CVC"
-                        name="cvc"
-                      ></input>
+                        name="cvc"></input>
                     </div>
                   </div>
                   <Button
                     className="ml-4 mr-4 mt-5 self-center bg-slate-500 px-44 py-6 hover:bg-slate-600"
                     size="lg"
-                    type="submit"
-                  >
+                    type="submit">
                     Place Order
                   </Button>
                 </form>

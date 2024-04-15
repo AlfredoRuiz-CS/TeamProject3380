@@ -168,8 +168,14 @@ async function refundItems(orderID,items,refundDate){
             WHERE orderLineID=?`,[res[0].orderLineID]);
         }
        
+<<<<<<< HEAD
         const [payment] = await connection.query(`
         SELECT paymentMethod, paymentID
+=======
+        //This function can be deleted if we can hard-coding paymentMethod
+        const pMethod = await connection.query(`
+        SELECT paymentMethod
+>>>>>>> 05e49e25bab7b07914c94cbf73dfc70d7df6888c
         FROM payment
         WHERE orderID=?`,[orderID]);
 

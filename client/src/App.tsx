@@ -1,22 +1,23 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Home from './pages/Home';
-import Products from './pages/Products';
-import SingleProduct from './pages/SingleProduct';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Profile from './pages/Profile';
+import Products from './pages/Products';
+import SingleProduct from './pages/SingleProduct';
+import ProductList from './pages/ProductList';
 import Cart from './pages/Cart';
 import Orders from './pages/Orders';
-import ProductList from './pages/ProductList';
-import AdminDashboard from './pages/AdminDashboard';
+import OrderSummary from './pages/OrderSummary';
 import MemberPage from './pages/MemberPage';
 import Payment from './pages/Payment';
 import Suppliers from './pages/Suppliers';
-import ShippingInformation from './pages/shippingInfo';
-import './index.css';
+import ShippingInformation from './pages/Shipping';
+import AdminDashboard from './pages/AdminDashboard';
 import { Navigate } from 'react-router-dom';
 import useUserStore from './components/store';
+import './index.css';
 
 function App() {
   const user = useUserStore();
@@ -33,6 +34,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={user.loggedIn ? <Profile /> : <Navigate to="/register" />} />
         <Route path="/orders" element={user.loggedIn ? <Orders /> : <Navigate to="/register" />} />
+        <Route path='/orders/summary' element={user.loggedIn ? <OrderSummary /> : <Navigate to="/register" />} />
         {/* User Cart/Payments */}
         <Route path="/cart" element={user.loggedIn ? <Cart /> : <Navigate to="/register" />} />
         <Route path="/list" element={user.loggedIn ? <ProductList /> : <Navigate to="/" />} />
@@ -49,8 +51,8 @@ function App() {
         {/* Products */}
         <Route path="/products" element={<Products />} />
         <Route path="/product/:productId" element={<SingleProduct />} />
-        {/* test */}
-        <Route path="/test" element={<ShippingInformation />} />
+        {/* Shipping */}
+        <Route path="/shipping" element={<ShippingInformation />} />
         {/* Any non-valid URL returns to home */}
         <Route path="*" element={<Home />} />
       </Routes>
