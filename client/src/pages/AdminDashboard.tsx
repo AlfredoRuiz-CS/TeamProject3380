@@ -22,6 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
+  DialogClose,
 } from '@/components/ui/dialog';
 
 import { Input } from '@/components/ui/input';
@@ -306,7 +307,9 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                     <DialogFooter>
-                      <Button type="submit">Submit Order</Button>
+                      <DialogClose asChild>
+                        <Button type="submit">Submit Order</Button>
+                      </DialogClose>
                     </DialogFooter>
                   </form>
                 </DialogContent>
