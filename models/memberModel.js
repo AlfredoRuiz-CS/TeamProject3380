@@ -18,8 +18,12 @@ async function createMembership(customerEmail,startDate,endDate,renewalDate,paym
         INSERT INTO membership(customerEmail,membershipStatus,startDate,endDate,renewalDate)
         VALUES(?,?,?,?,?)`,[customerEmail,1,startDate,endDate,renewalDate])
 
+        const result = {
+            isMember: true
+        }
+
         await connection.commit();
-        return createMember;
+        return result;
     } catch (error){
         await connection.rollback();
         console.log(error);

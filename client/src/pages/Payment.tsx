@@ -121,6 +121,16 @@ const payment = (props: paymentProps) => {
         email: store.email,
       };
       console.log(data);
+
+      try {
+        const response = await axios.post("https://shastamart-api-deploy.vercel.app/api/membership/member", data);
+        console.log(response.data);
+        const isMember = await response.data;
+        store.setUserDetails({isMember: isMember});
+        navigate("/orders/summary");
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
@@ -186,7 +196,7 @@ const payment = (props: paymentProps) => {
                   <thead>
                     <tr>
                       <th className="pl-5 text-left">Item</th>
-                      <th className=" pr-5 text-right">Cost</th>
+                      <th className="pr-5 text-right">Cost</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -388,14 +398,14 @@ const payment = (props: paymentProps) => {
             <h1 className="pt-16 text-center text-3xl font-medium text-white">
               Subscription Summary
             </h1>
-            <section className="mt-6 flex h-[40rem] w-[40rem] flex-col justify-between place-self-center rounded-2xl bg-cardwhite">
+            <section className="mt-6 flex h-auto w-[40rem] flex-col justify-between place-self-center rounded-2xl bg-cardwhite">
               <div className="">
                 <h3 className="ml-5 mt-3 text-2xl font-medium">
                   Order Summary
                 </h3>
                 {/* Item Table */}
-                <div className="flex flex-row justify-between pt-[30rem]">
-                  <p className="w-5 pl-5">Membership Subscription</p>
+                <div className="flex flex-row justify-between mb-5 mt-2 w-full">
+                  <p className="pl-5">Membership Subscription</p>
                   <p className="pr-5">$10.00 per month</p>
                 </div>
               </div>
@@ -414,9 +424,63 @@ const payment = (props: paymentProps) => {
                 </tbody>
               </table>
             </section>
-            <section className="mt-6 h-[30rem] w-[40rem] place-self-center rounded-2xl bg-cardwhite">
-              <h3 className="ml-5 mt-5 text-2xl font-medium">
-                Payment Details
+            <section className="mb-[20rem] mt-6 flex h-auto w-[40rem] flex-col items-center place-self-center rounded-2xl bg-cardwhite py-6">
+              <h3 className="mt-5 flex flex-row justify-center text-2xl font-medium">
+                Select A Previous Payment Method
+              </h3>
+              {/* Payment Method Component Map */}
+              <div className="flex flex-col pt-5">
+                <Collapsible
+                  className="flex w-72 flex-grow flex-col gap-2 place-self-center"
+                  open={collapsibleOpen}
+                  onOpenChange={setCollapsibleOpen}>
+                  {!isLoading ? (
+                    paymentMethods.length > 0 ? (
+                      <div className="flex w-auto flex-grow items-center justify-between space-x-4 rounded-lg bg-slate-300 px-4 text-black">
+                        <h4 className="flex w-auto flex-grow text-center text-sm font-semibold">
+                          {'Card Name: ' +
+                            paymentMethodSelected?.nameOnCard +
+                            '\nLast 4 digits: ' +
+                            paymentMethodSelected?.cardnumber.slice(-4)}
+                        </h4>
+                        <CollapsibleTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="hover:bg-white/50">
+                            <CaretSortIcon className="h-6 w-6" />
+                            <span className="sr-only">Toggle</span>
+                          </Button>
+                        </CollapsibleTrigger>
+                      </div>
+                    ) : (
+                      <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
+                        {' '}
+                        No Previous Payment Methods
+                      </div>
+                    )
+                  ) : (
+                    <div className="mx-auto flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
+                      Loading payment methods...
+                    </div>
+                  )}
+                  {paymentMethods.map((paymentMethod, index) => (
+                    <CollapsibleContent key={index} className="">
+                      <PaymentMethodCard
+                        key={index}
+                        cardId={index + 1}
+                        passedPaymentMethod={paymentMethod}
+                        variant="payment"
+                        onDelete={handleDeletePaymentMethod}
+                        onSelect={handleSelectPaymentMethod}
+                      />
+                    </CollapsibleContent>
+                  ))}
+                </Collapsible>
+              </div>
+
+              <h3 className="mt-5 flex flex-row justify-center text-2xl font-medium">
+                New Payment Details
               </h3>
 
               {/* Name Fields */}
@@ -429,11 +493,27 @@ const payment = (props: paymentProps) => {
                       Card Number
                     </h3>
                     <input
-                      className="mx-4 h-10 w-[30rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+                      className="mx-4 h-10 w-[30rem] mb-2 max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                       type="text"
                       placeholder="e.g. 1234 5678 9012 3456"
                       name="cardNumber"
+                      onChange={handlePaymentInputChange}
                     />
+                    <Select defaultValue="Debit" name="cardType">
+                          <SelectTrigger className="mx-4 h-10 w-[10rem] max-w-md rounded-md border border-gray-300 bg-white px-4 focus:border-logoblue focus:ring-logoblue">
+                            <SelectValue
+                              placeholder={'Card Type'}
+                              className="text-gray-200"
+                            />
+                          </SelectTrigger>
+                          <SelectContent side="bottom">
+                            {paymentForms.map((type, index) => (
+                              <SelectItem key={index} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                    </Select>
                     <h3 className="pl-5 pt-2 text-lg font-semibold text-darkblue">
                       Name on Card
                     </h3>
@@ -441,7 +521,9 @@ const payment = (props: paymentProps) => {
                       className="mx-4 h-10 w-[30rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                       type="text"
                       placeholder="e.g. John Doe"
-                      name="cardName"></input>
+                      name="cardName"
+                      onChange={handlePaymentInputChange}
+                    />
                   </div>
                   <div className="flex w-[30rem] flex-row gap-0 self-center">
                     <div>
@@ -452,21 +534,25 @@ const payment = (props: paymentProps) => {
                         className="ml-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                         type="text"
                         placeholder="MM/YY"
-                        name="expirationDate"></input>
+                        name="expirationDate"
+                        onChange={handlePaymentInputChange}
+                      />
                     </div>
                     <div className="">
                       <h3 className="pl-2 pt-2 text-left text-lg font-semibold text-darkblue">
-                        CVC
+                        CVV
                       </h3>
                       <input
                         className="ml-2 h-10 w-[12.5rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                         type="text"
-                        placeholder="CVC"
-                        name="cvc"></input>
+                        placeholder="CVV"
+                        name="cvv"
+                        onChange={handlePaymentInputChange}
+                      />
                     </div>
                   </div>
                   <Button
-                    className="ml-4 mr-4 mt-5 self-center bg-slate-500 px-44 py-6 hover:bg-slate-600"
+                    className="ml-4 mr-4 mt-5 self-center bg-blue-400 px-44 py-6 hover:bg-slate-600"
                     size="lg"
                     type="submit">
                     Place Order
