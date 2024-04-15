@@ -86,7 +86,7 @@ const Profile = () => {
   };
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [paymentMethodSelected, setPaymentMethodSelected] =
-    useState<PaymentMethod | null>(paymentMethods[0] || null);
+    useState<PaymentMethod>(paymentMethods[0]);
 
   const states = [
     'AL',
@@ -350,9 +350,11 @@ const Profile = () => {
         setPaymentMethodSelected(paymentMethods[0]);
         return;
       }
-      setPaymentMethodSelected(null);
+      // setPaymentMethodSelected(null);
     }
-  }, [setPaymentMethods]);
+  }, [paymentMethods, setPaymentMethods]);
+
+  useEffect(() => {}, [isLoading]);
 
   return (
     <>
@@ -642,13 +644,13 @@ const Profile = () => {
                       </h3>
                       {/* Payment Method Component Map */}
                       <Collapsible
-                        className="flex w-64 flex-col gap-2 place-self-center"
+                        className="flex w-72 flex-grow flex-col gap-2 place-self-center"
                         open={collapsibleOpen}
                         onOpenChange={setCollapsibleOpen}>
                         {!isLoading ? (
                           paymentMethods.length > 0 ? (
-                            <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
-                              <h4 className="h-10 text-sm font-semibold">
+                            <div className="flex w-auto flex-grow items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
+                              <h4 className="flex w-auto flex-grow text-center text-sm font-semibold">
                                 {'Card Name: ' +
                                   paymentMethodSelected?.nameOnCard +
                                   '\nLast 4 digits: ' +

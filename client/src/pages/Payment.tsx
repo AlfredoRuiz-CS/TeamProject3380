@@ -30,7 +30,7 @@ const payment = (props: paymentProps) => {
 
   function paymentMethodSelectedToast(p: PaymentMethod) {
     toast.success(
-      'Payment method ending in ' + p.cardNumber.slice(-4) + ' selected.',
+      'Payment method ending in ' + p.cardnumber.slice(-4) + ' selected.',
       {
         position: 'bottom-right',
         className: 'font-bold text-black',
@@ -85,9 +85,9 @@ const payment = (props: paymentProps) => {
         const transformedPayments = paymentData.map(
           (paymentMethod: PaymentMethod) => ({
             nameOnCard: store.fname + ' ' + store.lname,
-            cardnumber: paymentMethod.cardNumber,
-            expiration: paymentMethod.expirationDate,
-            cvv: paymentMethod.ccv,
+            cardnumber: paymentMethod.cardnumber,
+            expiration: paymentMethod.expiration,
+            cvv: paymentMethod.cvv,
           })
         );
         console.log(transformedPayments);
@@ -176,7 +176,7 @@ const payment = (props: paymentProps) => {
                         {'Card Name: ' +
                           paymentMethodSelected?.nameOnCard +
                           '\nLast 4 digits: ' +
-                          paymentMethodSelected?.cardNumber.slice(-4)}
+                          paymentMethodSelected?.cardnumber.slice(-4)}
                       </h4>
                       <CollapsibleTrigger asChild>
                         <Button

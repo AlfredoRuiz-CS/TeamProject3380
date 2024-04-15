@@ -10,7 +10,7 @@ interface PaymentMethodProps {
 
 const PaymentMethodCard = (props: PaymentMethodProps) => {
   return (
-    <div className="h-auto w-64 gap-2 rounded-md border bg-cardwhite px-4 pb-3 font-inter text-sm shadow-sm duration-300 ease-in-out hover:bg-cardwhite/90">
+    <div className="h-auto w-72 gap-2 rounded-md border bg-cardwhite px-4 pb-3 font-inter text-sm shadow-sm duration-300 ease-in-out hover:bg-cardwhite/90">
       <button>
         <h1 className="font-medium">
           {'Payment Method ' + '#' + props.cardId}{' '}
