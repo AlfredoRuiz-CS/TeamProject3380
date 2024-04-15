@@ -46,7 +46,7 @@ type ProfileData =
 export type PaymentMethod = {
   cardId?: number;
   nameOnCard: string;
-  cardtype: 'Debit' | 'Credit';
+  cardtype: string;
   cardnumber: string;
   expiration: string;
   cvv: string;
@@ -66,7 +66,7 @@ const Profile = () => {
     cardnumber: '1234 5678 9012 3456',
     expiration: '01/23',
     cvv: '123',
-    cardType: 'Debit',
+    cardtype: 'Debit',
   });
   dummyPaymentMethods[1] = {
     cardId: 2,

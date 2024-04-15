@@ -32,6 +32,12 @@ const payment = (props: paymentProps) => {
   const [usingExistingPaymentMethod, setUsingExistingPaymentMethod] = useState(false);
   const navigate = useNavigate();
 
+  const subtotal = store.cartItems.reduce(
+    (acc, product, index) => acc + product.price * store.quantity[index],
+    0
+  );
+  const shipping = 10;
+
   function paymentMethodSelectedToast(p: PaymentMethod) {
     toast.success(
       'Payment method ending in ' + p.cardnumber.slice(-4) + ' selected.',
@@ -185,6 +191,21 @@ const payment = (props: paymentProps) => {
                         </td>
                       </tr>
                     ))}
+                    <tr>
+                      <td className="pl-5">
+                        Shipping
+                      </td>
+                      <td className="pr-5 text-right">
+                        {!store.isMember && subtotal > 0
+                          ? shipping.toLocaleString('en-US', {
+                              style: 'currency',
+                              currency: 'USD',
+                            })
+                          : store.isMember && subtotal > 0 
+                          ? "$0.00" 
+                          : '--'}
+                      </td>
+                      </tr>
                   </tbody>
                 </table>
               </div>

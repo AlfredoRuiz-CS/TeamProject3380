@@ -115,7 +115,8 @@ async function findAllOrderbyEmail(email){
             CASE 
                 WHEN p.paymentMethod LIKE '%Debit%' THEN 'Debit'
                 WHEN p.paymentMethod LIKE '%Credit%' THEN 'Credit'
-                ELSE '' END) AS paymentMethod
+                ELSE '' 
+            END) AS paymentMethod
             FROM purchaseOrder po
             LEFT JOIN payment p ON po.orderID = p.orderID
             WHERE po.customerEmail = ?`, [email]);

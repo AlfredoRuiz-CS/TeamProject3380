@@ -74,6 +74,7 @@ const Orders = () => {
   // ? Search Query TO BE IMPLEMENTED USING BACKEND CALL
   const [filteredOrders, setFilteredOrders] = useState<Order[]>(orders);
   let [filterOption, setFilterOption] = useState('All');
+  const orderToDisplay = sortedOrders.find(order => order.orderID === selectedOrder);
 
   // let [searchQuery, setSearchQuery] = useState('');
   useEffect(() => {}, [sheetOpen]);
@@ -234,7 +235,7 @@ const Orders = () => {
               total: order.total,
               items: order.items.map((item: productOrder) => ({
                 productID: item.productID,
-                name: item.productName,
+                productName: item.productName,
                 unitPrice: item.unitPrice,
                 quantity: item.quantity,
                 totalAmount: item.totalAmount
@@ -363,7 +364,7 @@ const Orders = () => {
                         </TableHeader>
 
                         <TableBody>
-                          {filteredOrders[selectedOrder].items.map(
+                        {orderToDisplay && orderToDisplay.items.map(
                             (product, index) => (
                               <TableRow key={index}>
                                 <TableCell className="max-w-6 pl-6">
@@ -387,8 +388,9 @@ const Orders = () => {
                               className=" max-w-9 p-0 pr-9 text-right"
                               colSpan={2}
                             >
+
                               {/* TODO: Make sure that the total amount lines up with the rest of the products if the decimal place changes. */}
-                              {filteredOrders[selectedOrder].total.toLocaleString(
+                              {orderToDisplay?.total.toLocaleString(
                                 'en-US',
                                 {
                                   style: 'currency',

@@ -144,11 +144,16 @@ const Cart = () => {
                         Estimated Total
                       </td>
                       <td className="pr-2 text-right text-xl">
-                        {subtotal > 0
+                        {!store.isMember && subtotal > 0
                           ? (subtotal + shipping).toLocaleString('en-US', {
                               style: 'currency',
                               currency: 'USD',
                             })
+                          : store.isMember && subtotal > 0
+                          ? (subtotal).toLocaleString('en-US', {
+                            style: 'currency',
+                            currency: 'USD',
+                          })
                           : '--'}
                       </td>
                     </tr>
