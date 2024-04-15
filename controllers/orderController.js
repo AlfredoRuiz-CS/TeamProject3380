@@ -64,8 +64,7 @@ const getOrderDetail = async (req,res) => {
 
 const getAllOrderWithEmail = async (req,res) => {
   try{
-    const body = await getRequestBody(req);
-    const {customerEmail} = body;
+    const customerEmail = req.email;
     const order = await orderModel.findAllOrderbyEmail(customerEmail);
     if (!order){
       res.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -83,7 +82,7 @@ const getAllOrderWithEmail = async (req,res) => {
 }
 
 const getOrderByLname = async (req,res) => {
-  try{
+  try {
     const body = await getRequestBody(req);
     const {lname} = body;
     const order = await orderModel.findOrderByLname(lname);

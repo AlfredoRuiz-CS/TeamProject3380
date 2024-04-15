@@ -132,7 +132,7 @@ async function getUserPaymentInfo(email){
   try {
 
     const [rows] = await pool.query(`
-    SELECT p.cardtype, p.cardnumber, p.cvv, p.expiration 
+    SELECT p.nameOnCard, p.cardtype, p.cardnumber, p.cvv, p.expiration 
     FROM paymentInfo p
     where p.customerEmail = ?`, [email]);
 
@@ -144,23 +144,32 @@ async function getUserPaymentInfo(email){
   }
 }
 
-async function createUserPaymentInfo(customerEmail, cardtype, cardnumber, cvv, expiration) {
+async function createUserPaymentInfo(customerEmail, cardtype, cardnumber, cvv, expiration, nameOnCard) {
   const connection = await pool.getConnection();
 
   try {
     await connection.beginTransaction();
 
     const [rows] = await connection.execute(`
-    INSERT INTO paymentInfo (customerEmail, cardtype, cardnumber, cvv, expiration)
+    INSERT INTO paymentInfo (customerEmail, cardtype, cardnumber, cvv, expiration, nameOnCard)
     VALUES
     (?,?,?,?,?) 
-    `, [customerEmail, cardtype, cardnumber, cvv, expiration]);
+    `, [customerEmail, cardtype, cardnumber, cvv, expiration, nameOnCard]);
 
     await connection.commit();
 
-    return rows;
+    const paymentInfo = {
+      nameOnCard,
+      cardType: cardtype,
+      cardnumber,
+      cvv,
+      expiration
+    }
+
+    return paymentInfo;
 
   } catch (error){
+    await connection.rollback();
     console.log(error.message);
     throw error;
 

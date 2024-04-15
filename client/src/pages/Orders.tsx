@@ -4,6 +4,7 @@ import { productItem } from '@/components/store';
 import { dummyProducts } from './Products';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import useUserStore from '@/components/store';
 
 import { useEffect, useState } from 'react';
 
@@ -51,12 +52,14 @@ const dummyOrders: Order[] = Array(20)
   }));
 
 const Orders = () => {
+  const user = useUserStore();
   const navigate = useNavigate();
   // ? Selections for the order sheet
   const [selectedOrder, setSelectedOrder] = useState<number>(0);
   const [sheetOpen, setSheetOpen] = useState(false);
   // ! SET THIS TO THE BACKEND API CALL FOR PAST ORDERS
-  const orders = dummyOrders;
+  // let orders: Order[] = [];
+  let orders = dummyOrders;
   const [sortedOrders, setSortedOrders] = useState<Order[]>(dummyOrders);
   // ? Sorting Options
   let [sortOrder, setSortOrder] = useState('Order Desc.');
@@ -181,6 +184,30 @@ const Orders = () => {
       }
     }
     verifySession();
+  }, [])
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      if (user.isAdmin) {
+        try {
+          const response = await axios.get("https://shastamart-api-deploy.vercel.app/api/orders/allOrders");
+          orders = await response.data;
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        try {
+          const token = localStorage.getItem('token');
+          const response = await axios.get("https://shastamart-api-deploy.vercel.app/api/orders/allOrders", { 
+            headers: { 'Authorization' : `Bearer ${token}` }
+          });
+          orders = await response.data;
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+    fetchOrders();
   }, [])
 
   return (
