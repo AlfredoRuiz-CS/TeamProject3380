@@ -168,21 +168,15 @@ async function refundItems(orderID,items,refundDate){
             WHERE orderLineID=?`,[res[0].orderLineID]);
         }
        
-<<<<<<< HEAD
         const [payment] = await connection.query(`
         SELECT paymentMethod, paymentID
-=======
-        //This function can be deleted if we can hard-coding paymentMethod
-        const pMethod = await connection.query(`
-        SELECT paymentMethod
->>>>>>> 5d7b35665f3fb2e393e18c6a608ebdf1b9031413
         FROM payment
         WHERE orderID=?`,[orderID]);
 
         //record the refund
         const [createRefund] = await connection.query(`
         INSERT INTO refund(paymentID,refundDate,amount,refundMethod,refundStatus)
-        VALUES(?,?,?,?,?)`,[payment[0].paymentID,refundDate,amount,payment.paymentMethod,"pass"]);
+        VALUES(?,?,?,?,?)`,[payment[0].paymentID,refundDate,amount,payment[0].paymentMethod,"pass"]);
 
         await connection.commit();
         return {refund: createRefund,refundedItems: removedItems};
