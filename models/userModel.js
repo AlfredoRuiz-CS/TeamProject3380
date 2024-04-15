@@ -160,7 +160,7 @@ async function createUserPaymentInfo(customerEmail, cardtype, cardnumber, cvv, e
 
     const paymentInfo = {
       nameOnCard,
-      cardType: cardtype,
+      cardtype,
       cardnumber,
       cvv,
       expiration

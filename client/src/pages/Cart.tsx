@@ -128,11 +128,13 @@ const Cart = () => {
                         Estimated Shipping
                       </td>
                       <td className="pr-2 text-right text-xl">
-                        {subtotal > 0
+                        {!store.isMember && subtotal > 0
                           ? shipping.toLocaleString('en-US', {
                               style: 'currency',
                               currency: 'USD',
                             })
+                          : store.isMember && subtotal > 0 
+                          ? "$0.00" 
                           : '--'}
                       </td>
                     </tr>

@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/collapsible';
 // import { productItem } from '@/components/store';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 import useUserStore from '@/components/store';
 import { PaymentMethod } from '@/pages/Profile';
 import axios from 'axios';
@@ -28,6 +28,7 @@ const payment = (props: paymentProps) => {
   const [paymentMethodSelected, setPaymentMethodSelected] =
     useState<PaymentMethod | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [usingExistingPaymentMethod, setUsingExistingPaymentMethod] = useState(false);
 
   function paymentMethodSelectedToast(p: PaymentMethod) {
     toast.success(
@@ -41,6 +42,7 @@ const payment = (props: paymentProps) => {
 
   function handleSelectPaymentMethod(p: PaymentMethod) {
     setPaymentMethodSelected(p);
+    setUsingExistingPaymentMethod(true);
     paymentMethodSelectedToast(p);
     console.log('Selected Payment Method');
   }
@@ -50,8 +52,29 @@ const payment = (props: paymentProps) => {
   }
   console.log('Rendered Payment Page', props.type);
 
+  const handlePaymentInputChange = () => {
+    setUsingExistingPaymentMethod(false); 
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!paymentMethodSelected) {
+      console.error("No payment method selected");
+      return;
+    }
+
+    let paymentMethod;
+
+    if (usingExistingPaymentMethod && paymentMethodSelected) {
+      paymentMethod = `${paymentMethodSelected?.cardnumber} ${paymentMethodSelected?.cardType}`;
+    } else {
+      const formData = new FormData(event.currentTarget);
+      const cardNumber = formData.get('cardNumber');
+      const cardType = formData.get('cardType');
+      paymentMethod = `${cardNumber} ${cardType}`;
+    }
+
     if (props.type === 'cart') {
       const cartOrderDetails = {
         items: store.cartItems.map((item, index) => ({
@@ -60,9 +83,21 @@ const payment = (props: paymentProps) => {
           productQuantity: store.quantity[index],
           productPrice: item.price,
         })),
-        paymentMethod: '3564 Debit',
+        paymentMethod: paymentMethod,
       };
+
       console.log(cartOrderDetails);
+
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.post("https://shastamart-api-deploy.vercel.app/api/orders/processOrder", cartOrderDetails, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        console.log(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+
     } else if (props.type === 'membership') {
       const data = {
         email: store.email,
@@ -85,7 +120,7 @@ const payment = (props: paymentProps) => {
         const paymentData = await response.data;
         const transformedPayments = paymentData.map(
           (paymentMethod: PaymentMethod) => ({
-            nameOnCard: store.fname + ' ' + store.lname,
+            nameOnCard: paymentMethod.nameOnCard,
             cardnumber: paymentMethod.cardnumber,
             expiration: paymentMethod.expiration,
             cvv: paymentMethod.cvv,
@@ -247,6 +282,7 @@ const payment = (props: paymentProps) => {
                       type="text"
                       placeholder="e.g. 1234 5678 9012 3456"
                       name="cardNumber"
+                      onChange={handlePaymentInputChange}
                     />
                     <h3 className="pl-5 pt-2 text-lg font-semibold text-darkblue">
                       Name on Card
@@ -255,7 +291,9 @@ const payment = (props: paymentProps) => {
                       className="mx-4 h-10 w-[30rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                       type="text"
                       placeholder="e.g. John Doe"
-                      name="cardName"></input>
+                      name="cardName"
+                      onChange={handlePaymentInputChange}
+                    />
                   </div>
                   <div className="flex w-[30rem] flex-row gap-0 self-center">
                     <div>
@@ -266,24 +304,28 @@ const payment = (props: paymentProps) => {
                         className="ml-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                         type="text"
                         placeholder="MM/YY"
-                        name="expirationDate"></input>
+                        name="expirationDate"
+                        onChange={handlePaymentInputChange}
+                      />
                     </div>
                     <div className="">
                       <h3 className="pl-2 pt-2 text-left text-lg font-semibold text-darkblue">
-                        CVC
+                        CVV
                       </h3>
                       <input
                         className="ml-2 h-10 w-[12.5rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                         type="text"
-                        placeholder="CVC"
-                        name="cvc"></input>
+                        placeholder="CVV"
+                        name="cvv"
+                        onChange={handlePaymentInputChange}
+                      />
                     </div>
                   </div>
                   <Button
                     className="ml-4 mr-4 mt-5 self-center bg-blue-400 px-44 py-6 hover:bg-slate-600"
                     size="lg"
                     type="submit">
-                    <Link to={'/orders/'}>Place Order</Link>
+                    Place Order
                   </Button>
                 </form>
               </div>

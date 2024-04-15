@@ -60,6 +60,7 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod){
 
             total += item.productPrice*item.productQuantity;
         }
+        console.log("AT PURCHASE ORDER");
         //create new order
         const orderRes = await connection.query(`
             INSERT INTO purchaseOrder(customerEmail,orderDate,total)
@@ -67,6 +68,7 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod){
         //get the last insert id which is the newest orderID
         const [rows] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
         const lastId = rows[0].lastId;
+        console.log("AT PAYMENT");
         //create payment
         const createPayment = await connection.query(`
         INSERT INTO payment(orderID,paymentDate,totalAmount,paymentMethod,paymentStatus)
@@ -76,6 +78,7 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod){
         const IDpayment = getPayment[0].lastId;
         //create detail order in orderLine
         for (let item of items){
+            console.log(item);
             let subTotal = item.productPrice*item.productQuantity;
             const orderLineRes = await connection.query(`
             INSERT INTO orderLine(orderID,productID,quantity,unitPrice,totalAmount)

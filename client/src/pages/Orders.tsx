@@ -1,7 +1,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { productItem } from '@/components/store';
-import { dummyProducts } from './Products';
+// import { productItem } from '@/components/store';
+// import { dummyProducts } from './Products';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useUserStore from '@/components/store';
@@ -33,23 +33,31 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+type productOrder = {
+  productID: string,
+  productName: string,
+  quantity: number,
+  price: string,
+  total: number,
+}
+
 type Order = {
   orderNumber: number;
   date: string;
   paymentMethod: string;
   total: number;
-  items: productItem[];
+  items: productOrder[];
 };
 
-const dummyOrders: Order[] = Array(20)
-  .fill({ items: [] })
-  .map((_, index) => ({
-    orderNumber: index,
-    date: new Date().toDateString(),
-    paymentMethod: 'Credit Card',
-    total: Math.random() * 300,
-    items: dummyProducts.slice(0, 10),
-  }));
+// const dummyOrders: Order[] = Array(20)
+//   .fill({ items: [] })
+//   .map((_, index) => ({
+//     orderNumber: index,
+//     date: new Date().toDateString(),
+//     paymentMethod: 'Credit Card',
+//     total: Math.random() * 300,
+//     items: dummyProducts.slice(0, 10),
+//   }));
 
 const Orders = () => {
   const user = useUserStore();
@@ -60,11 +68,11 @@ const Orders = () => {
   // ! SET THIS TO THE BACKEND API CALL FOR PAST ORDERS
   let orders: Order[] = [];
   // let orders = dummyOrders;
-  const [sortedOrders, setSortedOrders] = useState<Order[]>(dummyOrders);
+  const [sortedOrders, setSortedOrders] = useState<Order[]>(orders);
   // ? Sorting Options
   let [sortOrder, setSortOrder] = useState('Order Desc.');
   // ? Search Query TO BE IMPLEMENTED USING BACKEND CALL
-  const [filteredOrders, setFilteredOrders] = useState<Order[]>(dummyOrders);
+  const [filteredOrders, setFilteredOrders] = useState<Order[]>(orders);
   let [filterOption, setFilterOption] = useState('All');
 
   // let [searchQuery, setSearchQuery] = useState('');
@@ -191,17 +199,45 @@ const Orders = () => {
       if (user.isAdmin) {
         try {
           const response = await axios.get("https://shastamart-api-deploy.vercel.app/api/orders/allOrders");
-          orders = await response.data;
+          const orderData = await response.data;
+          orders = orderData.map(
+            (order: Order) => ({
+              orderNumber: order.orderNumber,
+              date: new Date(order.date).toLocaleDateString(),
+              paymentMethod: order.paymentMethod,
+              total: order.total,
+              items: order.items.map((item: productOrder) => ({
+                productID: item.productID,
+                name: item.productName,
+                price: item.price,
+                quantity: item.quantity,
+                total: item.total
+              }))
+          }));
         } catch (error) {
           console.log(error);
         }
       } else {
         try {
           const token = localStorage.getItem('token');
-          const response = await axios.get("https://shastamart-api-deploy.vercel.app/api/orders/allOrders", { 
+          const response = await axios.get("https://shastamart-api-deploy.vercel.app/api/orders/findAllWithEmail", { 
             headers: { 'Authorization' : `Bearer ${token}` }
           });
-          orders = await response.data;
+          const orderData = await response.data;
+          orders = orderData.map(
+            (order: Order) => ({
+              orderNumber: order.orderNumber,
+              date: new Date(order.date).toLocaleDateString(),
+              paymentMethod: order.paymentMethod,
+              total: order.total,
+              items: order.items.map((item: productOrder) => ({
+                productID: item.productID,
+                name: item.productName,
+                price: item.price,
+                quantity: item.quantity,
+                total: item.total
+              }))
+          }));
         } catch (error) {
           console.log(error);
         }
@@ -327,11 +363,11 @@ const Orders = () => {
                             (product, index) => (
                               <TableRow key={index}>
                                 <TableCell className="max-w-6 pl-6">
-                                  {product.name}
+                                  {product.productName}
                                 </TableCell>
-                                <TableCell className="max-w-5">1</TableCell>
+                                <TableCell className="max-w-5">{product.quantity}</TableCell>
                                 <TableCell className="max-w-5">
-                                  {product.price.toLocaleString('en-US', {
+                                  {product.total.toLocaleString('en-US', {
                                     style: 'currency',
                                     currency: 'USD',
                                   })}
