@@ -37,7 +37,8 @@ const payment = (props: paymentProps) => {
   const [paymentMethodSelected, setPaymentMethodSelected] =
     useState<PaymentMethod | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [usingExistingPaymentMethod, setUsingExistingPaymentMethod] = useState(false);
+  const [usingExistingPaymentMethod, setUsingExistingPaymentMethod] =
+    useState(false);
   const navigate = useNavigate();
 
   const subtotal = store.cartItems.reduce(
@@ -58,6 +59,7 @@ const payment = (props: paymentProps) => {
 
   function handleSelectPaymentMethod(p: PaymentMethod) {
     setPaymentMethodSelected(p);
+    setCollapsibleOpen(false);
     setUsingExistingPaymentMethod(true);
     paymentMethodSelectedToast(p);
     console.log('Selected Payment Method');
@@ -69,7 +71,7 @@ const payment = (props: paymentProps) => {
   console.log('Rendered Payment Page', props.type);
 
   const handlePaymentInputChange = () => {
-    setUsingExistingPaymentMethod(false); 
+    setUsingExistingPaymentMethod(false);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -102,28 +104,34 @@ const payment = (props: paymentProps) => {
 
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.post("https://shastamart-api-deploy.vercel.app/api/orders/processOrder", cartOrderDetails, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.post(
+          'https://shastamart-api-deploy.vercel.app/api/orders/processOrder',
+          cartOrderDetails,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         console.log(response.data);
-        navigate("/orders/summary");
+        navigate('/orders/summary');
       } catch (error) {
         console.log(error);
       }
-
     } else if (props.type === 'membership') {
       const data = {
         customerEmail: store.email,
-        paymentMethod: paymentMethod
+        paymentMethod: paymentMethod,
       };
       console.log(data);
 
       try {
-        const response = await axios.post("https://shastamart-api-deploy.vercel.app/api/membership/member", data);
+        const response = await axios.post(
+          'https://shastamart-api-deploy.vercel.app/api/membership/member',
+          data
+        );
         console.log(response.data);
         const isMember = await response.data;
-        store.setUserDetails({isMember: isMember});
-        navigate("/orders/summary");
+        store.setUserDetails({ isMember: isMember });
+        navigate('/orders/summary');
       } catch (error) {
         console.log(error);
       }
@@ -148,7 +156,7 @@ const payment = (props: paymentProps) => {
             cardnumber: paymentMethod.cardnumber,
             expiration: paymentMethod.expiration,
             cvv: paymentMethod.cvv,
-            cardtype: paymentMethod.cardtype
+            cardtype: paymentMethod.cardtype,
           })
         );
         console.log(transformedPayments);
@@ -202,7 +210,9 @@ const payment = (props: paymentProps) => {
                           {product.name + ' x ' + store.quantity[index]}
                         </td>
                         <td className="pr-5 text-right">
-                          {product.price.toLocaleString('en-US', {
+                          {(
+                            product.price * store.quantity[index]
+                          ).toLocaleString('en-US', {
                             style: 'currency',
                             currency: 'USD',
                           })}
@@ -210,20 +220,18 @@ const payment = (props: paymentProps) => {
                       </tr>
                     ))}
                     <tr>
-                      <td className="pl-5">
-                        Shipping
-                      </td>
+                      <td className="pl-5">Shipping</td>
                       <td className="pr-5 text-right">
                         {!store.isMember && subtotal > 0
                           ? shipping.toLocaleString('en-US', {
                               style: 'currency',
                               currency: 'USD',
                             })
-                          : store.isMember && subtotal > 0 
-                          ? "$0.00" 
-                          : '--'}
+                          : store.isMember && subtotal > 0
+                            ? '$0.00'
+                            : '--'}
                       </td>
-                      </tr>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -304,6 +312,14 @@ const payment = (props: paymentProps) => {
                     </CollapsibleContent>
                   ))}
                 </Collapsible>
+                {paymentMethods.length > 0 && paymentMethodSelected && (
+                  <Button
+                    className="ml-4 mr-4 mt-5 self-center bg-blue-400 px-44 py-6 hover:bg-slate-600"
+                    size="lg"
+                    onClick={() => navigate('/orders/')}>
+                    Place Order (TESTING)
+                  </Button>
+                )}
               </div>
 
               <h3 className="mt-5 flex flex-row justify-center text-2xl font-medium">
@@ -320,26 +336,26 @@ const payment = (props: paymentProps) => {
                       Card Number
                     </h3>
                     <input
-                      className="mx-4 h-10 w-[30rem] mb-2 max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+                      className="mx-4 mb-2 h-10 w-[30rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                       type="text"
                       placeholder="e.g. 1234 5678 9012 3456"
                       name="cardNumber"
                       onChange={handlePaymentInputChange}
                     />
                     <Select defaultValue="Debit" name="cardType">
-                          <SelectTrigger className="mx-4 h-10 w-[10rem] max-w-md rounded-md border border-gray-300 bg-white px-4 focus:border-logoblue focus:ring-logoblue">
-                            <SelectValue
-                              placeholder={'Card Type'}
-                              className="text-gray-200"
-                            />
-                          </SelectTrigger>
-                          <SelectContent side="bottom">
-                            {paymentForms.map((type, index) => (
-                              <SelectItem key={index} value={type}>
-                                {type}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
+                      <SelectTrigger className="mx-4 h-10 w-[10rem] max-w-md rounded-md border border-gray-300 bg-white px-4 focus:border-logoblue focus:ring-logoblue">
+                        <SelectValue
+                          placeholder={'Card Type'}
+                          className="text-gray-200"
+                        />
+                      </SelectTrigger>
+                      <SelectContent side="bottom">
+                        {paymentForms.map((type, index) => (
+                          <SelectItem key={index} value={type}>
+                            {type}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
                     </Select>
                     <h3 className="pl-5 pt-2 text-lg font-semibold text-darkblue">
                       Name on Card
@@ -400,7 +416,7 @@ const payment = (props: paymentProps) => {
                   Order Summary
                 </h3>
                 {/* Item Table */}
-                <div className="flex flex-row justify-between mb-5 mt-2 w-full">
+                <div className="mb-5 mt-2 flex w-full flex-row justify-between">
                   <p className="pl-5">Membership Subscription</p>
                   <p className="pr-5">$10.00 per month</p>
                 </div>
@@ -489,26 +505,26 @@ const payment = (props: paymentProps) => {
                       Card Number
                     </h3>
                     <input
-                      className="mx-4 h-10 w-[30rem] mb-2 max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+                      className="mx-4 mb-2 h-10 w-[30rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                       type="text"
                       placeholder="e.g. 1234 5678 9012 3456"
                       name="cardNumber"
                       onChange={handlePaymentInputChange}
                     />
                     <Select defaultValue="Debit" name="cardType">
-                          <SelectTrigger className="mx-4 h-10 w-[10rem] max-w-md rounded-md border border-gray-300 bg-white px-4 focus:border-logoblue focus:ring-logoblue">
-                            <SelectValue
-                              placeholder={'Card Type'}
-                              className="text-gray-200"
-                            />
-                          </SelectTrigger>
-                          <SelectContent side="bottom">
-                            {paymentForms.map((type, index) => (
-                              <SelectItem key={index} value={type}>
-                                {type}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
+                      <SelectTrigger className="mx-4 h-10 w-[10rem] max-w-md rounded-md border border-gray-300 bg-white px-4 focus:border-logoblue focus:ring-logoblue">
+                        <SelectValue
+                          placeholder={'Card Type'}
+                          className="text-gray-200"
+                        />
+                      </SelectTrigger>
+                      <SelectContent side="bottom">
+                        {paymentForms.map((type, index) => (
+                          <SelectItem key={index} value={type}>
+                            {type}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
                     </Select>
                     <h3 className="pl-5 pt-2 text-lg font-semibold text-darkblue">
                       Name on Card

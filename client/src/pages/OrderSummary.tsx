@@ -3,7 +3,8 @@ import Footer from '@/components/Footer';
 
 import useUserStore from '@/components/store';
 import { PaymentMethod } from '@/pages/Profile';
-// import { useParams } from 'react-router-dom';
+
+import { useParams } from 'react-router-dom';
 // import { productItem } from '@/components/store';
 
 interface OrderSummaryProps {
@@ -12,6 +13,8 @@ interface OrderSummaryProps {
 
 const OrderSummary = (props: OrderSummaryProps) => {
   const user = useUserStore();
+  const { orderId } = useParams();
+  console.log(orderId);
   const membershipCost = 10;
   const total =
     props.type === 'membership'
