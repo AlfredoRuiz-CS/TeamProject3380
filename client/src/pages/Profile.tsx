@@ -375,11 +375,14 @@ const Profile = () => {
           {/* Member Since: AccountCreatedDate */}
           <div className="pb-6 pt-4 font-inter text-3xl">
             Member Since:{' '}
-            {new Date(store.accountCreatedDate).toLocaleDateString('en-US', {
+            {store.isAdmin ? 
+            "April 10, 2024"
+            : (new Date().toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'long',
               day: 'numeric',
-            })}
+            }))
+            }
           </div>
           {/* Forms for Updating User Information */}
 
