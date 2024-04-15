@@ -22,19 +22,19 @@ const getAllOrder = async (req,res) => {
 const processOrder = async(req,res)=>{
   try{
     const body = await getRequestBody(req);
-    const {items,paymentMethod} = body;
-    const customerEmail = req.email;
+    const {customerEmail,items,paymentMethod} = body;
+    // const customerEmail = req.email;
     const currTime = new Date();
     const formatDigit = (x) => x.toString().length === 1 ? '0' + x.toString() : x.toString();
     let orderDate = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate())}`;
     const order = await orderModel.createOrder(customerEmail,orderDate,items,paymentMethod);
     if(!order){
       res.writeHead(500,{'Content-Type':"application/json"});
-      res.end(JSON.stringify({"message":`Failed to add item to order for ${customerEmail}`}));
+      res.end(JSON.stringify({"message":`Failed to create order for ${customerEmail}`}));
       return;
     }
     res.writeHead(200,{'Content-Type':'application/json'});
-    res.end(JSON.stringify({"message":`Successfully added items to ${customerEmail} order`,
+    res.end(JSON.stringify({"message":`Successfully creating an order for ${customerEmail}`,
                             "data": order}));
   } catch(error){
     res.writeHead(500,{'Content-Type':'application/json'});
@@ -120,7 +120,7 @@ const processRefund = async (req,res)=>{
 
     } catch (error) {
     res.writeHead(500, {'Content-Type': 'application/json' });
-    res.end(JSON.stringify({"status": "Could not retrieve order information", "error" : error.message }));
+    res.end(JSON.stringify({"status": "Could not process refund", "error" : error.message }));
   }
 }
 
