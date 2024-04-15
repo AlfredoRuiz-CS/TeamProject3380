@@ -1,7 +1,7 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import toast from 'react-hot-toast';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Button } from '@/components/ui/button.tsx';
@@ -41,6 +41,7 @@ dummyProducts[6].supplierStock = 20;
 
 const AdminDashboard = () => {
   const { setProducts } = useProductsStore();
+  const [reloadTrigger, setReloadTrigger] = useState(0);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -98,7 +99,7 @@ const AdminDashboard = () => {
     };
 
     fetchProducts();
-  }, [setProducts]);
+  }, [setProducts, reloadTrigger]);
 
   const products = useProductsStore((state) => state.products);
   const navigate = useNavigate();
@@ -131,17 +132,33 @@ const AdminDashboard = () => {
     );
   }
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     let productName = (
       document.getElementById('productName') as HTMLInputElement
     ).value;
     let quantity = (document.getElementById('quantity') as HTMLInputElement)
       .value;
-    orderToast(productName, quantity);
-    console.log('Order Submitted for ', productName, ' ', quantity);
-  }
 
+    const data = {
+      productName: productName,
+      quantity: quantity
+    }
+
+    try {
+      const response = await axios.post("https://shastamart-api-deploy.vercel.app/api/orders/insertStock", data);
+      console.log(response);
+      orderToast(productName, quantity);
+      console.log('Order Submitted for ', productName, ' ', quantity);
+      setReloadTrigger(prev => prev + 1);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  
+  useEffect(() => {
+    console.log("Component has re-rendered");
+  }, [reloadTrigger]);
   // function handleSubmitOrder(event: React.FormEvent<HTMLFormElement>) {
   //   console.log('Order Submitted');
   // }
@@ -291,6 +308,7 @@ const AdminDashboard = () => {
                         </Label>
                         <Input
                           id="productName"
+                          name="productName"
                           placeholder="e.g. Fresh Strawberries"
                           className="col-span-3"
                         />
@@ -301,6 +319,7 @@ const AdminDashboard = () => {
                         </Label>
                         <Input
                           id="quantity"
+                          name="quantity"
                           placeholder="e.g. 10"
                           className="col-span-3"
                         />
