@@ -24,7 +24,7 @@ import {
 // Functionality Imports
 import useUserStore from '@/components/store';
 import PaymentMethodCard from '@/components/PaymentMethodCard';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -59,6 +59,8 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [collapsibleOpen, setCollapsibleOpen] = useState(false);
   const navigate = useNavigate();
+  const formRef = useRef<HTMLFormElement>(null);
+  const [reloadTrigger, setReloadTrigger] = useState(0);
 
   const dummyPaymentMethods: PaymentMethod[] = Array(5).fill({
     cardId: 1,
@@ -253,9 +255,9 @@ const Profile = () => {
         headers: { Authorization: `Bearer ${token}` },
       });
       console.log(response.data);
-      navigate('/profile')
+      setReloadTrigger(prev => prev + 1);
     } catch (error) {
-      
+      console.log(error);
     }
     return;
   }
@@ -270,10 +272,14 @@ const Profile = () => {
       navigate('/')
       store.logout();
     } catch (error) {
-
+      console.log(error);
     }
     return;
   }
+
+  useEffect(() => {
+    console.log("Component has re-rendered");
+  }, [reloadTrigger]);
 
   function paymentMethodSelectedToast(p: PaymentMethod) {
     toast.success(
@@ -308,6 +314,10 @@ const Profile = () => {
       }
     );
     console.log(response.data);
+    if (formRef.current){
+      formRef.current.reset();
+    }
+    setReloadTrigger(prev => prev + 1);
   }
 
   // const accessFail = (onClose: () => void) =>
@@ -369,7 +379,7 @@ const Profile = () => {
       }
     };
     fetchPayments();
-  }, [setPaymentMethods]);
+  }, [setPaymentMethods, reloadTrigger]);
 
   useEffect(() => {
     if (store.accountType === 'customer' && !store.isAdmin) {
@@ -667,8 +677,8 @@ const Profile = () => {
                 <div className="mx-auto w-full pt-5 text-center">
                   <section className="flex flex-col items-center">
                     <div className="flex flex-col">
-                      <h3 className="pb-5 pl-4 text-lg font-semibold text-white">
-                        Choose Existing Payment Method
+                      <h3 className="pb-5 text-lg font-semibold text-white">
+                        Existing Payment Methods
                       </h3>
                       {/* Payment Method Component Map */}
                       <Collapsible
@@ -725,6 +735,7 @@ const Profile = () => {
                       OR
                     </h3>
                     <form
+                      ref={formRef}
                       onSubmit={(event) => {
                         event.preventDefault();
                         const form = event.target as HTMLFormElement;
