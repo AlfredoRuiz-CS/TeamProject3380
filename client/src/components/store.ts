@@ -2,6 +2,7 @@
 import type {} from '@redux-devtools/extension'; // required for devtools typing
 import { create, StateCreator } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import { PaymentMethod } from '@/pages/Profile';
 import type {} from '@redux-devtools/extension'; // required for devtools typing
 
 export type productItem = {
@@ -115,6 +116,7 @@ type UserState = {
   List: productItem[];
   cartItems: productItem[];
   quantity: number[];
+  selectedPaymentMethod: PaymentMethod;
 
   // Actions for user login
   // setUserfName: (firstname: string) => void;
@@ -151,6 +153,14 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
     city: 'Nowhere',
     state: 'CA',
     zip: '12345',
+  },
+  selectedPaymentMethod: {
+    cardId: 2,
+    nameOnCard: 'NULL NULL',
+    cardnumber: '0000 0000 0000 0000',
+    expiration: '00/00',
+    cvv: '111',
+    cardtype: 'Credit',
   },
   cartItemsNumber: 0,
   cartItems: [],

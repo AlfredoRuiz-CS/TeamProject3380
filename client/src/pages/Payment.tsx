@@ -58,6 +58,7 @@ const payment = (props: paymentProps) => {
   }
 
   function handleSelectPaymentMethod(p: PaymentMethod) {
+    store.selectedPaymentMethod = p;
     setPaymentMethodSelected(p);
     setCollapsibleOpen(false);
     setUsingExistingPaymentMethod(true);
@@ -316,7 +317,7 @@ const payment = (props: paymentProps) => {
                   <Button
                     className="ml-4 mr-4 mt-5 self-center bg-blue-400 px-44 py-6 hover:bg-slate-600"
                     size="lg"
-                    onClick={() => navigate('/orders/')}>
+                    onClick={() => navigate('/orders/summary')}>
                     Place Order (TESTING)
                   </Button>
                 )}

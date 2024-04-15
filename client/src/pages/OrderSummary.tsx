@@ -13,6 +13,7 @@ interface OrderSummaryProps {
 
 const OrderSummary = (props: OrderSummaryProps) => {
   const user = useUserStore();
+  const selectedPaymentMethod: PaymentMethod = user.selectedPaymentMethod;
   const { orderId } = useParams();
   console.log(orderId);
   const membershipCost = 10;
@@ -32,20 +33,11 @@ const OrderSummary = (props: OrderSummaryProps) => {
             currency: 'USD',
           });
 
-  const dummyPaymentMethods: PaymentMethod[] = Array(5).fill({
-    cardId: 1,
-    nameOnCard: 'John Doe',
-    cardnumber: '1234 5678 9012 3456',
-    expiration: '01/23',
-    cvv: '123',
-    cardType: 'Debit',
-  });
-  const selectedPaymentMethod: PaymentMethod = dummyPaymentMethods[0];
   // const { orderId } = useParams();
 
   return (
     <>
-      <div className="mb-[5rem] flex min-h-screen flex-col gap-6 overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
+      <div className="flex min-h-screen flex-col gap-6 overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
         <Header />
         {/* Order Summary/ Receipt Section */}
         <section className="flex h-auto w-[40rem] flex-col justify-between place-self-center rounded-2xl bg-cardwhite">
@@ -159,8 +151,8 @@ const OrderSummary = (props: OrderSummaryProps) => {
             </div>
           </section>
         )}
+        <Footer />
       </div>
-      <Footer />
     </>
   );
 };
