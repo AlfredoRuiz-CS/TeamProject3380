@@ -352,7 +352,7 @@ const Profile = () => {
       }
       setPaymentMethodSelected(null);
     }
-  }, [setPaymentMethods]);
+  }, [paymentMethods, setPaymentMethods]);
 
   return (
     <>
