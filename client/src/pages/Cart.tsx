@@ -22,7 +22,7 @@ import { Link } from 'react-router-dom';
 
 const Cart = () => {
   const store = useUserStore();
-  const shipping = 10;
+  const shipping = store.isMember ? 0 : 10;
 
   const subtotal = store.cartItems.reduce(
     (acc, product, index) => acc + product.price * store.quantity[index],
@@ -128,12 +128,14 @@ const Cart = () => {
                         Estimated Shipping
                       </td>
                       <td className="pr-2 text-right text-xl">
-                        {subtotal > 0
+                        {!store.isMember && subtotal > 0
                           ? shipping.toLocaleString('en-US', {
                               style: 'currency',
                               currency: 'USD',
                             })
-                          : '--'}
+                          : store.isMember && subtotal > 0
+                            ? '$0.00'
+                            : '--'}
                       </td>
                     </tr>
 
@@ -142,12 +144,17 @@ const Cart = () => {
                         Estimated Total
                       </td>
                       <td className="pr-2 text-right text-xl">
-                        {subtotal > 0
+                        {!store.isMember && subtotal > 0
                           ? (subtotal + shipping).toLocaleString('en-US', {
                               style: 'currency',
                               currency: 'USD',
                             })
-                          : '--'}
+                          : store.isMember && subtotal > 0
+                            ? subtotal.toLocaleString('en-US', {
+                                style: 'currency',
+                                currency: 'USD',
+                              })
+                            : '--'}
                       </td>
                     </tr>
                   </tbody>

@@ -22,8 +22,8 @@ const getAllOrder = async (req,res) => {
 const processOrder = async(req,res)=>{
   try{
     const body = await getRequestBody(req);
-    const {customerEmail,items,paymentMethod} = body;
-    // const customerEmail = req.email;
+    const {items,paymentMethod} = body;
+    const customerEmail = req.email;
     const currTime = new Date();
     const formatDigit = (x) => x.toString().length === 1 ? '0' + x.toString() : x.toString();
     let orderDate = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate())}`;

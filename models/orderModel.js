@@ -1,15 +1,18 @@
-const { ErrorMessage } = require("formik");
-const {pool} = require("../config/db");
+const { pool } = require("../config/db");
 
 //getAllOrder used by employee
 async function findAllOrder(){
     try{
         const [orders] = await pool.query(`
         SELECT po.orderID, po.customerEmail, po.orderDate, po.total,
-                   CONCAT(SUBSTRING(p.paymentMethod, -4), ' ', CASE WHEN p.paymentMethod LIKE '%Debit%' THEN 'Debit' WHEN p.paymentMethod LIKE '%Credit%' THEN 'Credit' ELSE '' END) AS paymentMethod
-            FROM purchaseOrder po
-            LEFT JOIN payment p ON po.orderID = p.orderID
-        `);
+        CONCAT(RIGHT(SUBSTRING_INDEX(p.paymentMethod, ' ', 1), 4), ' ', 
+        CASE 
+            WHEN p.paymentMethod LIKE '%Debit%' THEN 'Debit'
+            WHEN p.paymentMethod LIKE '%Credit%' THEN 'Credit'
+            ELSE ''
+        END) AS paymentMethod
+        FROM purchaseOrder po
+        LEFT JOIN payment p ON po.orderID = p.orderID`);
 
         for (let order of orders) {
             const [details] = await pool.query(`
@@ -61,6 +64,7 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod){
 
             total += item.productPrice*item.productQuantity;
         }
+        console.log("AT PURCHASE ORDER");
         //create new order
         const orderRes = await connection.query(`
             INSERT INTO purchaseOrder(customerEmail,orderDate,total)
@@ -68,6 +72,7 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod){
         //get the last insert id which is the newest orderID
         const [rows] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
         const lastId = rows[0].lastId;
+        console.log("AT PAYMENT");
         //create payment
         const createPayment = await connection.query(`
         INSERT INTO payment(orderID,paymentDate,totalAmount,paymentMethod,paymentStatus)
@@ -77,6 +82,7 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod){
         const IDpayment = getPayment[0].lastId;
         //create detail order in orderLine
         for (let item of items){
+            console.log(item);
             let subTotal = item.productPrice*item.productQuantity;
             const orderLineRes = await connection.query(`
             INSERT INTO orderLine(orderID,productID,quantity,unitPrice,totalAmount)
@@ -85,10 +91,10 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod){
             const [anotherRows] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
             const anotherID = anotherRows[0].lastId;
             const res = await connection.query(`
-            SELECT productName, quantity, unitPrice, subTotal
+            SELECT p.productName, o.quantity, o.unitPrice, o.totalAmount
             FROM orderLine o
-            JOIN product p 
-            WHERE orderLineID=? AND active=? AND o.productID = p.productID`,[anotherID,1]);
+            JOIN product p on o.productID = p.productID
+            WHERE orderLineID = ? AND active = ?`,[anotherID,1]);
             orderLineDetail.push(res[0]);
         }
         await connection.commit();
@@ -104,17 +110,16 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod){
 async function findAllOrderbyEmail(email){
     try{
         const [orders] = await pool.query(`
-        SELECT po.orderID, po.customerEmail, po.orderDate, po.total,
-                   CONCAT(SUBSTRING(pm.paymentMethod, -4), ' ', 
-                   CASE 
-                       WHEN pm.paymentMethod LIKE '%Debit%' THEN 'Debit' 
-                       WHEN pm.paymentMethod LIKE '%Credit%' THEN 'Credit' 
-                       ELSE '' 
-                   END) AS paymentMethod
+            SELECT po.orderID, po.customerEmail, po.orderDate, po.total,
+            CONCAT(RIGHT(SUBSTRING_INDEX(p.paymentMethod, ' ', 1), 4), ' ', 
+            CASE 
+                WHEN p.paymentMethod LIKE '%Debit%' THEN 'Debit'
+                WHEN p.paymentMethod LIKE '%Credit%' THEN 'Credit'
+                ELSE '' 
+            END) AS paymentMethod
             FROM purchaseOrder po
-            LEFT JOIN payment pm ON po.orderID = pm.orderID
-            WHERE po.customerEmail = ?
-        `, [email]);
+            LEFT JOIN payment p ON po.orderID = p.orderID
+            WHERE po.customerEmail = ?`, [email]);
 
         // For each order, fetch the order details
         for (let order of orders) {

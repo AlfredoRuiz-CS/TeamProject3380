@@ -1,5 +1,4 @@
-const { ErrorMessage } = require("formik");
-const {pool} = require("../config/db");
+const { pool } = require("../config/db");
 
 async function createMembership(customerEmail,startDate,endDate,renewalDate,paymentMethod){
     const connection = await pool.getConnection();
@@ -17,10 +16,14 @@ async function createMembership(customerEmail,startDate,endDate,renewalDate,paym
         VALUES(?,?,?,?,?)`,[lastId,startDate,10,paymentMethod,"pass"])
         const [createMember] = await connection.query(`
         INSERT INTO membership(customerEmail,membershipStatus,startDate,endDate,renewalDate)
-        VALUES(?,?,?,?,?)`,[customerEmail,true,startDate,endDate,renewalDate])
+        VALUES(?,?,?,?,?)`,[customerEmail,1,startDate,endDate,renewalDate])
+
+        const result = {
+            isMember: true
+        }
 
         await connection.commit();
-        return createMember;
+        return result;
     } catch (error){
         await connection.rollback();
         console.log(error);

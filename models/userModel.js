@@ -153,14 +153,14 @@ async function createUserPaymentInfo(customerEmail, cardtype, cardnumber, cvv, e
     const [rows] = await connection.execute(`
     INSERT INTO paymentInfo (customerEmail, cardtype, cardnumber, cvv, expiration, nameOnCard)
     VALUES
-    (?,?,?,?,?) 
+    (?,?,?,?,?,?) 
     `, [customerEmail, cardtype, cardnumber, cvv, expiration, nameOnCard]);
 
     await connection.commit();
 
     const paymentInfo = {
       nameOnCard,
-      cardType: cardtype,
+      cardtype,
       cardnumber,
       cvv,
       expiration

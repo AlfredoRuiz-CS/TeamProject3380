@@ -3,7 +3,7 @@ const mysql = require('mysql2/promise');
 const fs = require('fs');
 const path = require('path');
 
-//const caCert = Buffer.from(process.env.DB_SSL_CERT, 'base64').toString('utf-8');
+const caCert = Buffer.from(process.env.DB_SSL_CERT, 'base64').toString('utf-8');
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
@@ -12,7 +12,7 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME,
   port: process.env.PORT || 3306,
   waitForConnections: true,
-  //ssl: { ca: caCert },
+  ssl: { ca: caCert },
   // ssl: process.env.DB_SSL_MODE === 'require' ? { rejectUnauthorized: true } : null
   // connectionLimit: 10,
   // queueLimit: 0

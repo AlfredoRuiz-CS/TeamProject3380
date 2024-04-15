@@ -102,12 +102,12 @@ const getUserPaymentInfo = async (req, res) => {
 const createUserPaymentInfo = async (req, res) => {
   try {
     const body = await getRequestBody(req);
-    const { cardType, cardnumber, expiration, cvv } = body;
-    console.log( cardType, cardnumber, expiration, cvv);
+    const { cardType, cardNumber, expirationDate, cvv, nameOnCard } = body;
+    console.log( cardType, cardNumber, expirationDate, cvv, nameOnCard);
     const customerEmail = req.email;
     console.log(customerEmail);
 
-    let addInfo = await userModel.createUserPaymentInfo(customerEmail, cardType, cardnumber, cvv, expiration);
+    let addInfo = await userModel.createUserPaymentInfo(customerEmail, cardType, cardNumber, cvv, expirationDate, nameOnCard);
     res.writeHead(201, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ addInfo, "message": `Successfully added payment information for ${customerEmail}` }));
 

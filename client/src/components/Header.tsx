@@ -29,6 +29,7 @@ interface HeaderProps {
 const Header = (props: HeaderProps) => {
   const user = useUserStore();
   const navigate = useNavigate();
+
   // ! ADD BACKEND CALL TO DISPLAY THE NUMBER OF NOTIFICATIONS
   const notifNumber = 5;
   useEffect(() => {}, [user.loggedIn]);
