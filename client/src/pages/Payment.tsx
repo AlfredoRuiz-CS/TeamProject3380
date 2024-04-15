@@ -174,12 +174,12 @@ const payment = (props: paymentProps) => {
                 </tbody>
               </table>
             </section>
-            <section className="mt-6 flex h-auto w-[40rem] flex-col items-center place-self-center rounded-2xl bg-cardwhite py-6">
+            <section className="mb-[20rem] mt-6 flex h-auto w-[40rem] flex-col items-center place-self-center rounded-2xl bg-cardwhite py-6">
               <h3 className="mt-5 flex flex-row justify-center text-2xl font-medium">
                 Select A Previous Payment Method
               </h3>
               {/* Payment Method Component Map */}
-              <div className="flex flex-col">
+              <div className="flex flex-col pt-5">
                 <Collapsible
                   className="flex w-72 flex-grow flex-col gap-2 place-self-center"
                   open={collapsibleOpen}
