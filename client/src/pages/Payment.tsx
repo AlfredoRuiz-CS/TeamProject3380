@@ -69,12 +69,12 @@ const payment = (props: paymentProps) => {
     let paymentMethod;
 
     if (usingExistingPaymentMethod && paymentMethodSelected) {
-      paymentMethod = `${paymentMethodSelected?.cardnumber} ${paymentMethodSelected?.cardType}`;
+      paymentMethod = `${paymentMethodSelected?.cardnumber} ${paymentMethodSelected?.cardtype}`;
     } else {
       const formData = new FormData(event.currentTarget);
       const cardNumber = formData.get('cardNumber');
-      const cardType = formData.get('cardType');
-      paymentMethod = `${cardNumber} ${cardType}`;
+      const cardtype = formData.get('cardType');
+      paymentMethod = `${cardNumber} ${cardtype}`;
     }
 
     if (props.type === 'cart') {

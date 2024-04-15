@@ -46,7 +46,7 @@ type ProfileData =
 export type PaymentMethod = {
   cardId?: number;
   nameOnCard: string;
-  cardType: 'Debit' | 'Credit';
+  cardtype: 'Debit' | 'Credit';
   cardnumber: string;
   expiration: string;
   cvv: string;
@@ -74,7 +74,7 @@ const Profile = () => {
     cardnumber: '9876 5432 1098 7654',
     expiration: '12/34',
     cvv: '321',
-    cardType: 'Credit',
+    cardtype: 'Credit',
   };
   dummyPaymentMethods[2] = {
     cardId: 3,
@@ -82,7 +82,7 @@ const Profile = () => {
     cardnumber: '1234 5678 9012 3454',
     expiration: '01/23',
     cvv: '123',
-    cardType: 'Debit',
+    cardtype: 'Debit',
   };
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [paymentMethodSelected, setPaymentMethodSelected] =
@@ -332,7 +332,7 @@ const Profile = () => {
             cardnumber: paymentMethod.cardnumber,
             expiration: paymentMethod.expiration,
             cvv: paymentMethod.cvv,
-            cardtype: paymentMethod.cardType
+            cardtype: paymentMethod.cardtype
           })
         );
         console.log(transformedPayments);

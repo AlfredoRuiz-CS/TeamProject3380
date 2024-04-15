@@ -4,11 +4,15 @@ const { pool } = require("../config/db");
 async function findAllOrder(){
     try{
         const [orders] = await pool.query(`
-            SELECT po.orderID, po.customerEmail, po.orderDate, po.total,
-                   CONCAT(SUBSTRING(p.paymentMethod, -4), ' ', CASE WHEN p.paymentMethod LIKE '%Debit%' THEN 'Debit' WHEN p.paymentMethod LIKE '%Credit%' THEN 'Credit' ELSE '' END) AS paymentMethod
-            FROM purchaseOrder po
-            LEFT JOIN payment p ON po.orderID = p.orderID
-        `);
+        SELECT po.orderID, po.customerEmail, po.orderDate, po.total,
+        CONCAT(RIGHT(SUBSTRING_INDEX(p.paymentMethod, ' ', 1), 4), ' ', 
+        CASE 
+            WHEN p.paymentMethod LIKE '%Debit%' THEN 'Debit'
+            WHEN p.paymentMethod LIKE '%Credit%' THEN 'Credit'
+            ELSE ''
+        END) AS paymentMethod
+        FROM purchaseOrder po
+        LEFT JOIN payment p ON po.orderID = p.orderID`);
 
         for (let order of orders) {
             const [details] = await pool.query(`
@@ -107,16 +111,14 @@ async function findAllOrderbyEmail(email){
     try{
         const [orders] = await pool.query(`
             SELECT po.orderID, po.customerEmail, po.orderDate, po.total,
-                   CONCAT(SUBSTRING(pm.paymentMethod, -4), ' ', 
-                   CASE 
-                       WHEN pm.paymentMethod LIKE '%Debit%' THEN 'Debit' 
-                       WHEN pm.paymentMethod LIKE '%Credit%' THEN 'Credit' 
-                       ELSE '' 
-                   END) AS paymentMethod
+            CONCAT(RIGHT(SUBSTRING_INDEX(p.paymentMethod, ' ', 1), 4), ' ', 
+            CASE 
+                WHEN p.paymentMethod LIKE '%Debit%' THEN 'Debit'
+                WHEN p.paymentMethod LIKE '%Credit%' THEN 'Credit'
+                ELSE '' END) AS paymentMethod
             FROM purchaseOrder po
-            LEFT JOIN payment pm ON po.orderID = pm.orderID
-            WHERE po.customerEmail = ?
-        `, [email]);
+            LEFT JOIN payment p ON po.orderID = p.orderID
+            WHERE po.customerEmail = ?`, [email]);
 
         // For each order, fetch the order details
         for (let order of orders) {

@@ -37,13 +37,13 @@ type productOrder = {
   productID: string,
   productName: string,
   quantity: number,
-  price: string,
-  total: number,
+  unitPrice: string,
+  totalAmount: number,
 }
 
 type Order = {
-  orderNumber: number;
-  date: string;
+  orderID: number;
+  orderDate: string;
   paymentMethod: string;
   total: number;
   items: productOrder[];
@@ -66,7 +66,7 @@ const Orders = () => {
   const [selectedOrder, setSelectedOrder] = useState<number>(0);
   const [sheetOpen, setSheetOpen] = useState(false);
   // ! SET THIS TO THE BACKEND API CALL FOR PAST ORDERS
-  let orders: Order[] = [];
+  const [orders, setOrders] = useState<Order[]>([]);
   // let orders = dummyOrders;
   const [sortedOrders, setSortedOrders] = useState<Order[]>(orders);
   // ? Sorting Options
@@ -114,13 +114,13 @@ const Orders = () => {
   function sortOrders(o: Order[]) {
     switch (sortOrder) {
       case 'Order Desc.':
-        return o.sort((a, b) => b.orderNumber - a.orderNumber);
+        return o.sort((a, b) => b.orderID - a.orderID);
       case 'Order Asc.':
-        return o.sort((a, b) => a.orderNumber - b.orderNumber);
+        return o.sort((a, b) => a.orderID - b.orderID);
       case 'Date Desc.':
-        return o.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+        return o.sort((a, b) => Date.parse(b.orderDate) - Date.parse(a.orderDate));
       case 'Date Asc.':
-        return o.sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
+        return o.sort((a, b) => Date.parse(a.orderDate) - Date.parse(b.orderDate));
       case 'Payment Method':
         // Function to group orders by a payment method
         return Object.values(
@@ -150,14 +150,14 @@ const Orders = () => {
     switch (filterOption) {
       case 'Last 6 Months':
         return orders.filter((order) => {
-          const orderDate = new Date(order.date);
+          const orderDate = new Date(order.orderDate);
           const sixMonthsAgo = new Date();
           sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
           return orderDate >= sixMonthsAgo;
         });
       case 'Last 2 Weeks':
         return orders.filter((order) => {
-          const orderDate = new Date(order.date);
+          const orderDate = new Date(order.orderDate);
           const twoWeeksAgo = new Date();
           twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
           return orderDate >= twoWeeksAgo;
@@ -192,7 +192,7 @@ const Orders = () => {
       }
     }
     verifySession();
-  }, [])
+  }, [navigate])
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -200,20 +200,21 @@ const Orders = () => {
         try {
           const response = await axios.get("https://shastamart-api-deploy.vercel.app/api/orders/allOrders");
           const orderData = await response.data;
-          orders = orderData.map(
-            (order: Order) => ({
-              orderNumber: order.orderNumber,
-              date: new Date(order.date).toLocaleDateString(),
-              paymentMethod: order.paymentMethod,
-              total: order.total,
-              items: order.items.map((item: productOrder) => ({
-                productID: item.productID,
-                name: item.productName,
-                price: item.price,
-                quantity: item.quantity,
-                total: item.total
-              }))
+          console.log(orderData);
+          const transformedOrders = orderData.map((order: Order) => ({
+            orderID: order.orderID,
+            orderDate: order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'N/A', // Handle invalid or null dates
+            paymentMethod: order.paymentMethod || 'N/A', // Handle null payment methods
+            total: order.total,
+            items: order.items.map((item: productOrder) => ({
+              productID: item.productID,
+              productName: item.productName,
+              unitPrice: item.unitPrice, 
+              quantity: item.quantity,
+              totalAmount: item.totalAmount, 
+            })),
           }));
+          setOrders(transformedOrders);
         } catch (error) {
           console.log(error);
         }
@@ -224,27 +225,30 @@ const Orders = () => {
             headers: { 'Authorization' : `Bearer ${token}` }
           });
           const orderData = await response.data;
-          orders = orderData.map(
+          console.log(orderData);
+          const transformedOrders = orderData.map(
             (order: Order) => ({
-              orderNumber: order.orderNumber,
-              date: new Date(order.date).toLocaleDateString(),
+              orderID: order.orderID,
+              orderDate: new Date(order.orderDate).toLocaleDateString(),
               paymentMethod: order.paymentMethod,
               total: order.total,
               items: order.items.map((item: productOrder) => ({
                 productID: item.productID,
                 name: item.productName,
-                price: item.price,
+                unitPrice: item.unitPrice,
                 quantity: item.quantity,
-                total: item.total
+                totalAmount: item.totalAmount
               }))
           }));
+          setOrders(transformedOrders);
+          console.log(orders);
         } catch (error) {
           console.log(error);
         }
       }
     }
     fetchOrders();
-  }, [])
+  }, [setOrders])
 
   return (
     <>
@@ -317,12 +321,12 @@ const Orders = () => {
               {filteredOrders.map((order, index) => (
                 <TableRow
                   key={index}
-                  onClick={() => orderSelectHandler(order.orderNumber)}
+                  onClick={() => orderSelectHandler(order.orderID)}
                 >
                   <TableCell className="max-w-6 pl-6">
-                    {order.orderNumber}
+                    {order.orderID}
                   </TableCell>
-                  <TableCell className="max-w-6">{order.date}</TableCell>
+                  <TableCell className="max-w-6">{order.orderDate}</TableCell>
                   <TableCell className="max-w-6">
                     {order.paymentMethod}
                   </TableCell>
@@ -359,7 +363,7 @@ const Orders = () => {
                         </TableHeader>
 
                         <TableBody>
-                          {sortedOrders[selectedOrder].items.map(
+                          {filteredOrders[selectedOrder].items.map(
                             (product, index) => (
                               <TableRow key={index}>
                                 <TableCell className="max-w-6 pl-6">
@@ -367,7 +371,7 @@ const Orders = () => {
                                 </TableCell>
                                 <TableCell className="max-w-5">{product.quantity}</TableCell>
                                 <TableCell className="max-w-5">
-                                  {product.total.toLocaleString('en-US', {
+                                  {product.totalAmount.toLocaleString('en-US', {
                                     style: 'currency',
                                     currency: 'USD',
                                   })}
@@ -384,7 +388,7 @@ const Orders = () => {
                               colSpan={2}
                             >
                               {/* TODO: Make sure that the total amount lines up with the rest of the products if the decimal place changes. */}
-                              {sortedOrders[selectedOrder].total.toLocaleString(
+                              {filteredOrders[selectedOrder].total.toLocaleString(
                                 'en-US',
                                 {
                                   style: 'currency',
