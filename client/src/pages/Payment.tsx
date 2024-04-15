@@ -6,6 +6,14 @@ import PaymentMethodCard from '@/components/PaymentMethodCard';
 import toast from 'react-hot-toast';
 
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
@@ -76,6 +84,7 @@ const payment = (props: paymentProps) => {
 
     if (usingExistingPaymentMethod && paymentMethodSelected) {
       paymentMethod = `${paymentMethodSelected?.cardnumber} ${paymentMethodSelected?.cardtype}`;
+      console.log(paymentMethod);
     } else {
       const formData = new FormData(event.currentTarget);
       const cardNumber = formData.get('cardNumber');
@@ -133,6 +142,7 @@ const payment = (props: paymentProps) => {
             cardnumber: paymentMethod.cardnumber,
             expiration: paymentMethod.expiration,
             cvv: paymentMethod.cvv,
+            cardtype: paymentMethod.cardtype
           })
         );
         console.log(transformedPayments);
@@ -153,6 +163,8 @@ const payment = (props: paymentProps) => {
       }
     }
   }, [paymentMethods, setPaymentMethods, isLoading]);
+
+  const paymentForms = ['Debit', 'Credit'];
 
   return (
     <>
@@ -302,12 +314,27 @@ const payment = (props: paymentProps) => {
                       Card Number
                     </h3>
                     <input
-                      className="mx-4 h-10 w-[30rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+                      className="mx-4 h-10 w-[30rem] mb-2 max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                       type="text"
                       placeholder="e.g. 1234 5678 9012 3456"
                       name="cardNumber"
                       onChange={handlePaymentInputChange}
                     />
+                    <Select defaultValue="Debit" name="cardType">
+                          <SelectTrigger className="mx-4 h-10 w-[10rem] max-w-md rounded-md border border-gray-300 bg-white px-4 focus:border-logoblue focus:ring-logoblue">
+                            <SelectValue
+                              placeholder={'Card Type'}
+                              className="text-gray-200"
+                            />
+                          </SelectTrigger>
+                          <SelectContent side="bottom">
+                            {paymentForms.map((type, index) => (
+                              <SelectItem key={index} value={type}>
+                                {type}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                    </Select>
                     <h3 className="pl-5 pt-2 text-lg font-semibold text-darkblue">
                       Name on Card
                     </h3>
