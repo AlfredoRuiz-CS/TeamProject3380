@@ -142,6 +142,24 @@ const getRefund = async (req,res)=>{
     res.end(JSON.stringify({"status": "Could not retrieve refund detail", "error" : error.message }));
   }
 }
+
+const addStock = async (req,res)=>{
+  try{
+    const body = await getRequestBody(req);
+    const{productName,quantity}=body;
+    const result = await orderModel.addingStock(productName,quantity);
+    if(!result){
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.end("none");
+      return; //exits if empty
+    }
+    res.writeHead(200, { 'Content-Type' : 'application/json' });
+    res.end(JSON.stringify(result));
+  } catch (error) {
+    res.writeHead(500, {'Content-Type': 'application/json' });
+    res.end(JSON.stringify({"status": "Could not add more stock", "error" : error.message }));
+  }
+}
 module.exports={
   getAllOrder,
   processOrder,
@@ -149,5 +167,6 @@ module.exports={
   getAllOrderWithEmail,
   getOrderByLname,
   processRefund,
-  getRefund
+  getRefund,
+  addStock
 }

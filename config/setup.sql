@@ -55,20 +55,20 @@ CREATE TABLE membership(
     FOREIGN KEY (customerEmail) REFERENCES customer(email) ON DELETE CASCADE
 );
 
-CREATE TABLE mbshipPayment(
-    mbPaymentID int PRIMARY KEY AUTO_INCREMENT,
-    membershipID int,
-    amount decimal(10, 2),
-    paymentDate date,
-    paymentMethod varchar(50),
-    paymentStatus varchar(50),
-    startDate date,
-    endDate date,
-    autoRenewal boolean,
-    priorityShipping boolean,
-    FOREIGN KEY (membershipID) REFERENCES membership(membershipID) ON DELETE
-    SET NULL
-);
+-- CREATE TABLE mbshipPayment(
+--     mbPaymentID int PRIMARY KEY AUTO_INCREMENT,
+--     membershipID int,
+--     amount decimal(10, 2),
+--     paymentDate date,
+--     paymentMethod varchar(50),
+--     paymentStatus varchar(50),
+--     startDate date,
+--     endDate date,
+--     autoRenewal boolean,
+--     priorityShipping boolean,
+--     FOREIGN KEY (membershipID) REFERENCES membership(membershipID) ON DELETE
+--     SET NULL
+-- );
 
 CREATE TABLE purchaseOrder (
     orderID int PRIMARY KEY AUTO_INCREMENT,

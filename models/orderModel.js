@@ -5,7 +5,7 @@ const {pool} = require("../config/db");
 async function findAllOrder(){
     try{
         const [orders] = await pool.query(`
-            SELECT po.orderID, po.customerEmail, po.orderDate, po.total,
+        SELECT po.orderID, po.customerEmail, po.orderDate, po.total,
                    CONCAT(SUBSTRING(p.paymentMethod, -4), ' ', CASE WHEN p.paymentMethod LIKE '%Debit%' THEN 'Debit' WHEN p.paymentMethod LIKE '%Credit%' THEN 'Credit' ELSE '' END) AS paymentMethod
             FROM purchaseOrder po
             LEFT JOIN payment p ON po.orderID = p.orderID
@@ -104,7 +104,7 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod){
 async function findAllOrderbyEmail(email){
     try{
         const [orders] = await pool.query(`
-            SELECT po.orderID, po.customerEmail, po.orderDate, po.total,
+        SELECT po.orderID, po.customerEmail, po.orderDate, po.total,
                    CONCAT(SUBSTRING(pm.paymentMethod, -4), ' ', 
                    CASE 
                        WHEN pm.paymentMethod LIKE '%Debit%' THEN 'Debit' 
@@ -204,14 +204,8 @@ async function refundItems(orderID,items,refundDate){
             WHERE orderLineID=?`,[res[0].orderLineID]);
         }
        
-<<<<<<< HEAD
         const [payment] = await connection.query(`
         SELECT paymentMethod, paymentID
-=======
-        //This function can be deleted if we can hard-coding paymentMethod
-        const pMethod = await connection.query(`
-        SELECT paymentMethod
->>>>>>> 05e49e25bab7b07914c94cbf73dfc70d7df6888c
         FROM payment
         WHERE orderID=?`,[orderID]);
 
@@ -285,6 +279,40 @@ async function findAllPayment (orderID){
         throw error
     }
 }
+
+async function addingStock (productName,quantity){
+    const connection = await pool.getConnection();
+    try{
+        await connection.beginTransaction();
+        const [id] = await connection.query(`
+        SELECT productID
+        FROM product
+        WHERE productName=?`,[productName]);
+
+        if(id.length==0){
+            throw new Error(`There is no such item in the inventory. Please double check your input`);
+        }
+
+        const [res] = await connection.query(`
+        UPDATE product
+        SET stockQuantity=stockQuantity+?
+        WHERE productID=?`,[quantity,id[0].productID]);
+
+        const [res1] = await connection.query(`
+        UPDATE inventory
+        SET quantity=quantity+?
+        WHERE productID=?`,[quantity,id[0].productID]);
+
+        await connection.commit();
+        return {product: id, amount: quantity};
+    } catch (error){
+        await connection.rollback();
+        console.log(error);
+        throw error;
+    } finally{
+        await connection.release();
+    }
+}
 module.exports={
     findAllOrder,
     createOrder,
@@ -295,7 +323,8 @@ module.exports={
     findRefund,
     findPayment,
     findAllRefund,
-    findAllPayment
+    findAllPayment,
+    addingStock
 }
 
 // add orderProcessed attribute into purchaseOrder table default false
