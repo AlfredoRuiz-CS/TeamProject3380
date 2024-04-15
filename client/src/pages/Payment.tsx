@@ -75,11 +75,6 @@ const payment = (props: paymentProps) => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!paymentMethodSelected) {
-      console.error("No payment method selected");
-      return;
-    }
-
     let paymentMethod;
 
     if (usingExistingPaymentMethod && paymentMethodSelected) {
@@ -118,7 +113,8 @@ const payment = (props: paymentProps) => {
 
     } else if (props.type === 'membership') {
       const data = {
-        email: store.email,
+        customerEmail: store.email,
+        paymentMethod: paymentMethod
       };
       console.log(data);
 
