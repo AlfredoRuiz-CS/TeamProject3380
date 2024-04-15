@@ -58,8 +58,8 @@ const Orders = () => {
   const [selectedOrder, setSelectedOrder] = useState<number>(0);
   const [sheetOpen, setSheetOpen] = useState(false);
   // ! SET THIS TO THE BACKEND API CALL FOR PAST ORDERS
-  // let orders: Order[] = [];
-  let orders = dummyOrders;
+  let orders: Order[] = [];
+  // let orders = dummyOrders;
   const [sortedOrders, setSortedOrders] = useState<Order[]>(dummyOrders);
   // ? Sorting Options
   let [sortOrder, setSortOrder] = useState('Order Desc.');
