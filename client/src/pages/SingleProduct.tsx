@@ -10,9 +10,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import toast from 'react-hot-toast';
 
 import { productItem } from '@/components/store';
-import toast from 'react-hot-toast';
 import { useProductsStore } from '@/components/store';
 import useUserStore from '@/components/store';
 // interface productProps {

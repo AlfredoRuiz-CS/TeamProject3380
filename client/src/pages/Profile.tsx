@@ -1,6 +1,5 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import PaymentMethod from '@/components/PaymentMethodCard';
 import { Button } from '@/components/ui/button';
 import { BsFillPersonLinesFill } from 'react-icons/bs';
 import { MdOutlinePersonOutline } from 'react-icons/md';
@@ -24,6 +23,7 @@ import {
 
 // Functionality Imports
 import useUserStore from '@/components/store';
+import PaymentMethodCard from '@/components/PaymentMethodCard';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -235,23 +235,24 @@ const Profile = () => {
 
   function handleSelectPaymentMethod(p: PaymentMethod) {
     setCollapsibleOpen(!collapsibleOpen);
+    paymentMethodSelectedToast(p);
     setPaymentMethodSelected(p);
     console.log('Payment Method Changed');
   }
 
+  // ! NEEDS TO BE CONNECTED TO BACKEND ! //
   function handleDeletePaymentMethod() {
     return;
   }
 
+  // ! NEEDS TO BE CONNECTED TO BACKEND ! //
   function handleDeleteAccount() {
     return;
   }
 
-  function paymentMethodSelectedToast() {
+  function paymentMethodSelectedToast(p: PaymentMethod) {
     toast.success(
-      'Payment method ending in ' +
-        paymentMethodSelected?.cardNumber.slice(-4) +
-        ' selected.',
+      'Payment method ending in ' + p.cardNumber.slice(-4) + ' selected.',
       {
         position: 'bottom-right',
         className: 'font-bold text-black',
@@ -350,18 +351,6 @@ const Profile = () => {
       setPaymentMethodSelected(null);
     }
   }, [setPaymentMethods]);
-
-  useEffect(() => {
-    if (store.accountType === 'customer' && !store.isAdmin) {
-      if (paymentMethods.length > 0) {
-        setPaymentMethodSelected(paymentMethods[0]);
-        if (paymentMethodSelected != paymentMethods[0])
-          paymentMethodSelectedToast();
-        return;
-      }
-      setPaymentMethodSelected(null);
-    }
-  }, [paymentMethodSelected]);
 
   return (
     <>
@@ -686,7 +675,7 @@ const Profile = () => {
                           <CollapsibleContent
                             key={index}
                             className="space-y-2 duration-300 ease-in-out">
-                            <PaymentMethod
+                            <PaymentMethodCard
                               key={index}
                               cardId={index + 1}
                               passedPaymentMethod={paymentMethod}
