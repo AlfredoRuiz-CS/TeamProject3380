@@ -254,7 +254,7 @@ const deleteUser = async (req, res) => {
   try {
     const email = req.email;
 
-    const paymentDelete = await userModel.deletePaymentMethod(email);
+    const paymentDelete = await userModel.deleteUser(email);
 
     res.writeHead(201, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ "message": `Successfully deleted user - ${email}` }));

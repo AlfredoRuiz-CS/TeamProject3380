@@ -321,7 +321,7 @@ async function deletePaymentMethod(email, cardnumber){
     const [rows] = await pool.query(`
     UPDATE paymentInfo
     set active = 0
-    where customeEmail = ? and cardnumber = ?`, [email, cardnumber]);
+    where customerEmail = ? and cardnumber = ?`, [email, cardnumber]);
 
     return rows;
   } catch (error) {

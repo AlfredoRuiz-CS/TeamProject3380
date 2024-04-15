@@ -249,7 +249,7 @@ const Profile = () => {
     }
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post("https://shastamart-api-deploy.vercel.app/api/users/delete_user", data, {
+      const response = await axios.post("https://shastamart-api-deploy.vercel.app/api/users/delete_payment", data, {
         headers: { Authorization: `Bearer ${token}` },
       });
       console.log(response.data);
