@@ -2,7 +2,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 // import { Supplier } from "@/components/store";
 import { useSupplierStore } from '@/components/store';
-import { useEffect /*, useState*/ } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 import {
@@ -14,17 +14,17 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-// import {
-//   Sheet,
-//   SheetContent,
-//   SheetDescription,
-//   SheetHeader,
-//   SheetTitle,
-// } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 
 const Suppliers = () => {
   const { setSuppliers } = useSupplierStore();
-  // const [sheetOpen, setSheetOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   useEffect(() => {
     const fetchSuppliers = async () => {
@@ -40,7 +40,7 @@ const Suppliers = () => {
     };
     fetchSuppliers();
   }, [setSuppliers]);
-  // useEffect(() => {}, [sheetOpen]);
+  useEffect(() => { }, [sheetOpen]);
 
   const suppliers = useSupplierStore((state) => state.suppliers);
 
