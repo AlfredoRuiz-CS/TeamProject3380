@@ -23,7 +23,7 @@ const PaymentMethodCard = (props: PaymentMethodProps) => {
             </h1>
             <h1>
               {'\nLast 4 Digits: ' +
-                props.passedPaymentMethod?.cardnumber.slice(-4)}
+                props.passedPaymentMethod.cardnumber.slice(-4)}
             </h1>
           </button>
           <div className="mx-auto w-full flex-row pt-2">

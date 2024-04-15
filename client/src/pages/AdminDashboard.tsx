@@ -1,9 +1,11 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import toast from 'react-hot-toast';
 import { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Button } from '@/components/ui/button.tsx';
+
 import {
   Table,
   TableBody,
@@ -20,6 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
+  DialogClose,
 } from '@/components/ui/dialog';
 
 import { Input } from '@/components/ui/input';
@@ -117,6 +120,28 @@ const AdminDashboard = () => {
     navigate('/suppliers');
   }
 
+  function orderToast(productName: string, quantity: string) {
+    toast.success(
+      'Order for ' + quantity + ' ' + productName + ' ' + 'Submitted!',
+      {
+        position: 'bottom-right',
+        className: 'font-bold text-black',
+        duration: 2000,
+      }
+    );
+  }
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    let productName = (
+      document.getElementById('productName') as HTMLInputElement
+    ).value;
+    let quantity = (document.getElementById('quantity') as HTMLInputElement)
+      .value;
+    orderToast(productName, quantity);
+    console.log('Order Submitted for ', productName, ' ', quantity);
+  }
+
   // function handleSubmitOrder(event: React.FormEvent<HTMLFormElement>) {
   //   console.log('Order Submitted');
   // }
@@ -148,8 +173,7 @@ const AdminDashboard = () => {
                 {products.map((product, index) => (
                   <TableRow
                     key={index}
-                    onClick={() => itemSelectHandler(product.productId)}
-                  >
+                    onClick={() => itemSelectHandler(product.productId)}>
                     <TableCell className="max-w-7">{product.name}</TableCell>
                     <TableCell className="max-w-6">{product.stock}</TableCell>
                     <TableCell className="max-w-6">
@@ -172,7 +196,7 @@ const AdminDashboard = () => {
                     </TableCell>
 
                     <TableCell className="max-w-6">
-                      {(product.supplierPrice).toLocaleString('en-US', {
+                      {product.supplierPrice.toLocaleString('en-US', {
                         style: 'currency',
                         currency: 'USD',
                       })}
@@ -251,37 +275,43 @@ const AdminDashboard = () => {
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle className="text-3xl">Order Stock</DialogTitle>
-                    <DialogDescription className="text-lg">
-                      Enter Product Name and Quantity below to submit order.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="grid gap-4 py-4">
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="name" className="text-right">
-                        Product Name
-                      </Label>
-                      <Input
-                        id="productName"
-                        placeholder="e.g. Fresh Strawberries"
-                        className="col-span-3"
-                      />
+                  <form onSubmit={handleSubmit}>
+                    <DialogHeader>
+                      <DialogTitle className="text-3xl">
+                        Order Stock
+                      </DialogTitle>
+                      <DialogDescription className="text-lg">
+                        Enter Product Name and Quantity below to submit order.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="name" className="text-right">
+                          Product Name
+                        </Label>
+                        <Input
+                          id="productName"
+                          placeholder="e.g. Fresh Strawberries"
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="quantity" className="text-right">
+                          Quantity
+                        </Label>
+                        <Input
+                          id="quantity"
+                          placeholder="e.g. 10"
+                          className="col-span-3"
+                        />
+                      </div>
                     </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="quantity" className="text-right">
-                        Quantity
-                      </Label>
-                      <Input
-                        id="quantity"
-                        placeholder="e.g. 10"
-                        className="col-span-3"
-                      />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button type="submit">Submit Order</Button>
-                  </DialogFooter>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button type="submit">Submit Order</Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </form>
                 </DialogContent>
               </Dialog>
             </div>
@@ -297,8 +327,7 @@ const AdminDashboard = () => {
                     <Link to={'/product/' + popularItem1.productId}>
                       <img
                         className=" h-[10rem] max-w-[15rem] rounded-xl object-cover"
-                        src={popularItem1.image}
-                      ></img>
+                        src={popularItem1.image}></img>
                     </Link>
                   </div>
                   <div className="flex flex-col">
