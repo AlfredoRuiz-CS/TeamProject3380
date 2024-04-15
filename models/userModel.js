@@ -134,7 +134,7 @@ async function getUserPaymentInfo(email){
     const [rows] = await pool.query(`
     SELECT p.nameOnCard, p.cardtype, p.cardnumber, p.cvv, p.expiration 
     FROM paymentInfo p
-    where p.customerEmail = ?`, [email]);
+    where p.customerEmail = ? and active = 1`, [email]);
 
     return rows;
 
