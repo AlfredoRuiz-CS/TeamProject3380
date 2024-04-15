@@ -27,6 +27,7 @@ const payment = (props: paymentProps) => {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [paymentMethodSelected, setPaymentMethodSelected] =
     useState<PaymentMethod | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   function paymentMethodSelectedToast(p: PaymentMethod) {
     toast.success(
@@ -92,12 +93,22 @@ const payment = (props: paymentProps) => {
         );
         console.log(transformedPayments);
         setPaymentMethods(transformedPayments);
+        setIsLoading(false);
       } catch (error) {
         console.log(error);
       }
     };
     fetchPayments();
   }, [setPaymentMethods]);
+
+  useEffect(() => {
+    if (store.accountType === 'customer' && !store.isAdmin) {
+      if (paymentMethods.length > 0) {
+        setPaymentMethodSelected(paymentMethods[0]);
+        return;
+      }
+    }
+  }, [paymentMethods, setPaymentMethods, isLoading]);
 
   return (
     <>
@@ -163,49 +174,53 @@ const payment = (props: paymentProps) => {
                 </tbody>
               </table>
             </section>
-            <section className="mt-6 h-[30rem] w-[40rem] place-self-center rounded-2xl bg-cardwhite">
+            <section className="mt-6 flex h-auto w-[40rem] flex-col items-center place-self-center rounded-2xl bg-cardwhite py-6">
+              <h3 className="mt-5 flex flex-row justify-center text-2xl font-medium">
+                Select A Previous Payment Method
+              </h3>
               {/* Payment Method Component Map */}
-              <div>
+              <div className="flex flex-col">
                 <Collapsible
-                  className="flex w-64 flex-col gap-2 place-self-center"
+                  className="flex w-72 flex-grow flex-col gap-2 place-self-center"
                   open={collapsibleOpen}
                   onOpenChange={setCollapsibleOpen}>
-                  {paymentMethodSelected ? (
-                    <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
-                      <h4 className="h-10 text-sm font-semibold">
-                        {'Card Name: ' +
-                          paymentMethodSelected?.nameOnCard +
-                          '\nLast 4 digits: ' +
-                          paymentMethodSelected?.cardnumber.slice(-4)}
-                      </h4>
-                      <CollapsibleTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="hover:bg-white/50">
-                          <CaretSortIcon className="h-6 w-6" />
-                          <span className="sr-only">Toggle</span>
-                        </Button>
-                      </CollapsibleTrigger>
-                    </div>
-                  ) : paymentMethods.length === 0 ? (
-                    <div className="bg-gray- flex w-auto items-center justify-between space-x-4 rounded-lg px-4 text-black">
-                      {' '}
-                      No Previous Payment Methods
-                    </div>
+                  {!isLoading ? (
+                    paymentMethods.length > 0 ? (
+                      <div className="flex w-auto flex-grow items-center justify-between space-x-4 rounded-lg bg-slate-300 px-4 text-black">
+                        <h4 className="flex w-auto flex-grow text-center text-sm font-semibold">
+                          {'Card Name: ' +
+                            paymentMethodSelected?.nameOnCard +
+                            '\nLast 4 digits: ' +
+                            paymentMethodSelected?.cardnumber.slice(-4)}
+                        </h4>
+                        <CollapsibleTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="hover:bg-white/50">
+                            <CaretSortIcon className="h-6 w-6" />
+                            <span className="sr-only">Toggle</span>
+                          </Button>
+                        </CollapsibleTrigger>
+                      </div>
+                    ) : (
+                      <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
+                        {' '}
+                        No Previous Payment Methods
+                      </div>
+                    )
                   ) : (
-                    <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
+                    <div className="mx-auto flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
                       Loading payment methods...
                     </div>
                   )}
                   {paymentMethods.map((paymentMethod, index) => (
-                    <CollapsibleContent
-                      key={index}
-                      className="space-y-2 duration-300 ease-in-out">
+                    <CollapsibleContent key={index} className="">
                       <PaymentMethodCard
                         key={index}
                         cardId={index + 1}
                         passedPaymentMethod={paymentMethod}
+                        variant="payment"
                         onDelete={handleDeletePaymentMethod}
                         onSelect={handleSelectPaymentMethod}
                       />
@@ -214,7 +229,7 @@ const payment = (props: paymentProps) => {
                 </Collapsible>
               </div>
 
-              <h3 className="ml-5 mt-5 text-2xl font-medium">
+              <h3 className="mt-5 flex flex-row justify-center text-2xl font-medium">
                 New Payment Details
               </h3>
 
@@ -265,7 +280,7 @@ const payment = (props: paymentProps) => {
                     </div>
                   </div>
                   <Button
-                    className="ml-4 mr-4 mt-5 self-center bg-slate-500 px-44 py-6 hover:bg-slate-600"
+                    className="ml-4 mr-4 mt-5 self-center bg-blue-400 px-44 py-6 hover:bg-slate-600"
                     size="lg"
                     type="submit">
                     <Link to={'/orders/'}>Place Order</Link>

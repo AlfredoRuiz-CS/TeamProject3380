@@ -352,9 +352,7 @@ const Profile = () => {
       }
       // setPaymentMethodSelected(null);
     }
-  }, [paymentMethods, setPaymentMethods]);
-
-  useEffect(() => {}, [isLoading]);
+  }, [paymentMethods, setPaymentMethods, isLoading]);
 
   return (
     <>
@@ -684,6 +682,7 @@ const Profile = () => {
                             <PaymentMethodCard
                               key={index}
                               cardId={index + 1}
+                              variant="profile"
                               passedPaymentMethod={paymentMethod}
                               onDelete={handleDeletePaymentMethod}
                               onSelect={handleSelectPaymentMethod}
