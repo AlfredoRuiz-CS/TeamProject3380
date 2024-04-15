@@ -262,6 +262,7 @@ const Profile = () => {
   }
 
   async function handleNewPayment(
+    nameOnCard: string,
     cardNumber: string,
     expirationDate: string,
     cvv: string,
@@ -272,6 +273,7 @@ const Profile = () => {
       expirationDate: expirationDate,
       cvv: parseInt(cvv, 10),
       cardType: cardType,
+      nameOnCard: nameOnCard,
     };
     const token = localStorage.getItem('token');
     const response = await axios.post(
@@ -699,6 +701,9 @@ const Profile = () => {
                       onSubmit={(event) => {
                         event.preventDefault();
                         const form = event.target as HTMLFormElement;
+                        const nameOnCard = form.elements.namedItem(
+                          'nameOnCard'
+                        ) as HTMLInputElement;
                         const cardnumber = form.elements.namedItem(
                           'cardnumber'
                         ) as HTMLInputElement;
@@ -712,6 +717,7 @@ const Profile = () => {
                           'cardType'
                         ) as HTMLInputElement;
                         handleNewPayment(
+                          nameOnCard.value,
                           cardnumber.value,
                           expiration.value,
                           cvv.value,
@@ -726,7 +732,7 @@ const Profile = () => {
                           className="mx-4  h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                           type="text"
                           placeholder="Name On Card"
-                          name="cardName"
+                          name="nameOnCard"
                         />
                         <input
                           className="mx-4  h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
