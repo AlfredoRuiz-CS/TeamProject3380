@@ -241,13 +241,37 @@ const Profile = () => {
     console.log('Payment Method Changed');
   }
 
-  // ! NEEDS TO BE CONNECTED TO BACKEND ! //
-  function handleDeletePaymentMethod() {
+
+  async function handleDeletePaymentMethod() {
+    let cardnumber = paymentMethodSelected?.cardnumber;
+    const data = {
+      cardnumber: cardnumber
+    }
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post("https://shastamart-api-deploy.vercel.app/api/users/delete_user", data, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log(response.data);
+      navigate('/profile')
+    } catch (error) {
+      
+    }
     return;
   }
 
-  // ! NEEDS TO BE CONNECTED TO BACKEND ! //
-  function handleDeleteAccount() {
+  async function handleDeleteAccount() {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get("https://shastamart-api-deploy.vercel.app/api/users/delete_user", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      console.log(response.data);
+      navigate('/')
+      store.logout();
+    } catch (error) {
+
+    }
     return;
   }
 

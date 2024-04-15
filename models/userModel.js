@@ -302,6 +302,34 @@ async function updateUserName(email, fName, lName){
   }
 }
 
+async function deleteUser(email){
+  try {
+    const [rows] = await pool.query(`
+    UPDATE customer
+    set active = 0
+    where email = ?`, [email]);
+
+    return rows;
+  } catch (error) {
+    console.log(error.message);
+    throw error;
+  }
+}
+
+async function deletePaymentMethod(email, cardnumber){
+  try {
+    const [rows] = await pool.query(`
+    UPDATE paymentInfo
+    set active = 0
+    where customeEmail = ? and cardnumber = ?`, [email, cardnumber]);
+
+    return rows;
+  } catch (error) {
+    console.log(error.message);
+    throw error;
+  }
+}
+
 // async function updateUserlName(email, lName){
 //   try{
 //     const [rows] = await pool.query(`
@@ -329,5 +357,7 @@ module.exports = {
     updateUserPhone,
     updateUserAddress,
     updateUserName,
-    findUserbyEmail
+    findUserbyEmail,
+    deleteUser,
+    deletePaymentMethod
 }
