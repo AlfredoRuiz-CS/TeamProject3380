@@ -1,8 +1,8 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
-import useUserStore from '@/components/store';
-import { productItem } from '@/components/store';
+// import useUserStore from '@/components/store';
+// import { productItem } from '@/components/store';
 
 const OrderSummary = () => {
   return (

@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/collapsible';
 // import { productItem } from '@/components/store';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import useUserStore from '@/components/store';
 import { PaymentMethod } from '@/pages/Profile';
 import axios from 'axios';
@@ -23,7 +23,6 @@ interface paymentProps {
 
 const payment = (props: paymentProps) => {
   const store = useUserStore();
-  const navigate = useNavigate();
   const [collapsibleOpen, setCollapsibleOpen] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [paymentMethodSelected, setPaymentMethodSelected] =
@@ -70,29 +69,6 @@ const payment = (props: paymentProps) => {
       console.log(data);
     }
   };
-
-  useEffect(() => {
-    const verifySession = async () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const response = await axios.get(
-            'https://shastamart-api-deploy.vercel.app/api/users/verifySession',
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-          console.log(response.data);
-        } catch (error) {
-          localStorage.removeItem('token');
-          navigate('/login');
-        }
-      } else {
-        navigate('/register');
-      }
-    };
-    verifySession();
-  }, []);
 
   useEffect(() => {
     const fetchPayments = async () => {
@@ -213,7 +189,7 @@ const payment = (props: paymentProps) => {
                       </CollapsibleTrigger>
                     </div>
                   ) : paymentMethods.length === 0 ? (
-                    <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
+                    <div className="bg-gray- flex w-auto items-center justify-between space-x-4 rounded-lg px-4 text-black">
                       {' '}
                       No Previous Payment Methods
                     </div>
@@ -292,7 +268,7 @@ const payment = (props: paymentProps) => {
                     className="ml-4 mr-4 mt-5 self-center bg-slate-500 px-44 py-6 hover:bg-slate-600"
                     size="lg"
                     type="submit">
-                    Place Order
+                    <Link to={'/orders/'}>Place Order</Link>
                   </Button>
                 </form>
               </div>

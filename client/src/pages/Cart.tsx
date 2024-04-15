@@ -18,12 +18,10 @@ import {
 } from '@/components/ui/alert-dialog';
 
 import useUserStore from '@/components/store';
-import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 
 const Cart = () => {
   const store = useUserStore();
-  const navigate = useNavigate();
   const shipping = 10;
 
   const subtotal = store.cartItems.reduce(
@@ -42,10 +40,6 @@ const Cart = () => {
   // const popularItem2 = updatedProducts.reduce((lowest, product) => {
   //   return lowest.supplierStock < product.supplierStock ? lowest : product;
   // }, dummyProducts[0]);
-
-  function handleCheckout() {
-    navigate('/payment');
-  }
 
   function emptyCart() {
     store.resetCart();
@@ -158,12 +152,18 @@ const Cart = () => {
                     </tr>
                   </tbody>
                 </table>
-
-                <Button
-                  className="mt-10 h-[3rem] w-[12rem] self-center border-darkblue text-white hover:bg-darkblue hover:text-bgwhite"
-                  onClick={handleCheckout}>
-                  <Link to="/payment">Proceed to Checkout</Link>
-                </Button>
+                {store.cartItemsNumber > 0 ? (
+                  <Button className="mt-10 h-[3rem] w-[12rem] self-center border-darkblue text-white hover:bg-darkblue hover:text-bgwhite">
+                    <Link to="/payment">Proceed to Checkout</Link>
+                  </Button>
+                ) : (
+                  <Button
+                    variant="ghost"
+                    disabled
+                    className="mt-10 h-[3rem] w-[12rem] self-center border-darkblue bg-gray-600 text-white hover:bg-gray-600 hover:text-white">
+                    Proceed to Checkout
+                  </Button>
+                )}
               </div>
             </div>
             {/* My List Section */}
