@@ -87,10 +87,10 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod){
             const [anotherRows] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
             const anotherID = anotherRows[0].lastId;
             const res = await connection.query(`
-            SELECT productName, quantity, unitPrice, subTotal
+            SELECT p.productName, o.quantity, o.unitPrice, o.totalAmount
             FROM orderLine o
-            JOIN product p 
-            WHERE orderLineID=? AND active=? AND o.productID = p.productID`,[anotherID,1]);
+            JOIN product p on o.productID = p.productID
+            WHERE orderLineID = ? AND active = ?`,[anotherID,1]);
             orderLineDetail.push(res[0]);
         }
         await connection.commit();

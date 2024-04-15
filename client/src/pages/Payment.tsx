@@ -16,6 +16,7 @@ import { useEffect, useState } from 'react';
 import useUserStore from '@/components/store';
 import { PaymentMethod } from '@/pages/Profile';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 interface paymentProps {
   type: 'cart' | 'membership';
@@ -29,6 +30,7 @@ const payment = (props: paymentProps) => {
     useState<PaymentMethod | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [usingExistingPaymentMethod, setUsingExistingPaymentMethod] = useState(false);
+  const navigate = useNavigate();
 
   function paymentMethodSelectedToast(p: PaymentMethod) {
     toast.success(
@@ -94,6 +96,7 @@ const payment = (props: paymentProps) => {
           headers: { Authorization: `Bearer ${token}` },
         });
         console.log(response.data);
+        navigate("/orders/summary");
       } catch (error) {
         console.log(error);
       }
