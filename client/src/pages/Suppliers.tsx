@@ -14,13 +14,13 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
+// import {
+//   Sheet,
+//   SheetContent,
+//   SheetDescription,
+//   SheetHeader,
+//   SheetTitle,
+// } from '@/components/ui/sheet';
 
 const Suppliers = () => {
   const { setSuppliers } = useSupplierStore();
@@ -40,7 +40,7 @@ const Suppliers = () => {
     };
     fetchSuppliers();
   }, [setSuppliers]);
-  useEffect(() => { }, [sheetOpen]);
+  useEffect(() => {}, [sheetOpen, setSheetOpen]);
 
   const suppliers = useSupplierStore((state) => state.suppliers);
 
