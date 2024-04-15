@@ -109,7 +109,7 @@ const createUserPaymentInfo = async (req, res) => {
 
     let addInfo = await userModel.createUserPaymentInfo(customerEmail, cardType, cardnumber, cvv, expiration);
     res.writeHead(201, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ "message": `Successfully added payment information for ${customerEmail}` }));
+    res.end(JSON.stringify({ addInfo, "message": `Successfully added payment information for ${customerEmail}` }));
 
   } catch(error) {
     res.writeHead(500, {' Content-Type': 'application/json' });

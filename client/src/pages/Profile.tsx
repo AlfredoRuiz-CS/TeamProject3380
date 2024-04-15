@@ -328,10 +328,11 @@ const Profile = () => {
         const paymentData = await response.data;
         const transformedPayments = paymentData.map(
           (paymentMethod: PaymentMethod) => ({
-            nameOnCard: store.fname + ' ' + store.lname,
+            nameOnCard: paymentMethod.nameOnCard,
             cardnumber: paymentMethod.cardnumber,
             expiration: paymentMethod.expiration,
             cvv: paymentMethod.cvv,
+            cardtype: paymentMethod.cardType
           })
         );
         console.log(transformedPayments);

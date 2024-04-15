@@ -4,10 +4,25 @@ const {pool} = require("../config/db");
 //getAllOrder used by employee
 async function findAllOrder(){
     try{
-        const [res] = await pool.query(`
-        SELECT *
-        FROM purchaseOrder`,);
-        return res;
+        const [orders] = await pool.query(`
+            SELECT po.orderID, po.customerEmail, po.orderDate, po.total,
+                   CONCAT(SUBSTRING(p.paymentMethod, -4), ' ', CASE WHEN p.paymentMethod LIKE '%Debit%' THEN 'Debit' WHEN p.paymentMethod LIKE '%Credit%' THEN 'Credit' ELSE '' END) AS paymentMethod
+            FROM purchaseOrder po
+            LEFT JOIN payment p ON po.orderID = p.orderID
+        `);
+
+        for (let order of orders) {
+            const [details] = await pool.query(`
+                SELECT ol.productID, ol.quantity, ol.unitPrice, ol.totalAmount, p.productName
+                FROM orderLine ol
+                JOIN product p ON ol.productID = p.productID
+                WHERE ol.orderID = ? AND ol.active = 1
+            `, [order.orderID]);
+
+            order.items = details;
+        }
+
+        return orders;
     } catch(error){
         console.log(error.message);
         throw error;
@@ -88,12 +103,33 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod){
 
 async function findAllOrderbyEmail(email){
     try{
-        const [res] = await pool.query(`
-        SELECT *
-        FROM purchaseOrder
-        WHERE customerEmail=?`,[email])
+        const [orders] = await pool.query(`
+            SELECT po.orderID, po.customerEmail, po.orderDate, po.total,
+                   CONCAT(SUBSTRING(pm.paymentMethod, -4), ' ', 
+                   CASE 
+                       WHEN pm.paymentMethod LIKE '%Debit%' THEN 'Debit' 
+                       WHEN pm.paymentMethod LIKE '%Credit%' THEN 'Credit' 
+                       ELSE '' 
+                   END) AS paymentMethod
+            FROM purchaseOrder po
+            LEFT JOIN payment pm ON po.orderID = pm.orderID
+            WHERE po.customerEmail = ?
+        `, [email]);
 
-        return res;
+        // For each order, fetch the order details
+        for (let order of orders) {
+            const [details] = await pool.query(`
+                SELECT ol.productID, ol.quantity, ol.unitPrice, ol.totalAmount, p.productName
+                FROM orderLine ol
+                JOIN product p ON ol.productID = p.productID
+                WHERE ol.orderID = ? AND ol.active = 1
+            `, [order.orderID]);
+
+            // Add the details to the order
+            order.items = details;
+        }
+
+        return orders;
     } catch(error){
         console.log(error.message);
         throw error;
