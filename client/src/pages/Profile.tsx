@@ -47,40 +47,41 @@ export type PaymentMethod = {
   cardId?: number;
   nameOnCard: string;
   cardType: 'Debit' | 'Credit';
-  cardNumber: string;
-  expirationDate: string;
-  ccv: string;
+  cardnumber: string;
+  expiration: string;
+  cvv: string;
 };
 
 const Profile = () => {
   const store = useUserStore();
   // const [state, setState] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [collapsibleOpen, setCollapsibleOpen] = useState(false);
   const navigate = useNavigate();
 
   const dummyPaymentMethods: PaymentMethod[] = Array(5).fill({
     cardId: 1,
     nameOnCard: 'John Doe',
-    cardNumber: '1234 5678 9012 3456',
-    expirationDate: '01/23',
-    ccv: '123',
+    cardnumber: '1234 5678 9012 3456',
+    expiration: '01/23',
+    cvv: '123',
     cardType: 'Debit',
   });
   dummyPaymentMethods[1] = {
     cardId: 2,
     nameOnCard: 'Jane Doe',
-    cardNumber: '9876 5432 1098 7654',
-    expirationDate: '12/34',
-    ccv: '321',
+    cardnumber: '9876 5432 1098 7654',
+    expiration: '12/34',
+    cvv: '321',
     cardType: 'Credit',
   };
   dummyPaymentMethods[2] = {
     cardId: 3,
     nameOnCard: 'Philip Doe',
-    cardNumber: '1234 5678 9012 3454',
-    expirationDate: '01/23',
-    ccv: '123',
+    cardnumber: '1234 5678 9012 3454',
+    expiration: '01/23',
+    cvv: '123',
     cardType: 'Debit',
   };
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
@@ -252,7 +253,7 @@ const Profile = () => {
 
   function paymentMethodSelectedToast(p: PaymentMethod) {
     toast.success(
-      'Payment method ending in ' + p.cardNumber.slice(-4) + ' selected.',
+      'Payment method ending in ' + p.cardnumber.slice(-4) + ' selected.',
       {
         position: 'bottom-right',
         className: 'font-bold text-black',
@@ -328,13 +329,14 @@ const Profile = () => {
         const transformedPayments = paymentData.map(
           (paymentMethod: PaymentMethod) => ({
             nameOnCard: store.fname + ' ' + store.lname,
-            cardnumber: paymentMethod.cardNumber,
-            expiration: paymentMethod.expirationDate,
-            cvv: paymentMethod.ccv,
+            cardnumber: paymentMethod.cardnumber,
+            expiration: paymentMethod.expiration,
+            cvv: paymentMethod.cvv,
           })
         );
         console.log(transformedPayments);
         setPaymentMethods(transformedPayments);
+        setIsLoading(false);
       } catch (error) {
         console.log(error);
       }
@@ -643,29 +645,31 @@ const Profile = () => {
                         className="flex w-64 flex-col gap-2 place-self-center"
                         open={collapsibleOpen}
                         onOpenChange={setCollapsibleOpen}>
-                        {paymentMethodSelected ? (
-                          <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
-                            <h4 className="h-10 text-sm font-semibold">
-                              {'Card Name: ' +
-                                paymentMethodSelected?.nameOnCard +
-                                '\nLast 4 digits: ' +
-                                paymentMethodSelected?.cardNumber.slice(-4)}
-                            </h4>
-                            <CollapsibleTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="hover:bg-white/50">
-                                <CaretSortIcon className="h-6 w-6" />
-                                <span className="sr-only">Toggle</span>
-                              </Button>
-                            </CollapsibleTrigger>
-                          </div>
-                        ) : paymentMethods.length === 0 ? (
-                          <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
-                            {' '}
-                            No Previous Payment Methods
-                          </div>
+                        {!isLoading ? (
+                          paymentMethods.length > 0 ? (
+                            <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
+                              <h4 className="h-10 text-sm font-semibold">
+                                {'Card Name: ' +
+                                  paymentMethodSelected?.nameOnCard +
+                                  '\nLast 4 digits: ' +
+                                  paymentMethodSelected?.cardnumber.slice(-4)}
+                              </h4>
+                              <CollapsibleTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="hover:bg-white/50">
+                                  <CaretSortIcon className="h-6 w-6" />
+                                  <span className="sr-only">Toggle</span>
+                                </Button>
+                              </CollapsibleTrigger>
+                            </div>
+                          ) : (
+                            <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
+                              {' '}
+                              No Previous Payment Methods
+                            </div>
+                          )
                         ) : (
                           <div className="flex w-auto items-center justify-between space-x-4 rounded-lg bg-cardwhite px-4 text-black">
                             Loading payment methods...

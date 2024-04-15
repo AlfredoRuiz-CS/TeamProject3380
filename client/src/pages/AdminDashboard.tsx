@@ -138,7 +138,7 @@ const AdminDashboard = () => {
                   <TableHead className="max-w-7">Store Stock Status</TableHead>
                   <TableHead className="max-w-6">Value In Inventory</TableHead>
                   <TableHead className="max-w-6">Supplier Name</TableHead>
-                  <TableHead className="max-w-6">Supplier Stock</TableHead>
+                  <TableHead className="max-w-6">Supplier Price</TableHead>
                   <TableHead className="max-w-7">
                     Supplier Stock Status
                   </TableHead>
@@ -172,7 +172,10 @@ const AdminDashboard = () => {
                     </TableCell>
 
                     <TableCell className="max-w-6">
-                      {product.supplierStock}
+                      {(product.supplierPrice).toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                      })}
                     </TableCell>
                     <TableCell className="max-w-7">
                       {product.supplierStock > 30 ? (
