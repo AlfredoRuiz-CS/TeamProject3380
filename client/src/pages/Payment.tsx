@@ -1,6 +1,5 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { CaretSortIcon } from '@radix-ui/react-icons';
 import PaymentMethodCard from '@/components/PaymentMethodCard';
@@ -12,8 +11,11 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 // import { productItem } from '@/components/store';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useUserStore from '@/components/store';
 import { PaymentMethod } from '@/pages/Profile';
+import axios from 'axios';
 
 interface paymentProps {
   type: 'cart' | 'membership';
@@ -21,16 +23,15 @@ interface paymentProps {
 
 const payment = (props: paymentProps) => {
   const store = useUserStore();
+  const navigate = useNavigate();
   const [collapsibleOpen, setCollapsibleOpen] = useState(false);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [paymentMethodSelected, setPaymentMethodSelected] =
     useState<PaymentMethod | null>(null);
 
-  function paymentMethodSelectedToast() {
+  function paymentMethodSelectedToast(p: PaymentMethod) {
     toast.success(
-      'Payment method ending in ' +
-        paymentMethodSelected?.cardNumber.slice(-4) +
-        ' selected.',
+      'Payment method ending in ' + p.cardNumber.slice(-4) + ' selected.',
       {
         position: 'bottom-right',
         className: 'font-bold text-black',
@@ -40,7 +41,7 @@ const payment = (props: paymentProps) => {
 
   function handleSelectPaymentMethod(p: PaymentMethod) {
     setPaymentMethodSelected(p);
-    paymentMethodSelectedToast();
+    paymentMethodSelectedToast(p);
     console.log('Selected Payment Method');
   }
 
@@ -69,6 +70,58 @@ const payment = (props: paymentProps) => {
       console.log(data);
     }
   };
+
+  useEffect(() => {
+    const verifySession = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const response = await axios.get(
+            'https://shastamart-api-deploy.vercel.app/api/users/verifySession',
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          console.log(response.data);
+        } catch (error) {
+          localStorage.removeItem('token');
+          navigate('/login');
+        }
+      } else {
+        navigate('/register');
+      }
+    };
+    verifySession();
+  }, []);
+
+  useEffect(() => {
+    const fetchPayments = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get(
+          'https://shastamart-api-deploy.vercel.app/api/users/payments',
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        console.log(response.data);
+        const paymentData = await response.data;
+        const transformedPayments = paymentData.map(
+          (paymentMethod: PaymentMethod) => ({
+            nameOnCard: store.fname + ' ' + store.lname,
+            cardnumber: paymentMethod.cardNumber,
+            expiration: paymentMethod.expirationDate,
+            cvv: paymentMethod.ccv,
+          })
+        );
+        console.log(transformedPayments);
+        setPaymentMethods(transformedPayments);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchPayments();
+  }, [setPaymentMethods]);
 
   return (
     <>
