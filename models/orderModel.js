@@ -51,6 +51,7 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod,normalD,f
             SELECT quantity
             FROM inventory
             WHERE productID=?`,[item.productID]);
+            console.log("Error in getting quantity")
             if (item.productQuantity > res[0].quantity){
                 throw new Error(`Not enough inventory for item: ${item.productName}`);
             }
@@ -65,7 +66,7 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod,normalD,f
 
             total += item.productPrice*item.productQuantity;
         }
-        // console.log("AT PURCHASE ORDER");
+        console.log("AT PURCHASE ORDER");
         //create new order
         const orderRes = await connection.query(`
             INSERT INTO purchaseOrder(customerEmail,orderDate,total)
@@ -73,7 +74,7 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod,normalD,f
         //get the last insert id which is the newest orderID
         const [rows] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
         const lastId = rows[0].lastId;
-        // console.log("AT PAYMENT");
+        console.log("AT PAYMENT");
         
         //create payment
         const createPayment = await connection.query(`
