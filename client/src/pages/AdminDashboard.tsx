@@ -762,8 +762,10 @@ const AdminDashboard = () => {
                           </SelectTrigger>
                           <SelectContent>
                             <SelectGroup>
-                              {states.map((state) => (
-                                <SelectItem value={state}>{state}</SelectItem>
+                              {states.map((state, index) => (
+                                <SelectItem key={index} value={state}>
+                                  {state}
+                                </SelectItem>
                               ))}
                             </SelectGroup>
                           </SelectContent>
