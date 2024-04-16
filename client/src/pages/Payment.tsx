@@ -140,7 +140,7 @@ const payment = (props: paymentProps) => {
         console.log("Response:", response.data);
         const isMember = await response.data;
         store.setUserDetails({ isMember: isMember });
-        navigate('/orders/summary');
+        navigate('/orders/summary/membership');
       } catch (error) {
         console.log(error);
       }

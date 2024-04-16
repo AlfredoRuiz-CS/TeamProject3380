@@ -33,6 +33,40 @@ async function createMembership(customerEmail,startDate,endDate,renewalDate,paym
     }
 }
 
+async function checkMembershipStatus(customerEmail) {
+    try {
+        const [rows] = await pool.query(`
+        SELECT *
+        FROM membership
+        where customerEmail = ?`, [customerEmail])
+        if (!rows) throw error("Couldn't find membership")
+
+        let membershipStatus = "None"
+            
+        if (rows.length > 0) {
+            const membership = rows[0];
+
+            const startDate = new Date(membership.startDate);
+            const endDate = new Date(membership.endDate);
+
+            const timeDiff = Math.abs(endDate.getTime() - startDate.getTime());
+            const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+            if (diffDays === 365 || diffDays === 366) {
+                membershipStatus = "From Order";
+            } else {
+                membershipStatus = "Purchased";
+            }
+        }
+        
+        return membershipStatus;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
 module.exports={
-    createMembership
+    createMembership,
+    checkMembershipStatus
 }
