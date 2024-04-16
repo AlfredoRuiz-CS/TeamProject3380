@@ -27,6 +27,7 @@ interface HeaderProps {
 const Header = (props: HeaderProps) => {
   const user = useUserStore();
   const navigate = useNavigate();
+  const [notifications, setNotifications] = useState([]);
   const [reloadTrigger, setReloadTrigger] = useState(0);
 
   // ! ADD BACKEND CALL TO DISPLAY THE NUMBER OF NOTIFICATIONS
@@ -57,18 +58,6 @@ const Header = (props: HeaderProps) => {
     navigate('/home');
   }
 
-  async function getNotifications() {
-    try {
-      const response = await axios.get(
-        'https://shastamart-api-deploy.vercel.app/api/notifications/get_notifications'
-      );
-      const notifData = await response.data;
-      console.log(notifData);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
@@ -77,6 +66,7 @@ const Header = (props: HeaderProps) => {
         );
         const notifData = await response.data;
         console.log(notifData);
+        setNotifications(notifData);
       } catch (error) {
         console.error(error);
       }
@@ -137,7 +127,10 @@ const Header = (props: HeaderProps) => {
                 {textColor === 'text-white' ? (
                   user.accountType === 'employee' ? (
                     // TODO: Add notification dropdown that links to the low supply sheet
-                    <DropdownMenu onOpenChange={getNotifications}>
+                    <DropdownMenu
+                      onOpenChange={(e) =>
+                        e && setReloadTrigger((prev) => prev + 1)
+                      }>
                       <DropdownMenuTrigger asChild>
                         <Link to="/admin" className="flex flex-row gap-1">
                           <p className="">{notifNumber}</p>
@@ -147,7 +140,13 @@ const Header = (props: HeaderProps) => {
                       <DropdownMenuContent>
                         <DropdownMenuLabel>Notifications</DropdownMenuLabel>
                         <DropdownMenuSeparator />
-                        <DropdownMenuGroup>{}</DropdownMenuGroup>
+                        <DropdownMenuGroup>
+                          {notifications.map((notification) => (
+                            <DropdownMenuItem>
+                              <Link to="/admin">{notification}</Link>
+                            </DropdownMenuItem>
+                          ))}
+                        </DropdownMenuGroup>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   ) : (
