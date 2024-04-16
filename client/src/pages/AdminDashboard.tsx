@@ -25,6 +25,17 @@ import {
   DialogClose,
 } from '@/components/ui/dialog';
 
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+import { Separator } from '@/components/ui/separator';
+
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
@@ -42,6 +53,8 @@ dummyProducts[6].supplierStock = 20;
 const AdminDashboard = () => {
   const { setProducts } = useProductsStore();
   const [reloadTrigger, setReloadTrigger] = useState(0);
+  const [portion, setPortion] = useState('lb.');
+  const [selectedCategory, setSelectedCategory] = useState('produce');
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -132,7 +145,18 @@ const AdminDashboard = () => {
     );
   }
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  function addProductToast(productName: string, quantity: string) {
+    toast.success(
+      'Added ' + quantity + ' ' + productName + ' ' + 'to Inventory!',
+      {
+        position: 'bottom-right',
+        className: 'font-bold text-black',
+        duration: 2000,
+      }
+    );
+  }
+
+  async function handleSubmitOrder(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     let productName = (
       document.getElementById('productName') as HTMLInputElement
@@ -142,22 +166,119 @@ const AdminDashboard = () => {
 
     const data = {
       productName: productName,
-      quantity: quantity
-    }
+      quantity: quantity,
+    };
 
     try {
-      const response = await axios.post("https://shastamart-api-deploy.vercel.app/api/orders/insertStock", data);
+      const response = await axios.post(
+        'https://shastamart-api-deploy.vercel.app/api/orders/insertStock',
+        data
+      );
       console.log(response);
       orderToast(productName, quantity);
       console.log('Order Submitted for ', productName, ' ', quantity);
-      setReloadTrigger(prev => prev + 1);
+      setReloadTrigger((prev) => prev + 1);
     } catch (error) {
       console.log(error);
     }
   }
-  
+
+  async function handleSubmitNewItem(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    let description = (
+      document.getElementById('productdescription') as HTMLInputElement
+    ).value;
+    // For Toast Confirmation
+    let productName = (
+      document.getElementById('productName') as HTMLInputElement
+    ).value;
+    let quantity = (
+      document.getElementById('stockquantity') as HTMLInputElement
+    ).value;
+
+    const data = {
+      productInfo: {
+        productName: (
+          document.getElementById('productName') as HTMLInputElement
+        ).value,
+        productDesc: description,
+        productPrice: (document.getElementById('price') as HTMLInputElement)
+          .value,
+        stockQuantity: parseInt(
+          (document.getElementById('stockquantity') as HTMLInputElement).value
+        ),
+        categoryID:
+          selectedCategory == 'produce'
+            ? 1
+            : selectedCategory == 'meat'
+              ? 2
+              : selectedCategory == 'fish'
+                ? 3
+                : selectedCategory == 'dairy'
+                  ? 4
+                  : 5,
+
+        image: '/assets/default.jpg',
+        supplier: (document.getElementById('suppliername') as HTMLInputElement)
+          .value,
+        supplierStock: parseInt(
+          (document.getElementById('supplierstock') as HTMLInputElement).value
+        ),
+        supplierPrice: (
+          document.getElementById('supplierprice') as HTMLInputElement
+        ).value,
+        portion: portion as 'lb.' | 'oz.' | 'item' | 'gal.',
+      },
+      nutritionFacts: {
+        servingSize: (
+          document.getElementById('servingsize') as HTMLInputElement
+        ).value,
+        servingsPerContainer: (
+          document.getElementById('servingspercontainer') as HTMLInputElement
+        ).value,
+        calories: parseInt(
+          (document.getElementById('calories') as HTMLInputElement).value
+        ),
+        totalFat: '0g',
+        cholesterol: '0mg',
+        sodium: '0mg',
+        totalCarbohydrates: '0g',
+        dietaryFiber: '0g',
+        sugars: '0g',
+        protein: '0g',
+        potassium: '0mg',
+        vitaminA: '0%',
+        vitaminC: '0%',
+        vitaminD: '0%',
+        vitaminE: '0%',
+        calcium: '0%',
+        iron: '0%',
+      },
+
+      shippingDetails: {
+        dimensionsLength: '7.38 inches',
+        dimensionsWidth: '6.38 inches',
+        dimensionsHeight: '2.3 inches',
+        weight: '14 ounces',
+      },
+    };
+
+    try {
+      const response = await axios.post(
+        'https://shastamart-api-deploy.vercel.app/api/products/insertProduct',
+        data
+      );
+      console.log(response);
+      addProductToast(productName, quantity);
+      console.log('Order Submitted for ', productName, ' ', quantity);
+      setReloadTrigger((prev) => prev + 1);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useEffect(() => {
-    console.log("Component has re-rendered");
+    console.log('Component has re-rendered');
   }, [reloadTrigger]);
   // function handleSubmitOrder(event: React.FormEvent<HTMLFormElement>) {
   //   console.log('Order Submitted');
@@ -235,7 +356,7 @@ const AdminDashboard = () => {
           {/* Overall Stock and Popular Items */}
           <div className="flex flex-col">
             <h1 className="mb-4 text-4xl text-white">Overall Stock</h1>
-            <div className="mr-10 flex h-[30rem] min-w-[40rem] max-w-[50rem] flex-col rounded-xl bg-cardwhite">
+            <div className="mr-10 flex h-auto min-w-[40rem] max-w-[50rem] flex-col rounded-xl bg-cardwhite pb-10">
               <div className="flex flex-row">
                 <div className="ml-10 mt-10 flex flex-col gap-10">
                   <div className="flex w-full flex-row justify-between gap-[10rem]">
@@ -292,7 +413,7 @@ const AdminDashboard = () => {
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
-                  <form onSubmit={handleSubmit}>
+                  <form onSubmit={handleSubmitOrder}>
                     <DialogHeader>
                       <DialogTitle className="text-3xl">
                         Order Stock
@@ -328,6 +449,189 @@ const AdminDashboard = () => {
                     <DialogFooter>
                       <DialogClose asChild>
                         <Button type="submit">Submit Order</Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className=" mt-6 flex h-[4rem] w-[30rem] flex-row self-center bg-darkblue text-lg">
+                    Add New Product Item?
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <form onSubmit={handleSubmitNewItem}>
+                    <DialogHeader>
+                      <DialogTitle className="text-3xl">
+                        Insert New Product
+                      </DialogTitle>
+                      <DialogDescription className="text-lg">
+                        Enter Product Name, Price, Portions, and Quantity of
+                        Product, etc...
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="name" className="text-right">
+                          Product Name
+                        </Label>
+                        <Input
+                          id="productName"
+                          name="productName"
+                          placeholder="e.g. Fresh Strawberries"
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="price" className="text-right">
+                          Product Price
+                        </Label>
+                        <Input
+                          id="price"
+                          name="price"
+                          placeholder=" e.g. $23.48"
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="category" className="text-right">
+                          Category
+                        </Label>
+                        <Select onValueChange={(e) => setSelectedCategory(e)}>
+                          <SelectTrigger className="col-span-3">
+                            <SelectValue placeholder="Select a category"></SelectValue>
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectItem value="produce">Produce</SelectItem>
+                              <SelectItem value="meat">Meat</SelectItem>
+                              <SelectItem value="fish">Fish</SelectItem>
+                              <SelectItem value="dairy">Dairy</SelectItem>
+                              <SelectItem value="snacks">Snacks</SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="portions" className="text-right">
+                          Portions
+                        </Label>
+                        <Select onValueChange={(e) => setPortion(e)}>
+                          <SelectTrigger className="col-span-3">
+                            <SelectValue placeholder="Select a portion size"></SelectValue>
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              <SelectItem value="lb.">lb.</SelectItem>
+                              <SelectItem value="oz.">oz.</SelectItem>
+                              <SelectItem value="item">item</SelectItem>
+                              <SelectItem value="gal.">gal.</SelectItem>
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <Separator />
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="stockquantity" className="text-right">
+                          Stock Quantity
+                        </Label>
+                        <Input
+                          id="stockquantity"
+                          name="stockquantity"
+                          placeholder="e.g. 10"
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="suppliername" className="text-right">
+                          Supplier Name
+                        </Label>
+                        <Input
+                          id="suppliername"
+                          name="suppliername"
+                          placeholder="e.g. Berry Farms"
+                          className="col-span-3"
+                        />
+                      </div>
+                      <Separator />
+
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="supplierprice" className="text-right">
+                          Supplier Price
+                        </Label>
+                        <Input
+                          id="supplierprice"
+                          name="supplierprice"
+                          placeholder="e.g. $23.48"
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="supplierstock" className="text-right">
+                          Supplier Stock Quantity
+                        </Label>
+                        <Input
+                          id="supplierstock"
+                          name="supplierstock"
+                          placeholder="e.g. 10"
+                          className="col-span-3"
+                        />
+                      </div>
+                      <Separator />
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="servingsize" className="text-right">
+                          Serving Size
+                        </Label>
+                        <Input
+                          id="servingsize"
+                          name="servingsize"
+                          placeholder="e.g. 3"
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label
+                          htmlFor="servingspercontainer"
+                          className="text-right">
+                          Servings Per Container
+                        </Label>
+                        <Input
+                          id="servingspercontainer"
+                          name="servingspercontainer"
+                          placeholder="e.g. 3"
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="calories" className="text-right">
+                          Calories
+                        </Label>
+                        <Input
+                          id="calories"
+                          name="calories"
+                          placeholder="e.g. 3"
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label
+                          htmlFor="productdescription"
+                          className="text-right">
+                          Product Description
+                        </Label>
+                        <Input
+                          id="productdescription"
+                          name="productdescription"
+                          placeholder="Use a period and a space to separate details"
+                          className="col-span-3"
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button type="submit">Add New Product</Button>
                       </DialogClose>
                     </DialogFooter>
                   </form>
