@@ -117,7 +117,7 @@ CREATE TABLE shipping(
     orderID int,
     paymentID int,
     cost decimal(6, 2),
-    trackingNum int,
+    trackingNum varchar(20),
     carrier varchar(100),
     shippingDate date,
     estimatedDel date,

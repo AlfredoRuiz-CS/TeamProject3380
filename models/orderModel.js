@@ -1,4 +1,5 @@
 const { pool } = require("../config/db");
+const { v4: uuidv4 } = require('uuid');
 
 //getAllOrder used by employee
 async function findAllOrder(){
@@ -32,7 +33,7 @@ async function findAllOrder(){
     }
 };
 
-async function createOrder(customerEmail,orderDate,items,paymentMethod){
+async function createOrder(customerEmail,orderDate,items,paymentMethod,normalD,fastD){
     const connection = await pool.getConnection();
     try{
         await connection.beginTransaction();
@@ -73,6 +74,7 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod){
         const [rows] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
         const lastId = rows[0].lastId;
         console.log("AT PAYMENT");
+        
         //create payment
         const createPayment = await connection.query(`
         INSERT INTO payment(orderID,paymentDate,totalAmount,paymentMethod,paymentStatus)
@@ -80,7 +82,30 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod){
         //gey paymentID for return
         const [getPayment] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
         const IDpayment = getPayment[0].lastId;
-        //create detail order in orderLine
+
+        //create shipping
+        const [isMember] = await connection.query(`
+        SELECT membershipID
+        FROM membership
+        WHERE customerEmail=?`,[customerEmail]);
+        if (isMember.length==0){
+            const createShipping = await connection.query(`
+            INSERT INTO shipping(orderID,paymentID,cost,trackingNum,estimatedDel,shippingStatus)
+            VALUES(?,?,?,?,?,?)`,[lastId,IDpayment,10,uuidv4(),normalD,"Delivering"])
+        } else{
+            const createShipping = await connection.query(`
+            INSERT INTO shipping(membershipID,orderID,paymentID,cost,trackingNum,estimatedDel,shippingStatus)
+            VALUES(?,?,?,?,?,?,?)`,[isMember[0].membershipID,lastId,IDpayment,0,uuidv4(),fastD,"Delivering"])
+        }
+        const [getID] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
+        const trackingID = getID[0].lastId;
+        const getTrackNum = await connection.query(`
+        SELECT trackingNum
+        FROM shipping
+        WHERE shippingID=?`,[trackingID]);
+
+
+        // create detail order in orderLine
         for (let item of items){
             console.log(item);
             let subTotal = item.productPrice*item.productQuantity;
@@ -98,7 +123,7 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod){
             orderLineDetail.push(res[0]);
         }
         await connection.commit();
-        return {orderID: lastId, detail: orderLineDetail, paymentID: IDpayment};
+        return {orderID: lastId, detail: orderLineDetail, paymentID: IDpayment, tracking: getTrackNum[0]};
     } catch(error){
         await connection.rollback();
         console.log(error.message);

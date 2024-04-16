@@ -45,7 +45,6 @@ const insertProductInfo = async (req, res) => {
     }
 }
 
-
 module.exports = {
     getAllProducts,
     insertProductInfo

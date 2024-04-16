@@ -30,6 +30,55 @@ async function generateReport(startDate,endDate){
     }
 }
 
+async function soldProducts(startDate,endDate){
+    try{
+        const [res] = await pool.query(`
+        SELECT categName, p.productName, 
+        SUM(ol.quantity) AS totalQuantitySold,
+        SUM(ol.totalAmount) AS totalGain
+        FROM orderLine ol
+        JOIN purchaseOrder pu ON ol.orderID = pu.orderID
+        JOIN product p ON p.productID=ol.productID
+        JOIN category c on c.categoryID = p.categoryID
+        WHERE ol.active=1 AND pu.orderDate BETWEEN ? AND ?
+        GROUP BY p.productID, p.productName
+        ORDER BY totalQuantitySold DESC`,[startDate,endDate]);
+
+        // const [res1] = await pool.query(`
+        // SELECT categName, p.productName,
+        // SUM(ol.quantity) AS totalQuantitySold,
+        // `)
+
+        return res;
+    } catch (error){
+        console.log(error);
+        throw error;
+    }
+}
+
+async function refundedProduct(startDate,endDate){
+    try{
+        const [res] = await pool.query(`
+        SELECT categName, p.productName, 
+        SUM(ol.quantity) AS totalQuantityReturned,
+        SUM(ol.totalAmount) AS totalLoss
+        FROM orderLine ol
+        JOIN purchaseOrder pu ON ol.orderID = pu.orderID
+        JOIN product p ON p.productID=ol.productID
+        JOIN category c on c.categoryID = p.categoryID
+        WHERE ol.active=0 AND pu.orderDate BETWEEN ? AND ?
+        GROUP BY p.productID, p.productName
+        ORDER BY totalQuantityReturned DESC`,[startDate,endDate]);
+
+        return res;
+    } catch (error){
+        console.log(error);
+        throw error;
+    }
+}
+
 module.exports={
-    generateReport
+    generateReport,
+    soldProducts,
+    refundedProduct
 }

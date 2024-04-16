@@ -22,12 +22,14 @@ const getAllOrder = async (req,res) => {
 const processOrder = async(req,res)=>{
   try{
     const body = await getRequestBody(req);
-    const {items,paymentMethod} = body;
-    const customerEmail = req.email;
+    const {customerEmail,items,paymentMethod} = body;
+    // const customerEmail = req.email;
     const currTime = new Date();
     const formatDigit = (x) => x.toString().length === 1 ? '0' + x.toString() : x.toString();
     let orderDate = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate())}`;
-    const order = await orderModel.createOrder(customerEmail,orderDate,items,paymentMethod);
+    let normalD = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate()+2)}`;
+    let fastD = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate()+1)}`;
+    const order = await orderModel.createOrder(customerEmail,orderDate,items,paymentMethod,normalD,fastD);
     if(!order){
       res.writeHead(500,{'Content-Type':"application/json"});
       res.end(JSON.stringify({"message":`Failed to create order for ${customerEmail}`}));

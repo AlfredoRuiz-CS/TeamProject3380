@@ -20,6 +20,45 @@ const getReport = async(req,res)=>{
     }
 }
 
+const getSoldProducts = async(req,res)=>{
+  try{
+    const body=await getRequestBody(req);
+    const {startDate,endDate} = body;
+    const result = await reportModel.soldProducts(startDate,endDate);
+    if(!result) {
+      res.writeHead(500,{'Content-Type':"application/json"});
+      res.end(JSON.stringify({"message":`Failed to get sold product report`}));
+      return;
+    }
+    res.writeHead(200,{'Content-Type':'application/json'});
+    res.end(JSON.stringify({"message":`Here is the sold product report`,
+                            "result": result}));
+  } catch(error){
+  res.writeHead(500,{'Content-Type':'application/json'});
+  res.end(JSON.stringify({"error":error.message}));
+  }
+}
+
+const getRefundedProducts = async(req,res)=>{
+  try{
+    const body=await getRequestBody(req);
+    const {startDate,endDate} = body;
+    const result = await reportModel.refundedProduct(startDate,endDate);
+    if(!result) {
+      res.writeHead(500,{'Content-Type':"application/json"});
+      res.end(JSON.stringify({"message":`Failed to get sold product report`}));
+      return;
+    }
+    res.writeHead(200,{'Content-Type':'application/json'});
+    res.end(JSON.stringify({"message":`Here is the refunded product report`,
+                            "result": result}));
+  } catch(error){
+  res.writeHead(500,{'Content-Type':'application/json'});
+  res.end(JSON.stringify({"error":error.message}));
+  }
+}
 module.exports={
-    getReport
+    getReport,
+    getSoldProducts,
+    getRefundedProducts
 }
