@@ -29,18 +29,6 @@ const Cart = () => {
     0
   );
 
-  // ! REPLACE POPULAR ITEMS WITH USER LIST
-
-  // const popularItem1 = dummyProducts.reduce((lowest, product) => {
-  //   return lowest.supplierStock < product.supplierStock ? lowest : product;
-  // }, dummyProducts[0]);
-  // const updatedProducts = dummyProducts.filter(
-  //   (product) => product !== popularItem1
-  // );
-  // const popularItem2 = updatedProducts.reduce((lowest, product) => {
-  //   return lowest.supplierStock < product.supplierStock ? lowest : product;
-  // }, dummyProducts[0]);
-
   function emptyCart() {
     store.resetCart();
     toast.success('Cart has been emptied!', {

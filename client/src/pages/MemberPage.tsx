@@ -3,7 +3,7 @@ import Footer from '@/components/Footer';
 // import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
-const dummyPage = () => {
+const MemberPage = () => {
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite pb-10 font-inter text-black">
@@ -48,4 +48,4 @@ const dummyPage = () => {
   );
 };
 
-export default dummyPage;
+export default MemberPage;

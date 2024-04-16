@@ -45,12 +45,6 @@ import { Label } from '@/components/ui/label';
 // import useUserStore from '@/components/store';
 import { useProductsStore } from '@/components/store';
 import { mapCategory, ProductApiResponse } from './Products';
-import { dummyProducts } from './Products';
-
-dummyProducts[4].stock = 2;
-dummyProducts[4].supplierStock = 0;
-dummyProducts[6].stock = 0;
-dummyProducts[6].supplierStock = 20;
 
 const AdminDashboard = () => {
   const { setProducts } = useProductsStore();
@@ -137,7 +131,7 @@ const AdminDashboard = () => {
     navigate('/suppliers');
   }
 
-  function orderToast(productName: string, quantity: string) {
+  function orderSuccessToast(productName: string, quantity: string) {
     toast.success(
       'Order for ' + quantity + ' ' + productName + ' ' + 'Submitted!',
       {
@@ -148,7 +142,7 @@ const AdminDashboard = () => {
     );
   }
 
-  function supplierToast(supplierName: string) {
+  function supplierSuccessToast(supplierName: string) {
     toast.success('Added ' + supplierName + ' to Suppliers!', {
       position: 'bottom-right',
       className: 'font-bold text-black',
@@ -199,7 +193,7 @@ const AdminDashboard = () => {
         'https://shastamart-api-deploy.vercel.app/api/suppliers/insertSupplier',
         data
       );
-      supplierToast(supplierName);
+      supplierSuccessToast(supplierName);
       console.log(response);
       console.log('Supplier Submitted for ', supplierName);
       setReloadTrigger((prev) => prev + 1);
@@ -227,7 +221,7 @@ const AdminDashboard = () => {
         data
       );
       console.log(response);
-      orderToast(productName, quantity);
+      orderSuccessToast(productName, quantity);
       console.log('Order Submitted for ', productName, ' ', quantity);
       setReloadTrigger((prev) => prev + 1);
     } catch (error) {
@@ -691,6 +685,7 @@ const AdminDashboard = () => {
                 </DialogContent>
               </Dialog>
 
+              {/* Add New Supplier */}
               <Dialog>
                 <DialogTrigger asChild>
                   <Button className=" mt-6 flex h-[4rem] w-[30rem] flex-row self-center bg-darkblue text-lg">
@@ -758,7 +753,7 @@ const AdminDashboard = () => {
                         </Label>
                         <Select onValueChange={(e) => setSelectedState(e)}>
                           <SelectTrigger className="col-span-3">
-                            <SelectValue placeholder="State"></SelectValue>
+                            <SelectValue placeholder="State" />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectGroup>
