@@ -185,7 +185,7 @@ async function findOrderByLname(lname){
 async function findOrderDetail(orderID){
     try{
         const [res] = await pool.query(`
-        SELECT o.productID, o.quantity, o.unitPrice, o.subTotal, p.total
+        SELECT o.productID, o.quantity, o.unitPrice, o.totalAmount, p.total
         FROM purchaseOrder p
         JOIN orderLine o
         ON p.orderID = o.orderID

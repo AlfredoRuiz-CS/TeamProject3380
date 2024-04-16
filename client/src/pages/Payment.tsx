@@ -119,8 +119,9 @@ const payment = (props: paymentProps) => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         console.log(response.data);
-        const orderData = await response.data;
-        const orderID = orderData.orderID;
+        const orderData = response.data;
+        const orderID = orderData.data.orderID;
+        console.log(orderID);
         navigate(`/orders/summary/${orderID}`);
       } catch (error) {
         console.log(error);

@@ -34,7 +34,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={user.loggedIn ? <Profile /> : <Navigate to="/register" />} />
         <Route path="/orders" element={user.loggedIn ? <Orders /> : <Navigate to="/register" />} />
-        <Route path="/orders/summary:orderID" element={user.loggedIn ? <OrderSummary type={'order'}/> : <Navigate to="/register" />} />
+        <Route path="/orders/summary/:orderID" element={user.loggedIn ? <OrderSummary type={'order'}/> : <Navigate to="/register" />} />
         <Route path="/orders/summary/membership" element={user.loggedIn ? <OrderSummary type={'membership'}/> : <Navigate to="/register" />} />
         {/* User Cart/Payments */}
         <Route path="/cart" element={user.loggedIn ? <Cart /> : <Navigate to="/register" />} />
