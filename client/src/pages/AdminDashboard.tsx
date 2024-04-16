@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Button } from '@/components/ui/button.tsx';
+import { FaTrashCan } from 'react-icons/fa6';
 import { states } from '@/pages/Profile';
 
 import {
@@ -35,6 +36,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 import { Separator } from '@/components/ui/separator';
 
@@ -196,6 +209,59 @@ const AdminDashboard = () => {
       supplierSuccessToast(supplierName);
       console.log(response);
       console.log('Supplier Submitted for ', supplierName);
+      setReloadTrigger((prev) => prev + 1);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async function handleRemoveProduct(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    let productName = (
+      document.getElementById('productname') as HTMLInputElement
+    ).value;
+
+    const data = {
+      productName: productName,
+    };
+
+    try {
+      const response = await axios.post(
+        'https://shastamart-api-deploy.vercel.app/api/products/deleteProduct',
+        data
+      );
+
+      if (response.status === 200) {
+        toast.success('Product Removed!', {
+          position: 'bottom-right',
+          className: 'font-bold text-black',
+          duration: 2000,
+        });
+      }
+      console.log('Product Removed for ', productName);
+      setReloadTrigger((prev) => prev + 1);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  function handleRemoveSupplier(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    let supplierName = (
+      document.getElementById('suppliername') as HTMLInputElement
+    ).value;
+
+    const data = {
+      supplierName: supplierName,
+    };
+
+    try {
+      const response = axios.post(
+        'https://shastamart-api-deploy.vercel.app/api/suppliers/deleteSupplier',
+        data
+      );
+      console.log(response);
+      console.log('Supplier Removed for ', supplierName);
       setReloadTrigger((prev) => prev + 1);
     } catch (error) {
       console.log(error);
@@ -782,6 +848,131 @@ const AdminDashboard = () => {
                       <DialogClose asChild>
                         <Button type="submit">Add New Supplier</Button>
                       </DialogClose>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className=" mt-6 flex h-[4rem] w-[30rem] flex-row self-center bg-red-500 text-lg hover:bg-red-500/90">
+                    Remove Product Item?
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <form onSubmit={handleRemoveProduct}>
+                    <DialogHeader>
+                      <DialogTitle className="text-3xl">
+                        Remove Product Item
+                      </DialogTitle>
+                      <DialogDescription className="text-lg">
+                        Enter Product Name Below.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="productname" className="text-right">
+                          Product Name
+                        </Label>
+                        <Input
+                          id="productname"
+                          name="productname"
+                          placeholder="e.g. Fresh Strawberries"
+                          className="col-span-3"
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button className="bg-red-500 hover:bg-red-500/90">
+                            Remove Product Item
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you absolutely sure?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action will remove the selected product from
+                              the databse.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <DialogClose asChild>
+                              <AlertDialogAction
+                                className="bg-red-500 hover:bg-red-500/90"
+                                type="submit">
+                                Confirm
+                              </AlertDialogAction>
+                            </DialogClose>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className=" mt-6 flex h-[4rem] w-[30rem] flex-row self-center bg-red-500 text-lg hover:bg-red-500/90">
+                    Remove Supplier?
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <form onSubmit={handleRemoveSupplier}>
+                    <DialogHeader>
+                      <DialogTitle className="text-3xl">
+                        Remove Supplier
+                      </DialogTitle>
+                      <DialogDescription className="text-lg">
+                        Enter Supplier Name Below.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="suppliername" className="text-right">
+                          Supplier Name
+                        </Label>
+                        <Input
+                          id="suppliername"
+                          name="suppliername"
+                          placeholder="e.g. Berry Farms"
+                          className="col-span-3"
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button className="bg-red-500 hover:bg-red-500/90">
+                            Remove Supplier
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you absolutely sure?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action will remove the selected supplier from
+                              the databse.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <DialogClose asChild>
+                              <AlertDialogAction
+                                className="bg-red-500 hover:bg-red-500/90"
+                                type="submit">
+                                Confirm
+                              </AlertDialogAction>
+                            </DialogClose>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </DialogFooter>
                   </form>
                 </DialogContent>

@@ -28,10 +28,9 @@ const Header = (props: HeaderProps) => {
   const user = useUserStore();
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState([]);
-  const [reloadTrigger, setReloadTrigger] = useState(0);
+  const [notifNumber, setNotifNumber] = useState(0);
 
   // ! ADD BACKEND CALL TO DISPLAY THE NUMBER OF NOTIFICATIONS
-  const notifNumber = 5;
   useEffect(() => {}, [user.loggedIn]);
   useEffect(() => {}, [user.cartItemsNumber]);
 
@@ -65,17 +64,26 @@ const Header = (props: HeaderProps) => {
           'https://shastamart-api-deploy.vercel.app/api/notifications/get_notifications'
         );
         const notifData = await response.data;
+
+        const uniqueMessages: any = {};
+        const filteredData: any = [];
+        notifData.forEach((item: any) => {
+          if (!uniqueMessages[item.message]) {
+            uniqueMessages[item.message] = true;
+            filteredData.push(item);
+          }
+        });
         console.log(notifData);
-        setNotifications(notifData);
+        console.log(filteredData);
+        setNotifications(filteredData);
+        setNotifNumber(notifData.length);
       } catch (error) {
         console.error(error);
       }
-
-      fetchNotifications();
     };
-  }, [reloadTrigger, user.loggedIn]);
+    fetchNotifications();
+  }, []);
 
-  // getNotifications();
   return (
     <>
       <div
@@ -127,10 +135,7 @@ const Header = (props: HeaderProps) => {
                 {textColor === 'text-white' ? (
                   user.accountType === 'employee' ? (
                     // TODO: Add notification dropdown that links to the low supply sheet
-                    <DropdownMenu
-                      onOpenChange={(e) =>
-                        e && setReloadTrigger((prev) => prev + 1)
-                      }>
+                    <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Link to="/admin" className="flex flex-row gap-1">
                           <p className="">{notifNumber}</p>
@@ -141,9 +146,11 @@ const Header = (props: HeaderProps) => {
                         <DropdownMenuLabel>Notifications</DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                          {notifications.map((notification) => (
-                            <DropdownMenuItem>
-                              <Link to="/admin">{notification}</Link>
+                          {notifications.map((notification, index) => (
+                            <DropdownMenuItem
+                              key={index}
+                              className="flex flex-wrap">
+                              <Link to="/admin"></Link>
                             </DropdownMenuItem>
                           ))}
                         </DropdownMenuGroup>
