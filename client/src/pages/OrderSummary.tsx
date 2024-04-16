@@ -6,7 +6,7 @@ import { PaymentMethod } from '@/pages/Profile';
 // import { productItem } from '@/components/store';
 import { useParams } from 'react-router-dom';
 // import { useState } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 // import { productItem } from '@/components/store';
@@ -15,10 +15,19 @@ interface OrderSummaryProps {
   type: 'membership' | 'order';
 }
 
+type orderData = {
+  productID?: string;
+  quantity?: number;
+  unitPrice?: number;
+  total?: number;
+  paymentMethod?: string;
+  nameOnCard?: string;
+}
+
 const OrderSummary = (props: OrderSummaryProps) => {
   const user = useUserStore();
   const selectedPaymentMethod: PaymentMethod = user.selectedPaymentMethod;
-  // const [cartItems, setCartItems] = useState<productItem[]>([]);
+  const [orderDetails, setOrderDetails] = useState<orderData[]>([]);
   const { orderID } = useParams();
   console.log(orderID);
   const membershipCost = 10;
@@ -28,12 +37,7 @@ const OrderSummary = (props: OrderSummaryProps) => {
           style: 'currency',
           currency: 'USD',
         })
-      : user.cartItems
-          .reduce(
-            (acc, product, index) => acc + product.price * user.quantity[index],
-            0
-          )
-          .toLocaleString('en-US', {
+      : orderDetails[0].total?.toLocaleString('en-US', {
             style: 'currency',
             currency: 'USD',
           });
@@ -58,10 +62,13 @@ const OrderSummary = (props: OrderSummaryProps) => {
           headers: { Authorization: `Bearer ${token}` } })
         console.log(response.data);
         const orderData = await response.data;
+        setOrderDetails(orderData.res);
+        console.log(orderDetails);
         if (orderData.membershipStatus === "From Order"){
           user.setUserDetails({isMember: true});
           loyaltyMembershipNotification();
         }
+        user.resetCart();
       } catch (error) {
         console.log(error);
       }
@@ -98,13 +105,13 @@ const OrderSummary = (props: OrderSummaryProps) => {
                     </td>
                   </tr>
                 ) : (
-                  user.cartItems.map((product, index) => (
+                  orderDetails.map((product, index) => (
                     <tr key={index}>
                       <td className="pl-5">
-                        {product.name + ' x ' + user.quantity[index]}
+                        {product.productID + ' x ' + product.quantity}
                       </td>
                       <td className="pr-5 text-right">
-                        {product.price.toLocaleString('en-US', {
+                        {product.total?.toLocaleString('en-US', {
                           style: 'currency',
                           currency: 'USD',
                         })}
