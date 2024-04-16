@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Button } from './ui/button.tsx';
 import toast from 'react-hot-toast';
 import { IoMdCart } from 'react-icons/io';
@@ -16,11 +15,10 @@ import {
 } from '@/components/ui/dropdown-menu.tsx';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-// Imports for state management
 import useUserStore from '@/components/store';
-// import { devtools, persist } from "zustand/middleware";
-import type {} from '@redux-devtools/extension'; // required for devtools typing
+import { useState, useEffect } from 'react';
 
 interface HeaderProps {
   color?: 'blue' | 'white';
@@ -29,6 +27,7 @@ interface HeaderProps {
 const Header = (props: HeaderProps) => {
   const user = useUserStore();
   const navigate = useNavigate();
+  const [reloadTrigger, setReloadTrigger] = useState(0);
 
   // ! ADD BACKEND CALL TO DISPLAY THE NUMBER OF NOTIFICATIONS
   const notifNumber = 5;
@@ -58,6 +57,35 @@ const Header = (props: HeaderProps) => {
     navigate('/home');
   }
 
+  async function getNotifications() {
+    try {
+      const response = await axios.get(
+        'https://shastamart-api-deploy.vercel.app/api/notifications/get_notifications'
+      );
+      const notifData = await response.data;
+      console.log(notifData);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get(
+          'https://shastamart-api-deploy.vercel.app/api/notifications/get_notifications'
+        );
+        const notifData = await response.data;
+        console.log(notifData);
+      } catch (error) {
+        console.error(error);
+      }
+
+      fetchNotifications();
+    };
+  }, [reloadTrigger, user.loggedIn]);
+
+  // getNotifications();
   return (
     <>
       <div
@@ -109,10 +137,19 @@ const Header = (props: HeaderProps) => {
                 {textColor === 'text-white' ? (
                   user.accountType === 'employee' ? (
                     // TODO: Add notification dropdown that links to the low supply sheet
-                    <Link to="/admin" className="flex flex-row gap-1">
-                      <p className="">{notifNumber}</p>
-                      <IoNotifications size={20} color="white" />
-                    </Link>
+                    <DropdownMenu onOpenChange={getNotifications}>
+                      <DropdownMenuTrigger asChild>
+                        <Link to="/admin" className="flex flex-row gap-1">
+                          <p className="">{notifNumber}</p>
+                          <IoNotifications size={20} color="white" />
+                        </Link>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent>
+                        <DropdownMenuLabel>Notifications</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuGroup>{}</DropdownMenuGroup>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   ) : (
                     <Link to="/cart" className="flex flex-row gap-1">
                       <p className="">{user.cartItemsNumber}</p>
