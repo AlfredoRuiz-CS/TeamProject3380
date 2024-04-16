@@ -59,6 +59,7 @@ const OrderSummary = (props: OrderSummaryProps) => {
         console.log(response.data);
         const orderData = await response.data;
         if (orderData.membershipStatus === "From Order"){
+          user.setUserDetails({isMember: true});
           loyaltyMembershipNotification();
         }
       } catch (error) {
