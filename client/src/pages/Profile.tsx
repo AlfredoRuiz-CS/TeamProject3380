@@ -21,6 +21,18 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+
 // Functionality Imports
 import useUserStore from '@/components/store';
 import PaymentMethodCard from '@/components/PaymentMethodCard';
@@ -655,11 +667,35 @@ const Profile = () => {
                     Change Password
                   </Button>
                 </form>
-                <Button
+                {!store.isAdmin &&
+                (<AlertDialog>
+                <AlertDialogTrigger asChild>
+                <Button className=" mt-10 bg-red-500 hover:bg-red-500/90">
+                  Delete Account
+                </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action will delete your account.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteAccount}>
+                      Confirm
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+                </AlertDialog>) }
+                {/* {!store.isAdmin && (<Button
                   className=" mt-10 bg-red-500 hover:bg-red-500/90"
                   onClick={handleDeleteAccount}>
                   Delete Account
-                </Button>
+                </Button>) } */}
               </section>
             </div>
           </div>

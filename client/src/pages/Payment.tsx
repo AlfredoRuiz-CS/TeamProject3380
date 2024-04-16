@@ -45,7 +45,7 @@ const payment = (props: paymentProps) => {
     (acc, product, index) => acc + product.price * store.quantity[index],
     0
   );
-  const shipping = 10;
+  let shipping = !store.isMember ? 10 : 0;
 
   function paymentMethodSelectedToast(p: PaymentMethod) {
     toast.success(
@@ -81,16 +81,24 @@ const payment = (props: paymentProps) => {
     let paymentMethod;
 
     if (usingExistingPaymentMethod && paymentMethodSelected) {
+      // Use existing payment method
       paymentMethod = `${paymentMethodSelected?.cardnumber} ${paymentMethodSelected?.cardtype}`;
       console.log(paymentMethod);
     } else {
+      // Extract new payment method details from form
       const formData = new FormData(event.currentTarget);
-      const cardNumber = formData.get('cardNumber');
-      const cardtype = formData.get('cardType');
-      paymentMethod = `${cardNumber} ${cardtype}`;
+      const nameOnCard = formData.get('cardName') as string;
+      const cardNumber = formData.get('cardNumber') as string;
+      const expirationDate = formData.get('expirationDate') as string;
+      const cvv = formData.get('cvv') as string;
+      const cardType = formData.get('cardType') as string;
+
+      await handleNewPayment(nameOnCard, cardNumber, expirationDate, cvv, cardType);
+      paymentMethod = `${cardNumber} ${cardType}`;
     }
 
     if (props.type === 'cart') {
+      
       const cartOrderDetails = {
         items: store.cartItems.map((item, index) => ({
           productID: item.productId,
@@ -108,9 +116,7 @@ const payment = (props: paymentProps) => {
         const response = await axios.post(
           'https://shastamart-api-deploy.vercel.app/api/orders/processOrder',
           cartOrderDetails,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
         console.log(response.data);
         navigate('/orders/summary');
@@ -118,10 +124,12 @@ const payment = (props: paymentProps) => {
         console.log(error);
       }
     } else if (props.type === 'membership') {
+      
       const data = {
         customerEmail: store.email,
         paymentMethod: paymentMethod,
       };
+
       console.log(data);
 
       try {
@@ -129,7 +137,7 @@ const payment = (props: paymentProps) => {
           'https://shastamart-api-deploy.vercel.app/api/membership/member',
           data
         );
-        console.log(response.data);
+        console.log("Response:", response.data);
         const isMember = await response.data;
         store.setUserDetails({ isMember: isMember });
         navigate('/orders/summary');
@@ -137,7 +145,35 @@ const payment = (props: paymentProps) => {
         console.log(error);
       }
     }
-  };
+};
+
+  async function handleNewPayment(
+    nameOnCard: string,
+    cardNumber: string,
+    expirationDate: string,
+    cvv: string,
+    cardType: string
+    ) {
+    const data = {
+      cardNumber,
+      expirationDate,
+      cvv: parseInt(cvv, 10),
+      cardType,
+      nameOnCard
+    };
+    const token = localStorage.getItem('token');
+    try {
+      const response = await axios.post(
+        'https://shastamart-api-deploy.vercel.app/api/users/set_card',
+        data,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      console.log('New payment method saved:', response.data);
+    } catch (error) {
+      console.error('Error saving new payment method:', error);
+      throw new Error('Failed to save payment method');
+    }
+}
 
   useEffect(() => {
     const fetchPayments = async () => {
@@ -245,12 +281,12 @@ const payment = (props: paymentProps) => {
                       </h3>
                     </td>
                     <td className="pr-5 text-right">
-                      {store.cartItems
+                      {(store.cartItems
                         .reduce(
                           (acc, product, index) =>
                             acc + product.price * store.quantity[index],
                           0
-                        )
+                        ) + shipping)
                         .toLocaleString('en-US', {
                           style: 'currency',
                           currency: 'USD',
