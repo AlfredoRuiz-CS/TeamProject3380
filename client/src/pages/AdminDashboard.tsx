@@ -704,7 +704,7 @@ const AdminDashboard = () => {
                         Add New Supplier
                       </DialogTitle>
                       <DialogDescription className="text-lg">
-                        Enter Supplier Name and Stock Information below.
+                        Enter supplier name and contact information below.
                       </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
