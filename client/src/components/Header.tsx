@@ -27,7 +27,6 @@ interface HeaderProps {
 const Header = (props: HeaderProps) => {
   const user = useUserStore();
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState([]);
   const [notifNumber, setNotifNumber] = useState(0);
 
   // ! ADD BACKEND CALL TO DISPLAY THE NUMBER OF NOTIFICATIONS
@@ -73,10 +72,8 @@ const Header = (props: HeaderProps) => {
             filteredData.push(item);
           }
         });
-        console.log(notifData);
         console.log(filteredData);
-        setNotifications(filteredData);
-        setNotifNumber(notifData.length);
+        setNotifNumber(filteredData.length);
       } catch (error) {
         console.error(error);
       }
@@ -135,27 +132,11 @@ const Header = (props: HeaderProps) => {
                 {textColor === 'text-white' ? (
                   user.accountType === 'employee' ? (
                     // TODO: Add notification dropdown that links to the low supply sheet
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Link to="/admin" className="flex flex-row gap-1">
-                          <p className="">{notifNumber}</p>
-                          <IoNotifications size={20} color="white" />
-                        </Link>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuGroup>
-                          {notifications.map((notification, index) => (
-                            <DropdownMenuItem
-                              key={index}
-                              className="flex flex-wrap">
-                              <Link to="/admin"></Link>
-                            </DropdownMenuItem>
-                          ))}
-                        </DropdownMenuGroup>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+
+                    <Link to="/notifications" className="flex flex-row gap-1">
+                      <p className="">{notifNumber}</p>
+                      <IoNotifications size={20} color="white" />
+                    </Link>
                   ) : (
                     <Link to="/cart" className="flex flex-row gap-1">
                       <p className="">{user.cartItemsNumber}</p>

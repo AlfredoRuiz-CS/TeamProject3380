@@ -1,7 +1,5 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-// import { productItem } from '@/components/store';
-// import { dummyProducts } from './Products';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useUserStore from '@/components/store';
@@ -34,12 +32,12 @@ import {
 } from '@/components/ui/select';
 
 type productOrder = {
-  productID: string,
-  productName: string,
-  quantity: number,
-  unitPrice: string,
-  totalAmount: number,
-}
+  productID: string;
+  productName: string;
+  quantity: number;
+  unitPrice: string;
+  totalAmount: number;
+};
 
 type Order = {
   orderID: number;
@@ -48,16 +46,6 @@ type Order = {
   total: number;
   items: productOrder[];
 };
-
-// const dummyOrders: Order[] = Array(20)
-//   .fill({ items: [] })
-//   .map((_, index) => ({
-//     orderNumber: index,
-//     date: new Date().toDateString(),
-//     paymentMethod: 'Credit Card',
-//     total: Math.random() * 300,
-//     items: dummyProducts.slice(0, 10),
-//   }));
 
 const Orders = () => {
   const user = useUserStore();
@@ -74,9 +62,10 @@ const Orders = () => {
   // ? Search Query TO BE IMPLEMENTED USING BACKEND CALL
   const [filteredOrders, setFilteredOrders] = useState<Order[]>(orders);
   let [filterOption, setFilterOption] = useState('All');
-  const orderToDisplay = sortedOrders.find(order => order.orderID === selectedOrder);
+  const orderToDisplay = sortedOrders.find(
+    (order) => order.orderID === selectedOrder
+  );
 
-  // let [searchQuery, setSearchQuery] = useState('');
   useEffect(() => {}, [sheetOpen]);
 
   // ? Order Selection and Sheet Handlers
@@ -109,7 +98,6 @@ const Orders = () => {
     // processedOrders = filterOrders(processedOrders);
     // processedOrders = sortOrders(processedOrders);
     // setDisplayOrders(processedOrders);
-
   }, [sortOrder, filterOption, orders]);
 
   function sortOrders(o: Order[]) {
@@ -119,9 +107,13 @@ const Orders = () => {
       case 'Order Asc.':
         return o.sort((a, b) => a.orderID - b.orderID);
       case 'Date Desc.':
-        return o.sort((a, b) => Date.parse(b.orderDate) - Date.parse(a.orderDate));
+        return o.sort(
+          (a, b) => Date.parse(b.orderDate) - Date.parse(a.orderDate)
+        );
       case 'Date Asc.':
-        return o.sort((a, b) => Date.parse(a.orderDate) - Date.parse(b.orderDate));
+        return o.sort(
+          (a, b) => Date.parse(a.orderDate) - Date.parse(b.orderDate)
+        );
       case 'Payment Method':
         // Function to group orders by a payment method
         return Object.values(
@@ -180,39 +172,46 @@ const Orders = () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const response = await axios.get('https://shastamart-api-deploy.vercel.app/api/users/verifySession', { 
-            headers: { 'Authorization' : `Bearer ${token}` }
-          });
+          const response = await axios.get(
+            'https://shastamart-api-deploy.vercel.app/api/users/verifySession',
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
           console.log(response.data);
         } catch (error) {
           localStorage.removeItem('token');
-          navigate('/login')
+          navigate('/login');
         }
       } else {
         navigate('/register');
       }
-    }
+    };
     verifySession();
-  }, [navigate])
+  }, [navigate]);
 
   useEffect(() => {
     const fetchOrders = async () => {
       if (user.isAdmin) {
         try {
-          const response = await axios.get("https://shastamart-api-deploy.vercel.app/api/orders/allOrders");
+          const response = await axios.get(
+            'https://shastamart-api-deploy.vercel.app/api/orders/allOrders'
+          );
           const orderData = await response.data;
           console.log(orderData);
           const transformedOrders = orderData.map((order: Order) => ({
             orderID: order.orderID,
-            orderDate: order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'N/A', // Handle invalid or null dates
+            orderDate: order.orderDate
+              ? new Date(order.orderDate).toLocaleDateString()
+              : 'N/A', // Handle invalid or null dates
             paymentMethod: order.paymentMethod || 'N/A', // Handle null payment methods
             total: order.total,
             items: order.items.map((item: productOrder) => ({
               productID: item.productID,
               productName: item.productName,
-              unitPrice: item.unitPrice, 
+              unitPrice: item.unitPrice,
               quantity: item.quantity,
-              totalAmount: item.totalAmount, 
+              totalAmount: item.totalAmount,
             })),
           }));
           setOrders(transformedOrders);
@@ -222,24 +221,26 @@ const Orders = () => {
       } else {
         try {
           const token = localStorage.getItem('token');
-          const response = await axios.get("https://shastamart-api-deploy.vercel.app/api/orders/findAllWithEmail", { 
-            headers: { 'Authorization' : `Bearer ${token}` }
-          });
+          const response = await axios.get(
+            'https://shastamart-api-deploy.vercel.app/api/orders/findAllWithEmail',
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
           const orderData = await response.data;
           console.log(orderData);
-          const transformedOrders = orderData.map(
-            (order: Order) => ({
-              orderID: order.orderID,
-              orderDate: new Date(order.orderDate).toLocaleDateString(),
-              paymentMethod: order.paymentMethod,
-              total: order.total,
-              items: order.items.map((item: productOrder) => ({
-                productID: item.productID,
-                productName: item.productName,
-                unitPrice: item.unitPrice,
-                quantity: item.quantity,
-                totalAmount: item.totalAmount
-              }))
+          const transformedOrders = orderData.map((order: Order) => ({
+            orderID: order.orderID,
+            orderDate: new Date(order.orderDate).toLocaleDateString(),
+            paymentMethod: order.paymentMethod,
+            total: order.total,
+            items: order.items.map((item: productOrder) => ({
+              productID: item.productID,
+              productName: item.productName,
+              unitPrice: item.unitPrice,
+              quantity: item.quantity,
+              totalAmount: item.totalAmount,
+            })),
           }));
           setOrders(transformedOrders);
           console.log(orders);
@@ -247,9 +248,9 @@ const Orders = () => {
           console.log(error);
         }
       }
-    }
+    };
     fetchOrders();
-  }, [setOrders])
+  }, [setOrders]);
 
   return (
     <>
@@ -267,8 +268,7 @@ const Orders = () => {
             {/* Sort dropdown */}
             <Select
               defaultValue="Order Number"
-              onValueChange={(e) => setSortOrder(e)}
-            >
+              onValueChange={(e) => setSortOrder(e)}>
               <SelectTrigger className="h-10 w-[8rem] bg-white text-black">
                 <SelectValue placeholder="Order Desc.">{sortOrder}</SelectValue>
               </SelectTrigger>
@@ -287,8 +287,7 @@ const Orders = () => {
 
             <Select
               defaultValue="Order Number"
-              onValueChange={(e) => setFilterOption(e)}
-            >
+              onValueChange={(e) => setFilterOption(e)}>
               <SelectTrigger className="h-10 w-[8rem] bg-white text-black">
                 <SelectValue placeholder="All">{filterOption}</SelectValue>
               </SelectTrigger>
@@ -296,8 +295,12 @@ const Orders = () => {
                 <SelectItem value="All">All</SelectItem>
                 <SelectItem value="Last 6 Months">Last 6 Months</SelectItem>
                 <SelectItem value="Last 2 Weeks">Last 2 Weeks</SelectItem>
-                <SelectItem value="Total Paid > 100">Total Paid {'>'} 100</SelectItem>
-                <SelectItem value="Total Paid > 250">Total Paid {'>'} 250</SelectItem>
+                <SelectItem value="Total Paid > 100">
+                  Total Paid {'>'} 100
+                </SelectItem>
+                <SelectItem value="Total Paid > 250">
+                  Total Paid {'>'} 250
+                </SelectItem>
                 <SelectItem value="Payment Method">Payment Method</SelectItem>
               </SelectContent>
             </Select>
@@ -322,8 +325,7 @@ const Orders = () => {
               {filteredOrders.map((order, index) => (
                 <TableRow
                   key={index}
-                  onClick={() => orderSelectHandler(order.orderID)}
-                >
+                  onClick={() => orderSelectHandler(order.orderID)}>
                   <TableCell className="max-w-6 pl-6">
                     {order.orderID}
                   </TableCell>
@@ -364,13 +366,15 @@ const Orders = () => {
                         </TableHeader>
 
                         <TableBody>
-                        {orderToDisplay && orderToDisplay.items.map(
-                            (product, index) => (
+                          {orderToDisplay &&
+                            orderToDisplay.items.map((product, index) => (
                               <TableRow key={index}>
                                 <TableCell className="max-w-6 pl-6">
                                   {product.productName}
                                 </TableCell>
-                                <TableCell className="max-w-5">{product.quantity}</TableCell>
+                                <TableCell className="max-w-5">
+                                  {product.quantity}
+                                </TableCell>
                                 <TableCell className="max-w-5">
                                   {product.totalAmount.toLocaleString('en-US', {
                                     style: 'currency',
@@ -378,25 +382,19 @@ const Orders = () => {
                                   })}
                                 </TableCell>
                               </TableRow>
-                            )
-                          )}
+                            ))}
                           <TableRow>
                             <TableCell className="max-w-6 pl-6">
                               Total
                             </TableCell>
                             <TableCell
                               className=" max-w-9 p-0 pr-9 text-right"
-                              colSpan={2}
-                            >
-
+                              colSpan={2}>
                               {/* TODO: Make sure that the total amount lines up with the rest of the products if the decimal place changes. */}
-                              {orderToDisplay?.total.toLocaleString(
-                                'en-US',
-                                {
-                                  style: 'currency',
-                                  currency: 'USD',
-                                }
-                              )}
+                              {orderToDisplay?.total.toLocaleString('en-US', {
+                                style: 'currency',
+                                currency: 'USD',
+                              })}
                             </TableCell>
                           </TableRow>
                         </TableBody>

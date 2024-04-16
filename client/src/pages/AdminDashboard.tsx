@@ -5,7 +5,6 @@ import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Button } from '@/components/ui/button.tsx';
-import { FaTrashCan } from 'react-icons/fa6';
 import { states } from '@/pages/Profile';
 
 import {
