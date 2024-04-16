@@ -119,7 +119,7 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod,normalD,f
             SELECT p.productName, o.quantity, o.unitPrice, o.totalAmount
             FROM orderLine o
             JOIN product p on o.productID = p.productID
-            WHERE orderLineID = ? AND active = ?`,[anotherID,1]);
+            WHERE orderLineID = ? AND o.active = 1`,[anotherID]);
             orderLineDetail.push(res[0]);
         }
         await connection.commit();
