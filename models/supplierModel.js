@@ -4,7 +4,8 @@ async function getAllSuppliers() {
     try {
         const [rows] = await pool.query(`
         SELECT *
-        FROM supplier`);
+        FROM supplier s
+        WHERE s.active = 1`);
 
         return rows;
 

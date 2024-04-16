@@ -9,7 +9,8 @@ async function getAllProducts() {
         s.dimensionsLength, s.dimensionsWidth, s.dimensionsHeight, s.weight
         FROM product p
         LEFT JOIN nutritionFacts n on p.productID = n.productID
-        LEFT JOIN shippingDetails s on p.productID = s.productID`);
+        LEFT JOIN shippingDetails s on p.productID = s.productID
+        where p.active = 1`);
 
         return rows;
 
