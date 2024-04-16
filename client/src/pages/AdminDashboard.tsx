@@ -795,20 +795,18 @@ const AdminDashboard = () => {
 
             {/* Popular Items */}
             <div className="">
-              <div className="mr-10 mt-10 flex min-h-[20rem] min-w-14 flex-col justify-center gap-5 rounded-lg bg-cardwhite pt-5">
+              <div className="mr-10 mt-10 flex min-h-[20rem] min-w-14 flex-col gap-5 rounded-lg bg-cardwhite pt-5">
                 <h1 className="text-center text-3xl font-medium">
                   Popular Items
                 </h1>
-                <div className="flex flex-row items-center justify-center gap-5 pl-10">
-                  <div>
-                    <Link to={'/product/' + popularItem1.productId}>
-                      <img
-                        className=" h-[10rem] max-w-[15rem] rounded-xl object-cover"
-                        src={popularItem1.image}></img>
-                    </Link>
-                  </div>
-                  <div className="flex flex-col">
-                    <h1 className="flex flex-row self-center text-3xl">
+                <div className="flex flex-row gap-5 self-start pl-10">
+                  <Link to={'/product/' + popularItem1.productId}>
+                    <img
+                      className=" h-[10rem] w-[15rem] place-self-start rounded-xl object-cover"
+                      src={popularItem1.image}></img>
+                  </Link>
+                  <div className="flex flex-col self-center">
+                    <h1 className="flex flex-row text-3xl">
                       {popularItem1.name}
                     </h1>
                     {popularItem1.price.toLocaleString('en-US', {
@@ -818,19 +816,16 @@ const AdminDashboard = () => {
                       ' per ' +
                       popularItem1.portion}
                   </div>
-                  <div className="flex flex-col"></div>
                 </div>
-                <div className="flex flex-row items-center justify-center gap-5 pb-12 pl-10">
-                  <div>
-                    <Link to={'/product/' + popularItem2.productId}>
-                      <img
-                        className="h-[10rem] w-[15rem] rounded-xl object-cover"
-                        src={popularItem2.image}
-                      />
-                    </Link>
-                  </div>
-                  <div className="flex flex-col">
-                    <h1 className="flex flex-row self-center text-3xl">
+                <div className="flex flex-row gap-5 self-start pb-12 pl-10">
+                  <Link to={'/product/' + popularItem2.productId}>
+                    <img
+                      className="h-[10rem] w-[15rem] place-self-start rounded-xl object-cover"
+                      src={popularItem2.image}
+                    />
+                  </Link>
+                  <div className="flex flex-col self-center">
+                    <h1 className="flex flex-row text-3xl">
                       {popularItem2.name}
                     </h1>
                     {popularItem2.price.toLocaleString('en-US', {
