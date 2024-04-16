@@ -3,9 +3,10 @@ import Footer from '@/components/Footer';
 
 import useUserStore from '@/components/store';
 import { PaymentMethod } from '@/pages/Profile';
-import { productItem } from '@/components/store';
+// import { productItem } from '@/components/store';
 import { useParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+// import { useState } from 'react';
+import { useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 // import { productItem } from '@/components/store';
@@ -17,7 +18,7 @@ interface OrderSummaryProps {
 const OrderSummary = (props: OrderSummaryProps) => {
   const user = useUserStore();
   const selectedPaymentMethod: PaymentMethod = user.selectedPaymentMethod;
-  const [cartItems, setCartItems] = useState<productItem[]>([]);
+  // const [cartItems, setCartItems] = useState<productItem[]>([]);
   const { orderID } = useParams();
   console.log(orderID);
   const membershipCost = 10;
@@ -39,10 +40,10 @@ const OrderSummary = (props: OrderSummaryProps) => {
 
   // const { orderId } = useParams();
   function loyaltyMembershipNotification() {
-    toast.success('Congratulations! You have been awarded a free membership for a year!', {
+    toast.success('Congratulations! You have been awarded a free membership for a year for your purchase!', {
       position: 'bottom-right',
       className: 'font-bold text-black',
-      duration: 2000,
+      duration: 4000,
     });
   }
 
