@@ -52,6 +52,68 @@ export type PaymentMethod = {
   cvv: string;
 };
 
+export const states = [
+  'AL',
+  'AK',
+  'AS',
+  'AZ',
+  'AR',
+  'CA',
+  'CO',
+  'CT',
+  'DE',
+  'DC',
+  'FM',
+  'FL',
+  'GA',
+  'GU',
+  'HI',
+  'ID',
+  'IL',
+  'IN',
+  'IA',
+  'KS',
+  'KY',
+  'LA',
+  'ME',
+  'MH',
+  'MD',
+  'MA',
+  'MI',
+  'MN',
+  'MS',
+  'MO',
+  'MT',
+  'NE',
+  'NV',
+  'NH',
+  'NJ',
+  'NM',
+  'NY',
+  'NC',
+  'ND',
+  'MP',
+  'OH',
+  'OK',
+  'OR',
+  'PW',
+  'PA',
+  'PR',
+  'RI',
+  'SC',
+  'SD',
+  'TN',
+  'TX',
+  'UT',
+  'VT',
+  'VI',
+  'VA',
+  'WA',
+  'WV',
+  'WI',
+  'WY',
+];
+
 const Profile = () => {
   const store = useUserStore();
   // const [state, setState] = useState('');
@@ -89,68 +151,6 @@ const Profile = () => {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [paymentMethodSelected, setPaymentMethodSelected] =
     useState<PaymentMethod>(paymentMethods[0]);
-
-  const states = [
-    'AL',
-    'AK',
-    'AS',
-    'AZ',
-    'AR',
-    'CA',
-    'CO',
-    'CT',
-    'DE',
-    'DC',
-    'FM',
-    'FL',
-    'GA',
-    'GU',
-    'HI',
-    'ID',
-    'IL',
-    'IN',
-    'IA',
-    'KS',
-    'KY',
-    'LA',
-    'ME',
-    'MH',
-    'MD',
-    'MA',
-    'MI',
-    'MN',
-    'MS',
-    'MO',
-    'MT',
-    'NE',
-    'NV',
-    'NH',
-    'NJ',
-    'NM',
-    'NY',
-    'NC',
-    'ND',
-    'MP',
-    'OH',
-    'OK',
-    'OR',
-    'PW',
-    'PA',
-    'PR',
-    'RI',
-    'SC',
-    'SD',
-    'TN',
-    'TX',
-    'UT',
-    'VT',
-    'VI',
-    'VA',
-    'WA',
-    'WV',
-    'WI',
-    'WY',
-  ];
 
   const paymentForms = ['Debit', 'Credit'];
 
@@ -243,19 +243,22 @@ const Profile = () => {
     console.log('Payment Method Changed');
   }
 
-
   async function handleDeletePaymentMethod() {
     let cardnumber = paymentMethodSelected?.cardnumber;
     const data = {
-      cardnumber: cardnumber
-    }
+      cardnumber: cardnumber,
+    };
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.post("https://shastamart-api-deploy.vercel.app/api/users/delete_payment", data, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.post(
+        'https://shastamart-api-deploy.vercel.app/api/users/delete_payment',
+        data,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       console.log(response.data);
-      setReloadTrigger(prev => prev + 1);
+      setReloadTrigger((prev) => prev + 1);
     } catch (error) {
       console.log(error);
     }
@@ -265,11 +268,14 @@ const Profile = () => {
   async function handleDeleteAccount() {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get("https://shastamart-api-deploy.vercel.app/api/users/delete_user", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(
+        'https://shastamart-api-deploy.vercel.app/api/users/delete_user',
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       console.log(response.data);
-      navigate('/')
+      navigate('/');
       store.logout();
     } catch (error) {
       console.log(error);
@@ -278,7 +284,7 @@ const Profile = () => {
   }
 
   useEffect(() => {
-    console.log("Component has re-rendered");
+    console.log('Component has re-rendered');
   }, [reloadTrigger]);
 
   function paymentMethodSelectedToast(p: PaymentMethod) {
@@ -314,10 +320,10 @@ const Profile = () => {
       }
     );
     console.log(response.data);
-    if (formRef.current){
+    if (formRef.current) {
       formRef.current.reset();
     }
-    setReloadTrigger(prev => prev + 1);
+    setReloadTrigger((prev) => prev + 1);
   }
 
   // const accessFail = (onClose: () => void) =>
@@ -368,7 +374,7 @@ const Profile = () => {
             cardnumber: paymentMethod.cardnumber,
             expiration: paymentMethod.expiration,
             cvv: paymentMethod.cvv,
-            cardtype: paymentMethod.cardtype
+            cardtype: paymentMethod.cardtype,
           })
         );
         console.log(transformedPayments);
@@ -409,14 +415,13 @@ const Profile = () => {
           {/* Member Since: AccountCreatedDate */}
           <div className="pb-6 pt-4 font-inter text-3xl">
             Member Since:{' '}
-            {store.isAdmin ? 
-            "April 10, 2024"
-            : (new Date().toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            }))
-            }
+            {store.isAdmin
+              ? 'April 10, 2024'
+              : new Date().toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
           </div>
           {/* Forms for Updating User Information */}
 

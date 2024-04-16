@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Button } from '@/components/ui/button.tsx';
+import { states } from '@/pages/Profile';
 
 import {
   Table,
@@ -14,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+
 import {
   Dialog,
   DialogContent,
@@ -55,6 +57,7 @@ const AdminDashboard = () => {
   const [reloadTrigger, setReloadTrigger] = useState(0);
   const [portion, setPortion] = useState('lb.');
   const [selectedCategory, setSelectedCategory] = useState('produce');
+  const [selectedState, setSelectedState] = useState('TX');
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -145,6 +148,14 @@ const AdminDashboard = () => {
     );
   }
 
+  function supplierToast(supplierName: string) {
+    toast.success('Added ' + supplierName + ' to Suppliers!', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      duration: 2000,
+    });
+  }
+
   function addProductToast(productName: string, quantity: string) {
     toast.success(
       'Added ' + quantity + ' ' + productName + ' ' + 'to Inventory!',
@@ -154,6 +165,47 @@ const AdminDashboard = () => {
         duration: 2000,
       }
     );
+  }
+
+  async function handleSubmitNewSupplier(
+    event: React.FormEvent<HTMLFormElement>
+  ) {
+    event.preventDefault();
+    let supplierName = (
+      document.getElementById('suppliername') as HTMLInputElement
+    ).value;
+    let phoneNumber = (
+      document.getElementById('supplierphone') as HTMLInputElement
+    ).value;
+    let streetAddress = (
+      document.getElementById('streetaddress') as HTMLInputElement
+    ).value;
+    let city = (document.getElementById('city') as HTMLInputElement).value;
+    let state = selectedState;
+    let zipcode = (document.getElementById('zipcode') as HTMLInputElement)
+      .value;
+
+    const data = {
+      name: supplierName,
+      phoneNumber: phoneNumber,
+      streetAddress: streetAddress,
+      city: city,
+      state: state,
+      zipcode: zipcode,
+    };
+
+    try {
+      const response = await axios.post(
+        'https://shastamart-api-deploy.vercel.app/api/suppliers/insertSupplier',
+        data
+      );
+      supplierToast(supplierName);
+      console.log(response);
+      console.log('Supplier Submitted for ', supplierName);
+      setReloadTrigger((prev) => prev + 1);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async function handleSubmitOrder(event: React.FormEvent<HTMLFormElement>) {
@@ -455,6 +507,7 @@ const AdminDashboard = () => {
                 </DialogContent>
               </Dialog>
 
+              {/* Button/Modal for adding a new product item */}
               <Dialog>
                 <DialogTrigger asChild>
                   <Button className=" mt-6 flex h-[4rem] w-[30rem] flex-row self-center bg-darkblue text-lg">
@@ -632,6 +685,105 @@ const AdminDashboard = () => {
                     <DialogFooter>
                       <DialogClose asChild>
                         <Button type="submit">Add New Product</Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className=" mt-6 flex h-[4rem] w-[30rem] flex-row self-center bg-darkblue text-lg">
+                    Add New Supplier?
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <form onSubmit={handleSubmitNewSupplier}>
+                    <DialogHeader>
+                      <DialogTitle className="text-3xl">
+                        Add New Supplier
+                      </DialogTitle>
+                      <DialogDescription className="text-lg">
+                        Enter Supplier Name and Stock Information below.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="suppliername" className="text-right">
+                          Supplier Name
+                        </Label>
+                        <Input
+                          id="suppliername"
+                          name="suppliername"
+                          placeholder="e.g. Berry Farms"
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="supplierphone" className="text-right">
+                          Supplier Phone Number
+                        </Label>
+                        <Input
+                          id="supplierphone"
+                          name="supplierphone"
+                          placeholder="e.g. 713 129 4839"
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="streetaddress" className="text-right">
+                          Street Address
+                        </Label>
+                        <Input
+                          id="streetaddress"
+                          name="streetadress"
+                          placeholder="e.g. 123 Board St."
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="city" className="text-right">
+                          City
+                        </Label>
+                        <Input
+                          id="city"
+                          name="city"
+                          placeholder="e.g. Houston"
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="state" className="text-right">
+                          State
+                        </Label>
+                        <Select onValueChange={(e) => setSelectedState(e)}>
+                          <SelectTrigger className="col-span-3">
+                            <SelectValue placeholder="State"></SelectValue>
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              {states.map((state) => (
+                                <SelectItem value={state}>{state}</SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="zipcode" className="text-right">
+                          Zip Code
+                        </Label>
+                        <Input
+                          id="zipcode"
+                          name="zipcode"
+                          placeholder="e.g. 74778"
+                          className="col-span-3"
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button type="submit">Add New Supplier</Button>
                       </DialogClose>
                     </DialogFooter>
                   </form>
