@@ -191,7 +191,7 @@ async function findOrderDetail(orderID){
         ON p.orderID = o.orderID
         WHERE p.orderID=? AND o.active=1`,[orderID]);
 
-        return res;
+        return {res};
     } catch(error){
         console.log(error.message);
         throw error;

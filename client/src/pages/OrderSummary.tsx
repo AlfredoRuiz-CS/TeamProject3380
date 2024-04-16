@@ -3,9 +3,9 @@ import Footer from '@/components/Footer';
 
 import useUserStore from '@/components/store';
 import { PaymentMethod } from '@/pages/Profile';
-
+import { productItem } from '@/components/store';
 import { useParams } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 // import { productItem } from '@/components/store';
@@ -17,6 +17,7 @@ interface OrderSummaryProps {
 const OrderSummary = (props: OrderSummaryProps) => {
   const user = useUserStore();
   const selectedPaymentMethod: PaymentMethod = user.selectedPaymentMethod;
+  const [cartItems, setCartItems] = useState<productItem[]>([]);
   const { orderID } = useParams();
   console.log(orderID);
   const membershipCost = 10;
