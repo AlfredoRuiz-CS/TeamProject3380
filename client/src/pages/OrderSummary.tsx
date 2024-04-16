@@ -5,6 +5,9 @@ import useUserStore from '@/components/store';
 import { PaymentMethod } from '@/pages/Profile';
 
 import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 // import { productItem } from '@/components/store';
 
 interface OrderSummaryProps {
@@ -14,8 +17,8 @@ interface OrderSummaryProps {
 const OrderSummary = (props: OrderSummaryProps) => {
   const user = useUserStore();
   const selectedPaymentMethod: PaymentMethod = user.selectedPaymentMethod;
-  const { orderId } = useParams();
-  console.log(orderId);
+  const { orderID } = useParams();
+  console.log(orderID);
   const membershipCost = 10;
   const total =
     props.type === 'membership'
@@ -34,6 +37,34 @@ const OrderSummary = (props: OrderSummaryProps) => {
           });
 
   // const { orderId } = useParams();
+  function loyaltyMembershipNotification() {
+    toast.success('Congratulations! You have been awarded a free membership for a year!', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      duration: 2000,
+    });
+  }
+
+  useEffect(() => {
+    const fetchOrder = async () => {
+      const data = {
+        orderID: orderID,
+      }
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.post("https://shastamart-api-deploy.vercel.app/api/orders/orderDetail", data, { 
+          headers: { Authorization: `Bearer ${token}` } })
+        console.log(response.data);
+        const orderData = await response.data;
+        if (orderData.membershipStatus === "From Order"){
+          loyaltyMembershipNotification();
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchOrder();
+  }, [])
 
   return (
     <>

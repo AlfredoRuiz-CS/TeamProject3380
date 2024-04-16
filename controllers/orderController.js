@@ -52,12 +52,15 @@ const getOrderDetail = async (req,res) => {
   try{
     const body = await getRequestBody(req);
     const {orderID} = body;
+    const customerEmail = req.email;
     const order = await orderModel.findOrderDetail(orderID);
     if (!order){
       res.writeHead(200, { 'Content-Type': 'text/plain' });
       res.end("none");
       return; //exits if order is empty
     }
+    const membershipStatus = await memberModel.getMembershipStatus(customerEmail);
+    order.membershipStatus = membershipStatus
     //else shows order
     res.writeHead(200, { 'Content-Type' : 'application/json' });
     res.end(JSON.stringify(order));
