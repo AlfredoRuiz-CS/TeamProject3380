@@ -33,7 +33,7 @@ async function createMembership(customerEmail,startDate,endDate,renewalDate,paym
     }
 }
 
-async function checkMembershipStatus(customerEmail) {
+async function getMembershipStatus(customerEmail) {
     try {
         const [rows] = await pool.query(`
         SELECT *
@@ -68,5 +68,5 @@ async function checkMembershipStatus(customerEmail) {
 
 module.exports={
     createMembership,
-    checkMembershipStatus
+    getMembershipStatus
 }
