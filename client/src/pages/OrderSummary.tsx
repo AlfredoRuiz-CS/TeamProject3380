@@ -3,21 +3,36 @@ import Footer from '@/components/Footer';
 
 import useUserStore from '@/components/store';
 import { PaymentMethod } from '@/pages/Profile';
-// import { useParams } from 'react-router-dom';
+
+import { useParams } from 'react-router-dom';
 // import { productItem } from '@/components/store';
 
-const OrderSummary = () => {
-  const user = useUserStore();
+interface OrderSummaryProps {
+  type: 'membership' | 'order';
+}
 
-  const dummyPaymentMethods: PaymentMethod[] = Array(5).fill({
-    cardId: 1,
-    nameOnCard: 'John Doe',
-    cardnumber: '1234 5678 9012 3456',
-    expiration: '01/23',
-    cvv: '123',
-    cardType: 'Debit',
-  });
-  const selectedPaymentMethod: PaymentMethod = dummyPaymentMethods[0];
+const OrderSummary = (props: OrderSummaryProps) => {
+  const user = useUserStore();
+  const selectedPaymentMethod: PaymentMethod = user.selectedPaymentMethod;
+  const { orderId } = useParams();
+  console.log(orderId);
+  const membershipCost = 10;
+  const total =
+    props.type === 'membership'
+      ? membershipCost.toLocaleString('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        })
+      : user.cartItems
+          .reduce(
+            (acc, product, index) => acc + product.price * user.quantity[index],
+            0
+          )
+          .toLocaleString('en-US', {
+            style: 'currency',
+            currency: 'USD',
+          });
+
   // const { orderId } = useParams();
 
   return (
@@ -29,6 +44,7 @@ const OrderSummary = () => {
           <div className="">
             <h3 className="ml-5 mt-3 text-2xl font-medium">Order Summary</h3>
             {/* Item Table */}
+
             <table className="mb-5 mt-2 w-full">
               <thead>
                 <tr>
@@ -37,19 +53,31 @@ const OrderSummary = () => {
                 </tr>
               </thead>
               <tbody>
-                {user.cartItems.map((product, index) => (
-                  <tr key={index}>
-                    <td className="pl-5">
-                      {product.name + ' x ' + user.quantity[index]}
-                    </td>
+                {props.type === 'membership' ? (
+                  <tr>
+                    <td className="pl-5">{'Membership x 1'}</td>
                     <td className="pr-5 text-right">
-                      {product.price.toLocaleString('en-US', {
+                      {(10).toLocaleString('en-US', {
                         style: 'currency',
                         currency: 'USD',
                       })}
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  user.cartItems.map((product, index) => (
+                    <tr key={index}>
+                      <td className="pl-5">
+                        {product.name + ' x ' + user.quantity[index]}
+                      </td>
+                      <td className="pr-5 text-right">
+                        {product.price.toLocaleString('en-US', {
+                          style: 'currency',
+                          currency: 'USD',
+                        })}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -61,18 +89,7 @@ const OrderSummary = () => {
                     Total
                   </h3>
                 </td>
-                <td className="pr-5 text-right">
-                  {user.cartItems
-                    .reduce(
-                      (acc, product, index) =>
-                        acc + product.price * user.quantity[index],
-                      0
-                    )
-                    .toLocaleString('en-US', {
-                      style: 'currency',
-                      currency: 'USD',
-                    })}
-                </td>
+                <td className="pr-5 text-right">{total}</td>
               </tr>
             </tbody>
           </table>
@@ -110,30 +127,32 @@ const OrderSummary = () => {
         </section>
 
         {/* Shipping Information Section */}
-        <section className="mb-[5rem] mt-6 flex h-auto w-[40rem] flex-col justify-between place-self-center rounded-2xl bg-cardwhite">
-          <div className="">
-            <h3 className="ml-5 mt-3 text-2xl font-medium">
-              Shipping Information
-            </h3>
-            <table className="mb-5 mt-2 w-full">
-              <thead>
-                <tr>
-                  <th className="pl-5 text-left">Shipping Address</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td className="pl-5">
-                    <p>{user.address.street}</p>
-                    <p>{user.address.city + ', ' + user.address.state}</p>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </section>
+        {props.type === 'order' && (
+          <section className="mt-6 flex h-auto w-[40rem] flex-col justify-between place-self-center rounded-2xl bg-cardwhite">
+            <div className="">
+              <h3 className="ml-5 mt-3 text-2xl font-medium">
+                Shipping Information
+              </h3>
+              <table className="mb-5 mt-2 w-full">
+                <thead>
+                  <tr>
+                    <th className="pl-5 text-left">Shipping Address</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td className="pl-5">
+                      <p>{user.address.street}</p>
+                      <p>{user.address.city + ', ' + user.address.state}</p>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
+        <Footer />
       </div>
-      <Footer />
     </>
   );
 };

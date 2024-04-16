@@ -21,10 +21,22 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+
 // Functionality Imports
 import useUserStore from '@/components/store';
 import PaymentMethodCard from '@/components/PaymentMethodCard';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -52,6 +64,68 @@ export type PaymentMethod = {
   cvv: string;
 };
 
+export const states = [
+  'AL',
+  'AK',
+  'AS',
+  'AZ',
+  'AR',
+  'CA',
+  'CO',
+  'CT',
+  'DE',
+  'DC',
+  'FM',
+  'FL',
+  'GA',
+  'GU',
+  'HI',
+  'ID',
+  'IL',
+  'IN',
+  'IA',
+  'KS',
+  'KY',
+  'LA',
+  'ME',
+  'MH',
+  'MD',
+  'MA',
+  'MI',
+  'MN',
+  'MS',
+  'MO',
+  'MT',
+  'NE',
+  'NV',
+  'NH',
+  'NJ',
+  'NM',
+  'NY',
+  'NC',
+  'ND',
+  'MP',
+  'OH',
+  'OK',
+  'OR',
+  'PW',
+  'PA',
+  'PR',
+  'RI',
+  'SC',
+  'SD',
+  'TN',
+  'TX',
+  'UT',
+  'VT',
+  'VI',
+  'VA',
+  'WA',
+  'WV',
+  'WI',
+  'WY',
+];
+
 const Profile = () => {
   const store = useUserStore();
   // const [state, setState] = useState('');
@@ -59,6 +133,8 @@ const Profile = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [collapsibleOpen, setCollapsibleOpen] = useState(false);
   const navigate = useNavigate();
+  const formRef = useRef<HTMLFormElement>(null);
+  const [reloadTrigger, setReloadTrigger] = useState(0);
 
   const dummyPaymentMethods: PaymentMethod[] = Array(5).fill({
     cardId: 1,
@@ -87,68 +163,6 @@ const Profile = () => {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [paymentMethodSelected, setPaymentMethodSelected] =
     useState<PaymentMethod>(paymentMethods[0]);
-
-  const states = [
-    'AL',
-    'AK',
-    'AS',
-    'AZ',
-    'AR',
-    'CA',
-    'CO',
-    'CT',
-    'DE',
-    'DC',
-    'FM',
-    'FL',
-    'GA',
-    'GU',
-    'HI',
-    'ID',
-    'IL',
-    'IN',
-    'IA',
-    'KS',
-    'KY',
-    'LA',
-    'ME',
-    'MH',
-    'MD',
-    'MA',
-    'MI',
-    'MN',
-    'MS',
-    'MO',
-    'MT',
-    'NE',
-    'NV',
-    'NH',
-    'NJ',
-    'NM',
-    'NY',
-    'NC',
-    'ND',
-    'MP',
-    'OH',
-    'OK',
-    'OR',
-    'PW',
-    'PA',
-    'PR',
-    'RI',
-    'SC',
-    'SD',
-    'TN',
-    'TX',
-    'UT',
-    'VT',
-    'VI',
-    'VA',
-    'WA',
-    'WV',
-    'WI',
-    'WY',
-  ];
 
   const paymentForms = ['Debit', 'Credit'];
 
@@ -241,15 +255,49 @@ const Profile = () => {
     console.log('Payment Method Changed');
   }
 
-  // ! NEEDS TO BE CONNECTED TO BACKEND ! //
-  function handleDeletePaymentMethod() {
+  async function handleDeletePaymentMethod() {
+    let cardnumber = paymentMethodSelected?.cardnumber;
+    const data = {
+      cardnumber: cardnumber,
+    };
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        'https://shastamart-api-deploy.vercel.app/api/users/delete_payment',
+        data,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      console.log(response.data);
+      setReloadTrigger((prev) => prev + 1);
+    } catch (error) {
+      console.log(error);
+    }
     return;
   }
 
-  // ! NEEDS TO BE CONNECTED TO BACKEND ! //
-  function handleDeleteAccount() {
+  async function handleDeleteAccount() {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.get(
+        'https://shastamart-api-deploy.vercel.app/api/users/delete_user',
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      console.log(response.data);
+      navigate('/');
+      store.logout();
+    } catch (error) {
+      console.log(error);
+    }
     return;
   }
+
+  useEffect(() => {
+    console.log('Component has re-rendered');
+  }, [reloadTrigger]);
 
   function paymentMethodSelectedToast(p: PaymentMethod) {
     toast.success(
@@ -284,6 +332,10 @@ const Profile = () => {
       }
     );
     console.log(response.data);
+    if (formRef.current) {
+      formRef.current.reset();
+    }
+    setReloadTrigger((prev) => prev + 1);
   }
 
   // const accessFail = (onClose: () => void) =>
@@ -334,7 +386,7 @@ const Profile = () => {
             cardnumber: paymentMethod.cardnumber,
             expiration: paymentMethod.expiration,
             cvv: paymentMethod.cvv,
-            cardtype: paymentMethod.cardtype
+            cardtype: paymentMethod.cardtype,
           })
         );
         console.log(transformedPayments);
@@ -345,7 +397,7 @@ const Profile = () => {
       }
     };
     fetchPayments();
-  }, [setPaymentMethods]);
+  }, [setPaymentMethods, reloadTrigger]);
 
   useEffect(() => {
     if (store.accountType === 'customer' && !store.isAdmin) {
@@ -375,14 +427,13 @@ const Profile = () => {
           {/* Member Since: AccountCreatedDate */}
           <div className="pb-6 pt-4 font-inter text-3xl">
             Member Since:{' '}
-            {store.isAdmin ? 
-            "April 10, 2024"
-            : (new Date().toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            }))
-            }
+            {store.isAdmin
+              ? 'April 10, 2024'
+              : new Date().toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
           </div>
           {/* Forms for Updating User Information */}
 
@@ -621,11 +672,35 @@ const Profile = () => {
                     Change Password
                   </Button>
                 </form>
-                <Button
+                {!store.isAdmin &&
+                (<AlertDialog>
+                <AlertDialogTrigger asChild>
+                <Button className=" mt-10 bg-red-500 hover:bg-red-500/90">
+                  Delete Account
+                </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Are you absolutely sure?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This action will delete your account.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={handleDeleteAccount}>
+                      Confirm
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+                </AlertDialog>) }
+                {/* {!store.isAdmin && (<Button
                   className=" mt-10 bg-red-500 hover:bg-red-500/90"
                   onClick={handleDeleteAccount}>
                   Delete Account
-                </Button>
+                </Button>) } */}
               </section>
             </div>
           </div>
@@ -643,8 +718,8 @@ const Profile = () => {
                 <div className="mx-auto w-full pt-5 text-center">
                   <section className="flex flex-col items-center">
                     <div className="flex flex-col">
-                      <h3 className="pb-5 pl-4 text-lg font-semibold text-white">
-                        Choose Existing Payment Method
+                      <h3 className="pb-5 text-lg font-semibold text-white">
+                        Existing Payment Methods
                       </h3>
                       {/* Payment Method Component Map */}
                       <Collapsible
@@ -701,6 +776,7 @@ const Profile = () => {
                       OR
                     </h3>
                     <form
+                      ref={formRef}
                       onSubmit={(event) => {
                         event.preventDefault();
                         const form = event.target as HTMLFormElement;

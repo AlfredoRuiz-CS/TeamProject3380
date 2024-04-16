@@ -250,6 +250,38 @@ const findUserbyEmail = async (req, res) => {
   }
 }
 
+const deleteUser = async (req, res) => {
+  try {
+    const email = req.email;
+
+    const paymentDelete = await userModel.deleteUser(email);
+
+    res.writeHead(201, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ "message": `Successfully deleted user - ${email}` }));
+
+  } catch (error) {
+    res.writeHead(500, { 'Content-Type' : 'application/json' })
+    res.end(JSON.stringify({ error: error.message}))
+  }
+}
+
+const deletePaymentMethod = async (req, res) => {
+  try {
+    const body = await getRequestBody(req);
+    const { cardnumber } = body;
+    const email = req.email;
+
+    const paymentDelete = await userModel.deletePaymentMethod(email, cardnumber);
+
+    res.writeHead(201, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ "message": `Successfully deleted payment method ${cardnumber} for - ${email}` }));
+
+  } catch (error) {
+    res.writeHead(500, { 'Content-Type' : 'application/json' })
+    res.end(JSON.stringify({ error: error.message}))
+  }
+}
+
 module.exports = { 
   registerAuth, 
   loginAuth, 
@@ -262,5 +294,7 @@ module.exports = {
   updateUserPassword,
   updateUserPhone,
   updateUserAddress,
-  updateUserName 
+  updateUserName,
+  deleteUser,
+  deletePaymentMethod
 };

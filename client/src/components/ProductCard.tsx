@@ -42,6 +42,7 @@ const ProductCard = (props: ProductCardProps) => {
     console.log('Removed ', quantity, ' ', props.product.name, 'from List');
     if (user.loggedIn) {
       user.removeFromList(props.product);
+      listRemoveToast();
     }
   }
 
@@ -69,6 +70,14 @@ const ProductCard = (props: ProductCardProps) => {
       className: 'font-bold text-black',
       duration: 2000,
     });
+
+  function listRemoveToast() {
+    toast.success('Removed ' + props.product.name + ' from List!', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      duration: 2000,
+    });
+  }
 
   return (
     <>
