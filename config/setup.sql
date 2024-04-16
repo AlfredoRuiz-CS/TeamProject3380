@@ -15,6 +15,7 @@ CREATE TABLE product(
 	supplierStock int,
 	portion varchar(50),
     supplierPrice decimal(10, 2),
+    active boolean default 1,
     FOREIGN KEY (categoryID) REFERENCES category(categoryID) ON DELETE
     SET NULL
 );
@@ -118,10 +119,10 @@ CREATE TABLE shipping(
     paymentID int,
     cost decimal(6, 2),
     trackingNum varchar(20),
-    carrier varchar(100),
-    shippingDate date,
+    -- carrier varchar(100),
+    -- shippingDate date,
     estimatedDel date,
-    actualDel date,
+    -- actualDel date,
     shippingStatus varchar(50),
     FOREIGN KEY (membershipID) REFERENCES membership(membershipID) ON DELETE
     SET NULL ON UPDATE CASCADE,

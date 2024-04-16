@@ -2,14 +2,26 @@ const { pool } = require('../config/db');
 
 async function getAllProducts() {
     try {
+        // const [rows] = await pool.query(`
+        // SELECT p.*,
+        // n.servingSize, n.servingsPerContainer, n.calories, n.totalFat, n.cholesterol, n.sodium, n.totalCarbohydrates, n.dietaryFiber, 
+        // n.sugars, n.protein, n.potassium, n.vitaminA, n.vitaminC, n.vitaminD, n.vitaminE, n.calcium, n.iron,
+        // s.dimensionsLength, s.dimensionsWidth, s.dimensionsHeight, s.weight
+        // FROM product p
+        // LEFT JOIN nutritionFacts n on p.productID = n.productID
+        // LEFT JOIN shippingDetails s on p.productID = s.productID`);
+
         const [rows] = await pool.query(`
-        SELECT p.*,
+        SELECT
+        p.productID, p.productName, p.productDesc, p.productPrice, p.stockQuantity, c.categName, p.image, p.supplier, p.supplierStock, p.portion, p.supplierPrice,
         n.servingSize, n.servingsPerContainer, n.calories, n.totalFat, n.cholesterol, n.sodium, n.totalCarbohydrates, n.dietaryFiber, 
         n.sugars, n.protein, n.potassium, n.vitaminA, n.vitaminC, n.vitaminD, n.vitaminE, n.calcium, n.iron,
         s.dimensionsLength, s.dimensionsWidth, s.dimensionsHeight, s.weight
         FROM product p
         LEFT JOIN nutritionFacts n on p.productID = n.productID
-        LEFT JOIN shippingDetails s on p.productID = s.productID`);
+        LEFT JOIN shippingDetails s on p.productID = s.productID
+        JOIN category c on c.categoryID = p.categoryID
+        WHERE p.active=?`,[1]);
 
         return rows;
 
@@ -123,10 +135,29 @@ async function insertInventory(connection,productID,productInfo){
     }
 }
 
+async function removeProduct(name){
+    try{
+        const result = await pool.query(`
+        UPDATE product
+        SET active=?
+        WHERE productName=? AND active=?`,[0,name,1]);
+
+        if (result[0].affectedRows === 0) {
+            return null;
+        }
+
+        return result;
+    } catch(error){
+        console.log(error);
+        throw error;
+    }
+}
+
 module.exports = {
     getAllProducts,
     insertProduct,
     insertNutritionFacts,
     insertShippingDetails,
-    insertInventory
+    insertInventory,
+    removeProduct
 }
