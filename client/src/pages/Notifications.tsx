@@ -9,9 +9,25 @@ import {
   TableCell,
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogClose,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+
+function handleStockOrder() {
+  console.log('Notification Selected');
+}
 
 function notificationSelectHandler() {
   console.log('Notification Selected');
@@ -79,7 +95,54 @@ const Notifications = () => {
                     {notification.message}
                   </TableCell>
                   <TableCell className="pl-12">
-                    <Button>Order</Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button>Order</Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <form onSubmit={handleStockOrder}>
+                          <DialogHeader>
+                            <DialogTitle className="text-3xl">
+                              Order Stock
+                            </DialogTitle>
+                            <DialogDescription className="text-lg">
+                              {'Enter Quantity of ' +
+                                notification.notificationID +
+                                ' below to submit order.'}
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="grid gap-4 py-4">
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="name" className="text-right">
+                                Product Name
+                              </Label>
+                              <Input
+                                id="productName"
+                                name="productName"
+                                placeholder="e.g. Fresh Strawberries"
+                                className="col-span-3"
+                              />
+                            </div>
+                            <div className="grid grid-cols-4 items-center gap-4">
+                              <Label htmlFor="quantity" className="text-right">
+                                Quantity
+                              </Label>
+                              <Input
+                                id="quantity"
+                                name="quantity"
+                                placeholder="e.g. 10"
+                                className="col-span-3"
+                              />
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <DialogClose asChild>
+                              <Button type="submit">Submit Order</Button>
+                            </DialogClose>
+                          </DialogFooter>
+                        </form>
+                      </DialogContent>
+                    </Dialog>
                   </TableCell>
                 </TableRow>
               ))}

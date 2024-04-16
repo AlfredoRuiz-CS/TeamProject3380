@@ -47,14 +47,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-
-import { Separator } from '@/components/ui/separator';
-
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 
-// import { productItem } from '@/components/store';
-// import useUserStore from '@/components/store';
 import { useProductsStore } from '@/components/store';
 import { mapCategory, ProductApiResponse } from './Products';
 
