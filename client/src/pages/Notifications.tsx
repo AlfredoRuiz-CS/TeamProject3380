@@ -48,6 +48,7 @@ const Notifications = () => {
         notifData.forEach((item: any) => {
           if (!uniqueMessages[item.message]) {
             uniqueMessages[item.message] = true;
+            item.message = item.message.replace(`Product ID ${item.productID}`, item.productName);
             filteredData.push(item);
           }
         });
@@ -89,7 +90,7 @@ const Notifications = () => {
               {notifications.map((notification: any, index) => (
                 <TableRow key={index} onClick={() => notificationSelectHandler}>
                   <TableCell className="pl-16 ">
-                    {notification.notificationID}
+                    {notification.productName}
                   </TableCell>
                   <TableCell className="text-center">
                     {notification.message}
