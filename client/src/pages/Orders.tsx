@@ -55,7 +55,6 @@ const Orders = () => {
   const [sheetOpen, setSheetOpen] = useState(false);
   // ! SET THIS TO THE BACKEND API CALL FOR PAST ORDERS
   const [orders, setOrders] = useState<Order[]>([]);
-  // let orders = dummyOrders;
   const [sortedOrders, setSortedOrders] = useState<Order[]>(orders);
   // ? Sorting Options
   let [sortOrder, setSortOrder] = useState('Order Desc.');

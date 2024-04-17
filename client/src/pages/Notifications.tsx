@@ -25,46 +25,42 @@ import toast from 'react-hot-toast';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-async function handleStockOrder(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    let productName = (
-      document.getElementById('productName') as HTMLInputElement
-    ).value;
-    let quantity = (document.getElementById('quantity') as HTMLInputElement)
-      .value;
+async function handleStockOrder(
+  event: React.FormEvent<HTMLFormElement>,
+  productName: string
+) {
+  event.preventDefault();
+  let quantity = (document.getElementById('quantity') as HTMLInputElement)
+    .value;
 
-    const data = {
-      productName: productName,
-      quantity: quantity,
-    };
+  const data = {
+    productName: productName,
+    quantity: quantity,
+  };
 
-    try {
-      const response = await axios.post(
-        'https://shastamart-api-deploy.vercel.app/api/orders/insertStock',
-        data
-      );
-      console.log(response);
-      orderSuccessToast(productName, quantity);
-      console.log('Order Submitted for ', productName, ' ', quantity);
-    } catch (error) {
-      console.log(error);
-    }
-    console.log('Notification Selected');
-  }
-
-  function orderSuccessToast(productName: string, quantity: string) {
-    toast.success(
-      'Order for ' + quantity + ' ' + productName + ' ' + 'Submitted!',
-      {
-        position: 'bottom-right',
-        className: 'font-bold text-black',
-        duration: 2000,
-      }
+  try {
+    const response = await axios.post(
+      'https://shastamart-api-deploy.vercel.app/api/orders/insertStock',
+      data
     );
+    console.log(response);
+    orderSuccessToast(productName, quantity);
+    console.log('Order Submitted for ', productName, ' ', quantity);
+  } catch (error) {
+    console.log(error);
   }
-
-function notificationSelectHandler() {
   console.log('Notification Selected');
+}
+
+function orderSuccessToast(productName: string, quantity: string) {
+  toast.success(
+    'Order for ' + quantity + ' ' + productName + ' ' + 'Submitted!',
+    {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      duration: 2000,
+    }
+  );
 }
 
 const Notifications = () => {
@@ -82,7 +78,10 @@ const Notifications = () => {
         notifData.forEach((item: any) => {
           if (!uniqueMessages[item.message]) {
             uniqueMessages[item.message] = true;
-            item.message = item.message.replace(`Product ID ${item.productID}`, item.productName);
+            item.message = item.message.replace(
+              `Product ID ${item.productID}`,
+              item.productName
+            );
             filteredData.push(item);
           }
         });
@@ -103,8 +102,8 @@ const Notifications = () => {
           <h1 className=" pb-5 pt-14 font-inter text-5xl font-medium text-black">
             Admin Notifications
           </h1>
-          {/* Sorting Funcitonality */}
 
+          {/* Sorting Funcitonality */}
           <Table className="ml-0 rounded-lg bg-gray-50">
             <TableHeader>
               <TableRow>
@@ -119,10 +118,9 @@ const Notifications = () => {
                 </TableHead>
               </TableRow>
             </TableHeader>
-
             <TableBody>
               {notifications.map((notification: any, index) => (
-                <TableRow key={index} onClick={() => notificationSelectHandler}>
+                <TableRow key={index}>
                   <TableCell className="pl-16 ">
                     {notification.productName}
                   </TableCell>
@@ -135,7 +133,10 @@ const Notifications = () => {
                         <Button>Order</Button>
                       </DialogTrigger>
                       <DialogContent>
-                        <form onSubmit={handleStockOrder}>
+                        <form
+                          onSubmit={(e) =>
+                            handleStockOrder(e, notification.productName)
+                          }>
                           <DialogHeader>
                             <DialogTitle className="text-3xl">
                               Order Stock
@@ -147,17 +148,6 @@ const Notifications = () => {
                             </DialogDescription>
                           </DialogHeader>
                           <div className="grid gap-4 py-4">
-                            <div className="grid grid-cols-4 items-center gap-4">
-                              <Label htmlFor="name" className="text-right">
-                                Product Name
-                              </Label>
-                              <Input
-                                id="productName"
-                                name="productName"
-                                placeholder="e.g. Fresh Strawberries"
-                                className="col-span-3"
-                              />
-                            </div>
                             <div className="grid grid-cols-4 items-center gap-4">
                               <Label htmlFor="quantity" className="text-right">
                                 Quantity
