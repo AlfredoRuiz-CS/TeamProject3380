@@ -26,7 +26,7 @@ type orderData = {
 
 const OrderSummary = (props: OrderSummaryProps) => {
   const user = useUserStore();
-  const selectedPaymentMethod: PaymentMethod = user.selectedPaymentMethod;
+  // const selectedPaymentMethod: PaymentMethod = user.selectedPaymentMethod;
   const [orderDetails, setOrderDetails] = useState<orderData[]>([]);
   const { orderID } = useParams();
   console.log(orderID);
@@ -36,7 +36,7 @@ const OrderSummary = (props: OrderSummaryProps) => {
       ? membershipCost.toLocaleString('en-US', {
           style: 'currency',
           currency: 'USD',
-        })
+        }) 
       : orderDetails[0].total?.toLocaleString('en-US', {
             style: 'currency',
             currency: 'USD',
@@ -151,14 +151,14 @@ const OrderSummary = (props: OrderSummaryProps) => {
               <tbody>
                 <tr>
                   <td className="pl-5">
-                    <p>{selectedPaymentMethod.nameOnCard}</p>
+                    <p>{orderDetails[0].nameOnCard}</p>
                     <p>
-                      {selectedPaymentMethod.cardnumber
+                      {orderDetails[0].paymentMethod
                         .replace(/.(?=....)/g, (match) =>
                           match === ' ' ? ' ' : '*'
                         )
-                        .slice(0, selectedPaymentMethod.cardnumber.length - 4) +
-                        selectedPaymentMethod.cardnumber.slice(-4)}
+                        .slice(0, orderDetails[0].paymentMethod.length - 4) +
+                        orderDetails[0].paymentMethod.slice(-4)}
                     </p>
                   </td>
                 </tr>

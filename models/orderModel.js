@@ -51,7 +51,6 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod,normalD,f
             SELECT quantity
             FROM inventory
             WHERE productID=?`,[item.productID]);
-            console.log("Error in getting quantity")
             if (item.productQuantity > res[0].quantity){
                 throw new Error(`Not enough inventory for item: ${item.productName}`);
             }
@@ -66,20 +65,20 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod,normalD,f
 
             total += item.productPrice*item.productQuantity;
         }
-        console.log("AT PURCHASE ORDER");
+        // console.log("AT PURCHASE ORDER");
         //create new order
         const orderRes = await connection.query(`
             INSERT INTO purchaseOrder(customerEmail,orderDate,total)
-            VALUEs(?,?,?)`,[customerEmail,orderDate,total]);
+            VALUES(?,?,?)`,[customerEmail,orderDate,total]);
         //get the last insert id which is the newest orderID
         const [rows] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
         const lastId = rows[0].lastId;
-        console.log("AT PAYMENT");
+        // console.log("AT PAYMENT");
         
         //create payment
         const createPayment = await connection.query(`
         INSERT INTO payment(orderID,paymentDate,totalAmount,paymentMethod,paymentStatus)
-        VALUE(?,?,?,?,?)`,[lastId,orderDate,total,paymentMethod,"pass"])
+        VALUES(?,?,?,?,?)`,[lastId,orderDate,total,paymentMethod,"pass"])
         //gey paymentID for return
         const [getPayment] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
         const IDpayment = getPayment[0].lastId;
@@ -195,7 +194,7 @@ async function findOrderDetail(orderID){
         JOIN payment pm
         ON pm.orderID = p.orderID
         JOIN paymentInfo pi
-        SUBSTRING(pm.paymentMethod, 1, 19) = pi.cardnumber
+        ON SUBSTRING(pm.paymentMethod, 1, 19) = pi.cardnumber
         WHERE p.orderID=? AND o.active=1`,[orderID]);
 
         return {res};
