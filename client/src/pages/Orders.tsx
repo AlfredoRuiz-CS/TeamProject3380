@@ -43,7 +43,7 @@ import {
 } from '@/components/ui/dialog';
 
 import { Button } from '@/components/ui/button';
-// import { Separator } from '@radix-ui/react-dropdown-menu';
+import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 
@@ -429,6 +429,7 @@ const Orders = () => {
                 ))}
               </TableBody>
             </Table>
+
             {sheetOpen ? (
               <div>
                 <Sheet defaultOpen={true} onOpenChange={sheetCloseHandler}>
@@ -478,6 +479,7 @@ const Orders = () => {
                               </TableCell>
                             </TableRow>
                           ))}
+                        <Separator />
                         <TableRow>
                           <TableCell className="max-w-6 pl-6">Total</TableCell>
                           <TableCell
@@ -552,7 +554,227 @@ const Orders = () => {
           </div>
         </div>
       ) : (
-        navigate('/products')
+        <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite font-inter text-black">
+          <Header color="blue" />
+          <div className="flex w-screen flex-col">
+            <h1 className="ml-16 pt-14 font-inter text-5xl font-medium text-black">
+              Order History
+            </h1>
+            {/* Sorting Funcitonality */}
+            <div className="mt-5 flex gap-2 place-self-start pb-5">
+              <h3 className="ml-6 items-center place-self-center font-inter text-lg font-medium">
+                Category:{' '}
+              </h3>
+              {/* Sort dropdown */}
+              <Select
+                defaultValue="Order Number"
+                onValueChange={(e) => setSortOrder(e)}>
+                <SelectTrigger className="h-10 w-[8rem] bg-white text-black">
+                  <SelectValue placeholder="Order Desc.">
+                    {sortOrder}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Order Desc.">Order Desc.</SelectItem>
+                  <SelectItem value="Order Asc.">Order Asc.</SelectItem>
+                  <SelectItem value="Date Desc.">Date Desc.</SelectItem>
+                  <SelectItem value="Date Asc.">Date Asc.</SelectItem>
+                  <SelectItem value="Payment Method">Payment Method</SelectItem>
+                  <SelectItem value="Total Paid Desc.">
+                    Total Paid Desc.
+                  </SelectItem>
+                  <SelectItem value="Total Paid Asc.">
+                    Total Paid Asc.
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+
+              <Select
+                defaultValue="Order Number"
+                onValueChange={(e) => setFilterOption(e)}>
+                <SelectTrigger className="h-10 w-[8rem] bg-white text-black">
+                  <SelectValue placeholder="All">{filterOption}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All</SelectItem>
+                  <SelectItem value="Last 6 Months">Last 6 Months</SelectItem>
+                  <SelectItem value="Last 2 Weeks">Last 2 Weeks</SelectItem>
+                  <SelectItem value="Total Paid > 100">
+                    Total Paid {'>'} 100
+                  </SelectItem>
+                  <SelectItem value="Total Paid > 250">
+                    Total Paid {'>'} 250
+                  </SelectItem>
+                  <SelectItem value="Payment Method">Payment Method</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="max-w-6 pl-6 text-gray-700">
+                    Order Number
+                  </TableHead>
+                  <TableHead className="max-w-5 text-gray-700">Date</TableHead>
+                  <TableHead className="max-w-5 text-gray-700">
+                    Payment Method
+                  </TableHead>
+                  <TableHead className="max-w-5 text-gray-700">
+                    Total Paid
+                  </TableHead>
+                  <TableHead className="max-w-5 text-gray-700">
+                    Status
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+
+              <TableBody>
+                {filteredOrders.map((order, index) => (
+                  <TableRow
+                    key={index}
+                    onClick={() => orderSelectHandler(order.orderID)}>
+                    <TableCell className="max-w-6 pl-6">
+                      {order.orderID}
+                    </TableCell>
+                    <TableCell className="max-w-6">{order.orderDate}</TableCell>
+                    <TableCell className="max-w-6">
+                      {order.paymentMethod}
+                    </TableCell>
+                    <TableCell className="max-w-6">
+                      {order.total.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                      })}
+                    </TableCell>
+                    {/* TODO: Implement a status check for the order */}
+                    <TableCell className="max-w-6">
+                      <span className="text-green-500">Paid</span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          {sheetOpen ? (
+            <div>
+              <Sheet defaultOpen={true} onOpenChange={sheetCloseHandler}>
+                <SheetContent side="right" className="overflow-y-auto">
+                  <SheetHeader>
+                    <SheetTitle>Order #{selectedOrder}</SheetTitle>
+                  </SheetHeader>
+                  <SheetDescription asChild className="mb-3">
+                    <div>
+                      <div>Order Date: {orderToDisplay?.orderDate}</div>
+                      <div>Payment Method: {orderToDisplay?.paymentMethod}</div>
+                      <div>Order Status:</div>
+                    </div>
+                  </SheetDescription>
+                  <Table className="ml-0 max-w-full rounded-lg bg-gray-50">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="max-w-6 pl-6 text-gray-700">
+                          Product
+                        </TableHead>
+                        <TableHead className="max-w-5 text-gray-700">
+                          Quantity
+                        </TableHead>
+                        <TableHead className="max-w-5 text-gray-700">
+                          Price
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+
+                    <TableBody>
+                      {orderToDisplay &&
+                        orderToDisplay.items.map((product, index) => (
+                          <TableRow key={index}>
+                            <TableCell className="max-w-6 pl-6">
+                              {product.productName}
+                            </TableCell>
+                            <TableCell className="max-w-5">
+                              {product.quantity}
+                            </TableCell>
+                            <TableCell className="max-w-5">
+                              {product.totalAmount.toLocaleString('en-US', {
+                                style: 'currency',
+                                currency: 'USD',
+                              })}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      <TableRow>
+                        <TableCell className="max-w-6 pl-6">Total</TableCell>
+                        <TableCell
+                          className=" max-w-9 p-0 pr-9 text-right"
+                          colSpan={2}>
+                          {/* TODO: Make sure that the total amount lines up with the rest of the products if the decimal place changes. */}
+                          {orderToDisplay?.total.toLocaleString('en-US', {
+                            style: 'currency',
+                            currency: 'USD',
+                          })}
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+
+                  <Dialog onOpenChange={(e) => handleDialogClose(e)}>
+                    <DialogTrigger asChild>
+                      <Button className="mt-5 w-full bg-darkblue">
+                        Request Refund?
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <form onSubmit={handleRefund}>
+                        <DialogHeader>
+                          <DialogTitle className="text-3xl">
+                            Select Items to Refund
+                          </DialogTitle>
+                        </DialogHeader>
+                        <div className="grid w-full gap-4 py-4">
+                          {orderToDisplay?.items.map((product, index) => (
+                            <div
+                              key={index}
+                              className="grid grid-cols-2 items-center gap-4">
+                              <Label htmlFor="">{product.productName}</Label>
+                              <Checkbox
+                                className="justify-self-end"
+                                id={product.productName}
+                                onCheckedChange={(e) =>
+                                  addToRefundTotal(
+                                    e,
+                                    product.totalAmount,
+                                    product
+                                  )
+                                }
+                              />
+                            </div>
+                          ))}
+                          <Separator />
+                          <div className="grid grid-cols-2">
+                            <p className="text-lg font-medium">Total</p>
+                            <p className="justify-self-end text-left text-lg font-medium">
+                              {refundTotal.toLocaleString('en-US', {
+                                style: 'currency',
+                                currency: 'USD',
+                              })}
+                            </p>
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <DialogClose asChild>
+                            <Button type="submit">Submit Refund</Button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
+                </SheetContent>
+              </Sheet>
+            </div>
+          ) : (
+            <></>
+          )}
+        </div>
       )}
       <Footer />
     </>

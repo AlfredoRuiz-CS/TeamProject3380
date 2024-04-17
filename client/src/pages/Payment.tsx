@@ -93,12 +93,17 @@ const payment = (props: paymentProps) => {
       const cvv = formData.get('cvv') as string;
       const cardType = formData.get('cardType') as string;
 
-      await handleNewPayment(nameOnCard, cardNumber, expirationDate, cvv, cardType);
+      await handleNewPayment(
+        nameOnCard,
+        cardNumber,
+        expirationDate,
+        cvv,
+        cardType
+      );
       paymentMethod = `${cardNumber} ${cardType}`;
     }
 
     if (props.type === 'cart') {
-      
       const cartOrderDetails = {
         items: store.cartItems.map((item, index) => ({
           productID: item.productId,
@@ -127,7 +132,6 @@ const payment = (props: paymentProps) => {
         console.log(error);
       }
     } else if (props.type === 'membership') {
-      
       const data = {
         customerEmail: store.email,
         paymentMethod: paymentMethod,
@@ -140,7 +144,7 @@ const payment = (props: paymentProps) => {
           'https://shastamart-api-deploy.vercel.app/api/membership/member',
           data
         );
-        console.log("Response:", response.data);
+        console.log('Response:', response.data);
         const isMember = await response.data;
         store.setUserDetails({ isMember: isMember });
         navigate('/orders/summary/membership');
@@ -148,7 +152,7 @@ const payment = (props: paymentProps) => {
         console.log(error);
       }
     }
-};
+  };
 
   async function handleNewPayment(
     nameOnCard: string,
@@ -156,13 +160,13 @@ const payment = (props: paymentProps) => {
     expirationDate: string,
     cvv: string,
     cardType: string
-    ) {
+  ) {
     const data = {
       cardNumber,
       expirationDate,
       cvv: parseInt(cvv, 10),
       cardType,
-      nameOnCard
+      nameOnCard,
     };
     const token = localStorage.getItem('token');
     try {
@@ -176,7 +180,7 @@ const payment = (props: paymentProps) => {
       console.error('Error saving new payment method:', error);
       throw new Error('Failed to save payment method');
     }
-}
+  }
 
   useEffect(() => {
     const fetchPayments = async () => {
@@ -284,16 +288,16 @@ const payment = (props: paymentProps) => {
                       </h3>
                     </td>
                     <td className="pr-5 text-right">
-                      {(store.cartItems
-                        .reduce(
+                      {(
+                        store.cartItems.reduce(
                           (acc, product, index) =>
                             acc + product.price * store.quantity[index],
                           0
-                        ) + shipping)
-                        .toLocaleString('en-US', {
-                          style: 'currency',
-                          currency: 'USD',
-                        })}
+                        ) + shipping
+                      ).toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                      })}
                     </td>
                   </tr>
                 </tbody>
@@ -352,14 +356,6 @@ const payment = (props: paymentProps) => {
                     </CollapsibleContent>
                   ))}
                 </Collapsible>
-                {paymentMethods.length > 0 && paymentMethodSelected && (
-                  <Button
-                    className="ml-4 mr-4 mt-5 self-center bg-blue-400 px-44 py-6 hover:bg-slate-600"
-                    size="lg"
-                    onClick={() => navigate('/orders/summary')}>
-                    Place Order (TESTING)
-                  </Button>
-                )}
               </div>
 
               <h3 className="mt-5 flex flex-row justify-center text-2xl font-medium">

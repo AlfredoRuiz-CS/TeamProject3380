@@ -43,9 +43,9 @@ const Cart = () => {
       <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
         <Header />
 
-        <div className="flex flex-row justify-around">
+        <div className="max-w-1/2 flex flex-row justify-center">
           {/* Review Cart Section */}
-          <section className="flex w-[50%] flex-col pl-[5rem] pt-[6rem]">
+          <section className="flex flex-col pl-[5rem] pt-[6rem]">
             <div className="flex flex-row justify-between pb-4">
               <h1 className="pl-4 text-3xl text-white ">Review Cart</h1>
               {/* Alert to confirm cart deletion */}
