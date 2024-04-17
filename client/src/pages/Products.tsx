@@ -122,12 +122,10 @@ const Products = () => {
         console.log(error);
       }
     };
-
     fetchProducts();
   }, [setProducts]);
 
   const products = useProductsStore((state) => state.products);
-  // const products = dummyProducts;
   const [orderedProducts, setOrderedProducts] = useState<productItem[]>([]);
 
   useEffect(() => {

@@ -3,6 +3,7 @@ import Footer from '@/components/Footer';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useUserStore from '@/components/store';
+// import toast from 'react-hot-toast';
 
 import { useEffect, useState } from 'react';
 
@@ -69,6 +70,9 @@ const Orders = () => {
   const [selectedOrder, setSelectedOrder] = useState<number>(0);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [refundTotal, setRefundTotal] = useState<number>(0);
+  const [selectedRefundItems, setSelectedRefundItems] = useState<
+    productOrder[]
+  >([]);
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [sortedOrders, setSortedOrders] = useState<Order[]>(orders);
@@ -104,17 +108,48 @@ const Orders = () => {
 
   function handleDialogClose(e: boolean) {
     if (!e) setRefundTotal(0);
+
     console.log('Dialog Closed: ', e);
   }
 
-  function handleRefund() {
+  // ! BACKEND ENDPINT HERE
+  async function handleRefund(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const data = {
+      orderID: orderToDisplay?.orderID,
+      items: selectedRefundItems.map((item: productOrder) => ({
+        productID: item.productID,
+        productName: item.productName,
+        productQuantity: item.quantity,
+        totalAmount: item.totalAmount,
+      })),
+    };
+    console.log(data);
+
+    try {
+      const response = await axios.post(
+        'https://shastamart-api-deploy.vercel.app/api/orders/refund',
+        data
+      );
+      console.log('Response', response.data);
+    } catch (error) {
+      console.log(error);
+    }
     console.log('Refund Requested');
   }
 
-  function addToRefundTotal(amount: number, e: boolean | string) {
-    e
-      ? setRefundTotal(Number(refundTotal) + Number(amount))
-      : setRefundTotal(Number(refundTotal) - Number(amount));
+  function addToRefundTotal(
+    e: boolean | string,
+    amount: number,
+    product: productOrder
+  ) {
+    if (e) {
+      setRefundTotal(Number(refundTotal) + Number(amount));
+      setSelectedRefundItems([...selectedRefundItems, product]);
+    } else {
+      setRefundTotal(Number(refundTotal) - Number(amount));
+    }
     e
       ? console.log('Refund Total Added: ', amount)
       : console.log('Refund Total Removed: ', amount);
@@ -287,222 +322,238 @@ const Orders = () => {
     fetchOrders();
   }, [setOrders]);
 
-  useEffect(() => {
-    console.log('Refund Total: ', refundTotal);
-  }, [refundTotal]);
+  // useEffect(() => {
+  //   console.log('Refund Total: ', refundTotal);
+  // }, [refundTotal]);
 
   return (
     <>
-      <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite font-inter text-black">
-        <Header color="blue" />
-        <div className="flex w-screen flex-col">
-          <h1 className="ml-16 pt-14 font-inter text-5xl font-medium text-black">
-            Order History
-          </h1>
-          {/* Sorting Funcitonality */}
-          <div className="mt-5 flex gap-2 place-self-start pb-5">
-            <h3 className="ml-6 items-center place-self-center font-inter text-lg font-medium">
-              Category:{' '}
-            </h3>
-            {/* Sort dropdown */}
-            <Select
-              defaultValue="Order Number"
-              onValueChange={(e) => setSortOrder(e)}>
-              <SelectTrigger className="h-10 w-[8rem] bg-white text-black">
-                <SelectValue placeholder="Order Desc.">{sortOrder}</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Order Desc.">Order Desc.</SelectItem>
-                <SelectItem value="Order Asc.">Order Asc.</SelectItem>
-                <SelectItem value="Date Desc.">Date Desc.</SelectItem>
-                <SelectItem value="Date Asc.">Date Asc.</SelectItem>
-                <SelectItem value="Payment Method">Payment Method</SelectItem>
-                <SelectItem value="Total Paid Desc.">
-                  Total Paid Desc.
-                </SelectItem>
-                <SelectItem value="Total Paid Asc.">Total Paid Asc.</SelectItem>
-              </SelectContent>
-            </Select>
+      {user.isAdmin ? (
+        <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite font-inter text-black">
+          <Header color="blue" />
+          <div className="flex w-screen flex-col">
+            <h1 className="ml-16 pt-14 font-inter text-5xl font-medium text-black">
+              Order History
+            </h1>
+            {/* Sorting Funcitonality */}
+            <div className="mt-5 flex gap-2 place-self-start pb-5">
+              <h3 className="ml-6 items-center place-self-center font-inter text-lg font-medium">
+                Category:{' '}
+              </h3>
+              {/* Sort dropdown */}
+              <Select
+                defaultValue="Order Number"
+                onValueChange={(e) => setSortOrder(e)}>
+                <SelectTrigger className="h-10 w-[8rem] bg-white text-black">
+                  <SelectValue placeholder="Order Desc.">
+                    {sortOrder}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Order Desc.">Order Desc.</SelectItem>
+                  <SelectItem value="Order Asc.">Order Asc.</SelectItem>
+                  <SelectItem value="Date Desc.">Date Desc.</SelectItem>
+                  <SelectItem value="Date Asc.">Date Asc.</SelectItem>
+                  <SelectItem value="Payment Method">Payment Method</SelectItem>
+                  <SelectItem value="Total Paid Desc.">
+                    Total Paid Desc.
+                  </SelectItem>
+                  <SelectItem value="Total Paid Asc.">
+                    Total Paid Asc.
+                  </SelectItem>
+                </SelectContent>
+              </Select>
 
-            <Select
-              defaultValue="Order Number"
-              onValueChange={(e) => setFilterOption(e)}>
-              <SelectTrigger className="h-10 w-[8rem] bg-white text-black">
-                <SelectValue placeholder="All">{filterOption}</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All">All</SelectItem>
-                <SelectItem value="Last 6 Months">Last 6 Months</SelectItem>
-                <SelectItem value="Last 2 Weeks">Last 2 Weeks</SelectItem>
-                <SelectItem value="Total Paid > 100">
-                  Total Paid {'>'} 100
-                </SelectItem>
-                <SelectItem value="Total Paid > 250">
-                  Total Paid {'>'} 250
-                </SelectItem>
-                <SelectItem value="Payment Method">Payment Method</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
-            <TableHeader>
-              <TableRow>
-                <TableHead className="max-w-6 pl-6 text-gray-700">
-                  Order Number
-                </TableHead>
-                <TableHead className="max-w-5 text-gray-700">Date</TableHead>
-                <TableHead className="max-w-5 text-gray-700">
-                  Payment Method
-                </TableHead>
-                <TableHead className="max-w-5 text-gray-700">
-                  Total Paid
-                </TableHead>
-                <TableHead className="max-w-5 text-gray-700">Status</TableHead>
-              </TableRow>
-            </TableHeader>
-
-            <TableBody>
-              {filteredOrders.map((order, index) => (
-                <TableRow
-                  key={index}
-                  onClick={() => orderSelectHandler(order.orderID)}>
-                  <TableCell className="max-w-6 pl-6">
-                    {order.orderID}
-                  </TableCell>
-                  <TableCell className="max-w-6">{order.orderDate}</TableCell>
-                  <TableCell className="max-w-6">
-                    {order.paymentMethod}
-                  </TableCell>
-                  <TableCell className="max-w-6">
-                    {order.total.toLocaleString('en-US', {
-                      style: 'currency',
-                      currency: 'USD',
-                    })}
-                  </TableCell>
-                  {/* TODO: Implement a status check for the order */}
-                  <TableCell className="max-w-6">
-                    <span className="text-green-500">Paid</span>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-          {sheetOpen ? (
-            <div>
-              <Sheet defaultOpen={true} onOpenChange={sheetCloseHandler}>
-                <SheetContent side="right" className="overflow-y-auto">
-                  <SheetHeader>
-                    <SheetTitle>Order #{selectedOrder}</SheetTitle>
-                  </SheetHeader>
-                  <SheetDescription asChild className="mb-3">
-                    <div>
-                      <div>Order Date: {orderToDisplay?.orderDate}</div>
-                      <div>Payment Method: {orderToDisplay?.paymentMethod}</div>
-                      <div>Order Status:</div>
-                    </div>
-                  </SheetDescription>
-                  <Table className="ml-0 max-w-full rounded-lg bg-gray-50">
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="max-w-6 pl-6 text-gray-700">
-                          Product
-                        </TableHead>
-                        <TableHead className="max-w-5 text-gray-700">
-                          Quantity
-                        </TableHead>
-                        <TableHead className="max-w-5 text-gray-700">
-                          Price
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-
-                    <TableBody>
-                      {orderToDisplay &&
-                        orderToDisplay.items.map((product, index) => (
-                          <TableRow key={index}>
-                            <TableCell className="max-w-6 pl-6">
-                              {product.productName}
-                            </TableCell>
-                            <TableCell className="max-w-5">
-                              {product.quantity}
-                            </TableCell>
-                            <TableCell className="max-w-5">
-                              {product.totalAmount.toLocaleString('en-US', {
-                                style: 'currency',
-                                currency: 'USD',
-                              })}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      <TableRow>
-                        <TableCell className="max-w-6 pl-6">Total</TableCell>
-                        <TableCell
-                          className=" max-w-9 p-0 pr-9 text-right"
-                          colSpan={2}>
-                          {/* TODO: Make sure that the total amount lines up with the rest of the products if the decimal place changes. */}
-                          {orderToDisplay?.total.toLocaleString('en-US', {
-                            style: 'currency',
-                            currency: 'USD',
-                          })}
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-
-                  <Dialog onOpenChange={(e) => handleDialogClose(e)}>
-                    <DialogTrigger asChild>
-                      <Button className="mt-5 w-full bg-darkblue">
-                        Request Refund?
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <form onSubmit={handleRefund}>
-                        <DialogHeader>
-                          <DialogTitle className="text-3xl">
-                            Select Items to Refund
-                          </DialogTitle>
-                        </DialogHeader>
-                        <div className="grid w-full gap-4 py-4">
-                          {orderToDisplay?.items.map((product, index) => (
-                            <div
-                              key={index}
-                              className="grid grid-cols-2 items-center gap-4">
-                              <Label htmlFor="">{product.productName}</Label>
-                              <Checkbox
-                                className="justify-self-end"
-                                id={product.productName}
-                                onCheckedChange={(e) =>
-                                  addToRefundTotal(product.totalAmount, e)
-                                }
-                              />
-                            </div>
-                          ))}
-                          <div className="grid grid-cols-2">
-                            <p className="text-lg font-medium">Total</p>
-                            <p className="justify-self-end text-left text-lg font-medium">
-                              {refundTotal.toLocaleString('en-US', {
-                                style: 'currency',
-                                currency: 'USD',
-                              })}
-                            </p>
-                          </div>
-                        </div>
-                        <DialogFooter>
-                          <DialogClose asChild>
-                            <Button type="submit">Submit Refund</Button>
-                          </DialogClose>
-                        </DialogFooter>
-                      </form>
-                    </DialogContent>
-                  </Dialog>
-                </SheetContent>
-              </Sheet>
+              <Select
+                defaultValue="Order Number"
+                onValueChange={(e) => setFilterOption(e)}>
+                <SelectTrigger className="h-10 w-[8rem] bg-white text-black">
+                  <SelectValue placeholder="All">{filterOption}</SelectValue>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All</SelectItem>
+                  <SelectItem value="Last 6 Months">Last 6 Months</SelectItem>
+                  <SelectItem value="Last 2 Weeks">Last 2 Weeks</SelectItem>
+                  <SelectItem value="Total Paid > 100">
+                    Total Paid {'>'} 100
+                  </SelectItem>
+                  <SelectItem value="Total Paid > 250">
+                    Total Paid {'>'} 250
+                  </SelectItem>
+                  <SelectItem value="Payment Method">Payment Method</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          ) : (
-            <></>
-          )}
+            <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="max-w-6 pl-6 text-gray-700">
+                    Order Number
+                  </TableHead>
+                  <TableHead className="max-w-5 text-gray-700">Date</TableHead>
+                  <TableHead className="max-w-5 text-gray-700">
+                    Payment Method
+                  </TableHead>
+                  <TableHead className="max-w-5 text-gray-700">
+                    Total Paid
+                  </TableHead>
+                  <TableHead className="max-w-5 text-gray-700">
+                    Status
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+
+              <TableBody>
+                {filteredOrders.map((order, index) => (
+                  <TableRow
+                    key={index}
+                    onClick={() => orderSelectHandler(order.orderID)}>
+                    <TableCell className="max-w-6 pl-6">
+                      {order.orderID}
+                    </TableCell>
+                    <TableCell className="max-w-6">{order.orderDate}</TableCell>
+                    <TableCell className="max-w-6">
+                      {order.paymentMethod}
+                    </TableCell>
+                    <TableCell className="max-w-6">
+                      {order.total.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                      })}
+                    </TableCell>
+                    {/* TODO: Implement a status check for the order */}
+                    <TableCell className="max-w-6">
+                      <span className="text-green-500">Paid</span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            {sheetOpen ? (
+              <div>
+                <Sheet defaultOpen={true} onOpenChange={sheetCloseHandler}>
+                  <SheetContent side="right" className="overflow-y-auto">
+                    <SheetHeader>
+                      <SheetTitle>Order #{selectedOrder}</SheetTitle>
+                    </SheetHeader>
+                    <SheetDescription asChild className="mb-3">
+                      <div>
+                        <div>Order Date: {orderToDisplay?.orderDate}</div>
+                        <div>
+                          Payment Method: {orderToDisplay?.paymentMethod}
+                        </div>
+                        <div>Order Status:</div>
+                      </div>
+                    </SheetDescription>
+                    <Table className="ml-0 max-w-full rounded-lg bg-gray-50">
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="max-w-6 pl-6 text-gray-700">
+                            Product
+                          </TableHead>
+                          <TableHead className="max-w-5 text-gray-700">
+                            Quantity
+                          </TableHead>
+                          <TableHead className="max-w-5 text-gray-700">
+                            Price
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+
+                      <TableBody>
+                        {orderToDisplay &&
+                          orderToDisplay.items.map((product, index) => (
+                            <TableRow key={index}>
+                              <TableCell className="max-w-6 pl-6">
+                                {product.productName}
+                              </TableCell>
+                              <TableCell className="max-w-5">
+                                {product.quantity}
+                              </TableCell>
+                              <TableCell className="max-w-5">
+                                {product.totalAmount.toLocaleString('en-US', {
+                                  style: 'currency',
+                                  currency: 'USD',
+                                })}
+                              </TableCell>
+                            </TableRow>
+                          ))}
+                        <TableRow>
+                          <TableCell className="max-w-6 pl-6">Total</TableCell>
+                          <TableCell
+                            className=" max-w-9 p-0 pr-9 text-right"
+                            colSpan={2}>
+                            {/* TODO: Make sure that the total amount lines up with the rest of the products if the decimal place changes. */}
+                            {orderToDisplay?.total.toLocaleString('en-US', {
+                              style: 'currency',
+                              currency: 'USD',
+                            })}
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+
+                    <Dialog onOpenChange={(e) => handleDialogClose(e)}>
+                      <DialogTrigger asChild>
+                        <Button className="mt-5 w-full bg-darkblue">
+                          Request Refund?
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <form onSubmit={handleRefund}>
+                          <DialogHeader>
+                            <DialogTitle className="text-3xl">
+                              Select Items to Refund
+                            </DialogTitle>
+                          </DialogHeader>
+                          <div className="grid w-full gap-4 py-4">
+                            {orderToDisplay?.items.map((product, index) => (
+                              <div
+                                key={index}
+                                className="grid grid-cols-2 items-center gap-4">
+                                <Label htmlFor="">{product.productName}</Label>
+                                <Checkbox
+                                  className="justify-self-end"
+                                  id={product.productName}
+                                  onCheckedChange={(e) =>
+                                    addToRefundTotal(
+                                      e,
+                                      product.totalAmount,
+                                      product
+                                    )
+                                  }
+                                />
+                              </div>
+                            ))}
+                            <div className="grid grid-cols-2">
+                              <p className="text-lg font-medium">Total</p>
+                              <p className="justify-self-end text-left text-lg font-medium">
+                                {refundTotal.toLocaleString('en-US', {
+                                  style: 'currency',
+                                  currency: 'USD',
+                                })}
+                              </p>
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <DialogClose asChild>
+                              <Button type="submit">Submit Refund</Button>
+                            </DialogClose>
+                          </DialogFooter>
+                        </form>
+                      </DialogContent>
+                    </Dialog>
+                  </SheetContent>
+                </Sheet>
+              </div>
+            ) : (
+              <></>
+            )}
+          </div>
         </div>
-      </div>
+      ) : (
+        navigate('/products')
+      )}
       <Footer />
     </>
   );
