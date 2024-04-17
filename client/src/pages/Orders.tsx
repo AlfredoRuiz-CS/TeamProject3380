@@ -42,7 +42,7 @@ import {
 } from '@/components/ui/dialog';
 
 import { Button } from '@/components/ui/button';
-// import { Separator } from '@radix-ui/react-dropdown-menu';
+import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 
@@ -69,6 +69,9 @@ const Orders = () => {
   const [selectedOrder, setSelectedOrder] = useState<number>(0);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [refundTotal, setRefundTotal] = useState<number>(0);
+  let refundQuantity = new Map();
+  let productRefundNames: any = [];
+  let productRefundQuantities: any = [];
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [sortedOrders, setSortedOrders] = useState<Order[]>(orders);
@@ -111,13 +114,55 @@ const Orders = () => {
     console.log('Refund Requested');
   }
 
-  function addToRefundTotal(amount: number, e: boolean | string) {
+  async function handleValueChangeBatch(
+    productNameList: string[]
+    // quantity: number[]
+  ) {
+    try {
+      productNameList.forEach((productName) => {
+        refundQuantity.set(productName, 1);
+      });
+      console.log(refundQuantity);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const handleValueChange = (productName: string, quantity: number) => {
+    refundQuantity.set(productName, quantity);
+    console.log(refundQuantity);
+  };
+
+  async function handleRefundTotalChange(
+    e: boolean | string,
+    productName: string,
+    price: number
+  ) {
+    if (productName) {
+      const quantity: number = Number(refundQuantity.get(productName));
+      console.log(refundQuantity);
+      console.log('Quantity: ', refundQuantity.get(productName));
+      e
+        ? setRefundTotal(Number(refundTotal) + Number(price) * quantity)
+        : setRefundTotal(Number(refundTotal) - Number(price) * quantity);
+    }
     e
-      ? setRefundTotal(Number(refundTotal) + Number(amount))
-      : setRefundTotal(Number(refundTotal) - Number(amount));
-    e
-      ? console.log('Refund Total Added: ', amount)
-      : console.log('Refund Total Removed: ', amount);
+      ? console.log(
+          'Refund Total Added: ',
+          price,
+          'x',
+          refundQuantity.get(productName),
+          'Refund Total: ',
+          refundTotal
+        )
+      : console.log(
+          'Refund Total Removed: ',
+          price,
+          'x',
+          refundQuantity.get(productName),
+          'Refund Total: ',
+          refundTotal
+        );
   }
 
   // ? Order Sorting Handlers
@@ -288,8 +333,20 @@ const Orders = () => {
   }, [setOrders]);
 
   useEffect(() => {
-    console.log('Refund Total: ', refundTotal);
-  }, [refundTotal]);
+    if (orderToDisplay) {
+      productRefundNames = orderToDisplay?.items.map(
+        (product) => product.productName
+      );
+      console.log('Product Refund Names: ');
+      console.log(productRefundNames);
+      productRefundQuantities = orderToDisplay?.items.map(
+        (product) => product.quantity
+      );
+      console.log('Product Refund Quantities: ');
+      console.log(productRefundQuantities);
+      handleValueChangeBatch(productRefundNames);
+    }
+  }, [orderToDisplay]);
 
   return (
     <>
@@ -439,7 +496,6 @@ const Orders = () => {
                         <TableCell
                           className=" max-w-9 p-0 pr-9 text-right"
                           colSpan={2}>
-                          {/* TODO: Make sure that the total amount lines up with the rest of the products if the decimal place changes. */}
                           {orderToDisplay?.total.toLocaleString('en-US', {
                             style: 'currency',
                             currency: 'USD',
@@ -451,7 +507,11 @@ const Orders = () => {
 
                   <Dialog onOpenChange={(e) => handleDialogClose(e)}>
                     <DialogTrigger asChild>
-                      <Button className="mt-5 w-full bg-darkblue">
+                      <Button
+                        onClick={() =>
+                          handleValueChangeBatch(productRefundNames)
+                        }
+                        className="mt-5 w-full bg-darkblue">
                         Request Refund?
                       </Button>
                     </DialogTrigger>
@@ -464,21 +524,57 @@ const Orders = () => {
                         </DialogHeader>
                         <div className="grid w-full gap-4 py-4">
                           {orderToDisplay?.items.map((product, index) => (
+                            // handleValueChange(product.productName),
                             <div
                               key={index}
                               className="grid grid-cols-2 items-center gap-4">
                               <Label htmlFor="">{product.productName}</Label>
-                              <Checkbox
-                                className="justify-self-end"
-                                id={product.productName}
-                                onCheckedChange={(e) =>
-                                  addToRefundTotal(product.totalAmount, e)
-                                }
-                              />
+                              <div className="flex flex-row justify-self-end">
+                                <Checkbox
+                                  className="mr-2 h-5 w-5 self-center"
+                                  id={product.productName}
+                                  onCheckedChange={(e) =>
+                                    handleRefundTotalChange(
+                                      e,
+                                      product.productName,
+                                      Number(product.unitPrice)
+                                    )
+                                  }
+                                />
+                                <Select
+                                  defaultValue="1"
+                                  onValueChange={(e) =>
+                                    handleValueChange(
+                                      product.productName,
+                                      parseInt(e)
+                                    )
+                                  }>
+                                  <SelectTrigger className="h-10 max-w-16 flex-grow border border-black bg-gray-200">
+                                    <SelectValue placeholder="1" />
+                                  </SelectTrigger>
+                                  <SelectContent side="bottom">
+                                    {product.quantity > 1 ? (
+                                      Array.from(
+                                        { length: product.quantity },
+                                        (_, i) => i + 1
+                                      ).map((item, index) => (
+                                        <SelectItem
+                                          key={index}
+                                          value={item.toString()}>
+                                          {item}
+                                        </SelectItem>
+                                      ))
+                                    ) : (
+                                      <></>
+                                    )}
+                                  </SelectContent>
+                                </Select>
+                              </div>
                             </div>
                           ))}
+                          <Separator />
                           <div className="grid grid-cols-2">
-                            <p className="text-lg font-medium">Total</p>
+                            <p className="text-lg font-medium">Refund Total</p>
                             <p className="justify-self-end text-left text-lg font-medium">
                               {refundTotal.toLocaleString('en-US', {
                                 style: 'currency',
