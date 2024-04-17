@@ -16,23 +16,31 @@ interface OrderSummaryProps {
 }
 
 type orderData = {
-  productID: string;
-  quantity: number;
-  unitPrice: number;
-  totalAmount: number;
-  total: number;
-  paymentMethod: string;
-  nameOnCard: string;
+  productID?: string;
+  productName?: string;
+  quantity?: number;
+  unitPrice?: number;
+  totalAmount?: number;
+  total?: number;
+  paymentMethod?: string;
+  nameOnCard?: string;
 }
 
 const OrderSummary = (props: OrderSummaryProps) => {
   const user = useUserStore();
   // const selectedPaymentMethod: PaymentMethod = user.selectedPaymentMethod;
-  const [orderDetails, setOrderDetails] = useState<orderData[]>([]);
+  const [orderDetails, setOrderDetails] = useState<orderData[]>([{ productName: '', quantity: 0, nameOnCard: '', paymentMethod: '' }]);
   const { orderID } = useParams();
   console.log(orderID);
   const membershipCost = 10;
-  
+  const total = props.type === 'membership'
+    ? membershipCost.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    }) : orderDetails[0].total?.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    })
 
   // const { orderId } = useParams();
   function loyaltyMembershipNotification() {
@@ -53,7 +61,8 @@ const OrderSummary = (props: OrderSummaryProps) => {
         const response = await axios.post("https://shastamart-api-deploy.vercel.app/api/orders/orderDetail", data, { 
           headers: { Authorization: `Bearer ${token}` } })
         console.log(response.data);
-        const orderData = await response.data;
+        let orderData = await response.data;
+        orderData.res[0].paymentMethod = orderData.res[0].paymentMethod.slice(0, 19);
         setOrderDetails(orderData.res);
         console.log(orderDetails);
         if (orderData.membershipStatus === "From Order"){
@@ -100,10 +109,10 @@ const OrderSummary = (props: OrderSummaryProps) => {
                   orderDetails.map((product, index) => (
                     <tr key={index}>
                       <td className="pl-5">
-                        {product.productID + ' x ' + product.quantity}
+                        {product.productName + ' x ' + product.quantity}
                       </td>
                       <td className="pr-5 text-right">
-                        {product.total?.toLocaleString('en-US', {
+                        {product.totalAmount?.toLocaleString('en-US', {
                           style: 'currency',
                           currency: 'USD',
                         })}
@@ -122,17 +131,9 @@ const OrderSummary = (props: OrderSummaryProps) => {
                     Total
                   </h3>
                 </td>
-                <td className="pr-5 text-right">{
-            props.type === 'membership'
-            ? membershipCost.toLocaleString('en-US', {
-            style: 'currency',
-            currency: 'USD',
-            }) : 0
-          // : orderDetails[0].total.toLocaleString('en-US', {
-          //   style: 'currency',
-          //   currency: 'USD',
-          //   })}
-          }</td>
+                <td className="pr-5 text-right">
+                  {total}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -153,14 +154,13 @@ const OrderSummary = (props: OrderSummaryProps) => {
               <tbody>
                 <tr>
                   <td className="pl-5">
-                    <p>{orderDetails[0].nameOnCard}</p>
+                    <p>{orderDetails[0]?.nameOnCard}</p>
                     <p>
-                      {orderDetails[0].paymentMethod
-                        .replace(/.(?=....)/g, (match) =>
-                          match === ' ' ? ' ' : '*'
-                        )
-                        .slice(0, orderDetails[0].paymentMethod.length - 4) +
-                        orderDetails[0].paymentMethod.slice(-4)}
+                    {orderDetails[0]?.paymentMethod &&
+                      orderDetails[0].paymentMethod
+                      .replace(/.(?=....)/g, match => (match === ' ' ? ' ' : '*'))
+                      .slice(0, -4) +
+                      orderDetails[0].paymentMethod.slice(-4)}
                     </p>
                   </td>
                 </tr>
