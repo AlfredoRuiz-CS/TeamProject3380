@@ -15,6 +15,7 @@ import Payment from './pages/Payment';
 import Suppliers from './pages/Suppliers';
 import ShippingInformation from './pages/Shipping';
 import AdminDashboard from './pages/AdminDashboard';
+import Notifications from './pages/Notifications';
 import { Navigate } from 'react-router-dom';
 import useUserStore from './components/store';
 import './index.css';
@@ -34,7 +35,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={user.loggedIn ? <Profile /> : <Navigate to="/register" />} />
         <Route path="/orders" element={user.loggedIn ? <Orders /> : <Navigate to="/register" />} />
-        <Route path="/orders/summary" element={user.loggedIn ? <OrderSummary type={'order'} /> : <Navigate to="/register" />} />
+        <Route path="/orders/summary/:orderID" element={user.loggedIn ? <OrderSummary type={'order'} /> : <Navigate to="/register" />} />
         <Route path="/orders/summary/membership" element={user.loggedIn ? <OrderSummary type={'membership'} /> : <Navigate to="/register" />} />
         {/* User Cart/Payments */}
         <Route path="/cart" element={user.loggedIn ? <Cart /> : <Navigate to="/register" />} />
@@ -47,6 +48,7 @@ function App() {
         />
         {/* Admin Dashboard */}
         <Route path="/admin" element={user.loggedIn && user.isAdmin ? <AdminDashboard /> : <Navigate to="/login" />} />
+        <Route path='/notifications' element={user.loggedIn && user.isAdmin ? <Notifications /> : <Navigate to="/login" />} />
         {/* Suppliers */}
         <Route path="/suppliers" element={user.loggedIn && user.isAdmin ? <Suppliers /> : <Navigate to="/login" />} />
         {/* Products */}

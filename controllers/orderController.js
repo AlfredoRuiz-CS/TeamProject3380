@@ -1,4 +1,5 @@
 const orderModel = require('../models/orderModel')
+const memberModel = require('../models/memberModel');
 const { getRequestBody } = require('../lib/requestBodyParser');
 
 //get all orders with customer email
@@ -26,13 +27,18 @@ const processOrder = async(req,res)=>{
     const customerEmail = req.email;
     const currTime = new Date();
     const formatDigit = (x) => x.toString().length === 1 ? '0' + x.toString() : x.toString();
-    let orderDate = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate())}`;
-    const order = await orderModel.createOrder(customerEmail,orderDate,items,paymentMethod);
+    const orderDate = new Date().toISOString().split('T')[0];;
+    let normalD = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate()+2)}`;
+    let fastD = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate()+1)}`;
+    const order = await orderModel.createOrder(customerEmail,orderDate,items,paymentMethod,normalD,fastD);
     if(!order){
       res.writeHead(500,{'Content-Type':"application/json"});
       res.end(JSON.stringify({"message":`Failed to create order for ${customerEmail}`}));
       return;
     }
+    const membershipStatus = await memberModel.getMembershipStatus(customerEmail);
+    order.membershipStatus = membershipStatus
+
     res.writeHead(200,{'Content-Type':'application/json'});
     res.end(JSON.stringify({"message":`Successfully creating an order for ${customerEmail}`,
                             "data": order}));
@@ -46,12 +52,15 @@ const getOrderDetail = async (req,res) => {
   try{
     const body = await getRequestBody(req);
     const {orderID} = body;
+    const customerEmail = req.email;
     const order = await orderModel.findOrderDetail(orderID);
     if (!order){
       res.writeHead(200, { 'Content-Type': 'text/plain' });
       res.end("none");
       return; //exits if order is empty
     }
+    const membershipStatus = await memberModel.getMembershipStatus(customerEmail);
+    order.membershipStatus = membershipStatus
     //else shows order
     res.writeHead(200, { 'Content-Type' : 'application/json' });
     res.end(JSON.stringify(order));

@@ -1,7 +1,5 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-// import { productItem } from '@/components/store';
-// import { dummyProducts } from './Products';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import useUserStore from '@/components/store';
@@ -33,13 +31,28 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogClose,
+} from '@/components/ui/dialog';
+
+import { Button } from '@/components/ui/button';
+// import { Separator } from '@radix-ui/react-dropdown-menu';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+
 type productOrder = {
-  productID: string,
-  productName: string,
-  quantity: number,
-  unitPrice: string,
-  totalAmount: number,
-}
+  productID: string;
+  productName: string;
+  quantity: number;
+  unitPrice: string;
+  totalAmount: number;
+};
 
 type Order = {
   orderID: number;
@@ -49,34 +62,27 @@ type Order = {
   items: productOrder[];
 };
 
-// const dummyOrders: Order[] = Array(20)
-//   .fill({ items: [] })
-//   .map((_, index) => ({
-//     orderNumber: index,
-//     date: new Date().toDateString(),
-//     paymentMethod: 'Credit Card',
-//     total: Math.random() * 300,
-//     items: dummyProducts.slice(0, 10),
-//   }));
-
 const Orders = () => {
   const user = useUserStore();
   const navigate = useNavigate();
   // ? Selections for the order sheet
   const [selectedOrder, setSelectedOrder] = useState<number>(0);
   const [sheetOpen, setSheetOpen] = useState(false);
-  // ! SET THIS TO THE BACKEND API CALL FOR PAST ORDERS
+  const [refundTotal, setRefundTotal] = useState<number>(0);
+
   const [orders, setOrders] = useState<Order[]>([]);
-  // let orders = dummyOrders;
   const [sortedOrders, setSortedOrders] = useState<Order[]>(orders);
+
   // ? Sorting Options
   let [sortOrder, setSortOrder] = useState('Order Desc.');
-  // ? Search Query TO BE IMPLEMENTED USING BACKEND CALL
-  const [filteredOrders, setFilteredOrders] = useState<Order[]>(orders);
-  let [filterOption, setFilterOption] = useState('All');
-  const orderToDisplay = sortedOrders.find(order => order.orderID === selectedOrder);
 
-  // let [searchQuery, setSearchQuery] = useState('');
+  const [filteredOrders, setFilteredOrders] = useState<Order[]>(orders);
+
+  let [filterOption, setFilterOption] = useState('All');
+  const orderToDisplay = sortedOrders.find(
+    (order) => order.orderID === selectedOrder
+  );
+
   useEffect(() => {}, [sheetOpen]);
 
   // ? Order Selection and Sheet Handlers
@@ -96,6 +102,24 @@ const Orders = () => {
     setSheetOpen(!sheetOpen);
   }
 
+  function handleDialogClose(e: boolean) {
+    if (!e) setRefundTotal(0);
+    console.log('Dialog Closed: ', e);
+  }
+
+  function handleRefund() {
+    console.log('Refund Requested');
+  }
+
+  function addToRefundTotal(amount: number, e: boolean | string) {
+    e
+      ? setRefundTotal(Number(refundTotal) + Number(amount))
+      : setRefundTotal(Number(refundTotal) - Number(amount));
+    e
+      ? console.log('Refund Total Added: ', amount)
+      : console.log('Refund Total Removed: ', amount);
+  }
+
   // ? Order Sorting Handlers
   useEffect(() => {
     const sorted = sortOrders(orders);
@@ -109,7 +133,6 @@ const Orders = () => {
     // processedOrders = filterOrders(processedOrders);
     // processedOrders = sortOrders(processedOrders);
     // setDisplayOrders(processedOrders);
-
   }, [sortOrder, filterOption, orders]);
 
   function sortOrders(o: Order[]) {
@@ -119,9 +142,13 @@ const Orders = () => {
       case 'Order Asc.':
         return o.sort((a, b) => a.orderID - b.orderID);
       case 'Date Desc.':
-        return o.sort((a, b) => Date.parse(b.orderDate) - Date.parse(a.orderDate));
+        return o.sort(
+          (a, b) => Date.parse(b.orderDate) - Date.parse(a.orderDate)
+        );
       case 'Date Asc.':
-        return o.sort((a, b) => Date.parse(a.orderDate) - Date.parse(b.orderDate));
+        return o.sort(
+          (a, b) => Date.parse(a.orderDate) - Date.parse(b.orderDate)
+        );
       case 'Payment Method':
         // Function to group orders by a payment method
         return Object.values(
@@ -180,39 +207,46 @@ const Orders = () => {
       const token = localStorage.getItem('token');
       if (token) {
         try {
-          const response = await axios.get('https://shastamart-api-deploy.vercel.app/api/users/verifySession', { 
-            headers: { 'Authorization' : `Bearer ${token}` }
-          });
+          const response = await axios.get(
+            'https://shastamart-api-deploy.vercel.app/api/users/verifySession',
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
           console.log(response.data);
         } catch (error) {
           localStorage.removeItem('token');
-          navigate('/login')
+          navigate('/login');
         }
       } else {
         navigate('/register');
       }
-    }
+    };
     verifySession();
-  }, [navigate])
+  }, [navigate]);
 
   useEffect(() => {
     const fetchOrders = async () => {
       if (user.isAdmin) {
         try {
-          const response = await axios.get("https://shastamart-api-deploy.vercel.app/api/orders/allOrders");
+          const response = await axios.get(
+            'https://shastamart-api-deploy.vercel.app/api/orders/allOrders'
+          );
           const orderData = await response.data;
           console.log(orderData);
           const transformedOrders = orderData.map((order: Order) => ({
             orderID: order.orderID,
-            orderDate: order.orderDate ? new Date(order.orderDate).toLocaleDateString() : 'N/A', // Handle invalid or null dates
+            orderDate: order.orderDate
+              ? new Date(order.orderDate).toLocaleDateString()
+              : 'N/A', // Handle invalid or null dates
             paymentMethod: order.paymentMethod || 'N/A', // Handle null payment methods
             total: order.total,
             items: order.items.map((item: productOrder) => ({
               productID: item.productID,
               productName: item.productName,
-              unitPrice: item.unitPrice, 
+              unitPrice: item.unitPrice,
               quantity: item.quantity,
-              totalAmount: item.totalAmount, 
+              totalAmount: item.totalAmount,
             })),
           }));
           setOrders(transformedOrders);
@@ -222,24 +256,26 @@ const Orders = () => {
       } else {
         try {
           const token = localStorage.getItem('token');
-          const response = await axios.get("https://shastamart-api-deploy.vercel.app/api/orders/findAllWithEmail", { 
-            headers: { 'Authorization' : `Bearer ${token}` }
-          });
+          const response = await axios.get(
+            'https://shastamart-api-deploy.vercel.app/api/orders/findAllWithEmail',
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
           const orderData = await response.data;
           console.log(orderData);
-          const transformedOrders = orderData.map(
-            (order: Order) => ({
-              orderID: order.orderID,
-              orderDate: new Date(order.orderDate).toLocaleDateString(),
-              paymentMethod: order.paymentMethod,
-              total: order.total,
-              items: order.items.map((item: productOrder) => ({
-                productID: item.productID,
-                productName: item.productName,
-                unitPrice: item.unitPrice,
-                quantity: item.quantity,
-                totalAmount: item.totalAmount
-              }))
+          const transformedOrders = orderData.map((order: Order) => ({
+            orderID: order.orderID,
+            orderDate: new Date(order.orderDate).toLocaleDateString(),
+            paymentMethod: order.paymentMethod,
+            total: order.total,
+            items: order.items.map((item: productOrder) => ({
+              productID: item.productID,
+              productName: item.productName,
+              unitPrice: item.unitPrice,
+              quantity: item.quantity,
+              totalAmount: item.totalAmount,
+            })),
           }));
           setOrders(transformedOrders);
           console.log(orders);
@@ -247,9 +283,13 @@ const Orders = () => {
           console.log(error);
         }
       }
-    }
+    };
     fetchOrders();
-  }, [setOrders])
+  }, [setOrders]);
+
+  useEffect(() => {
+    console.log('Refund Total: ', refundTotal);
+  }, [refundTotal]);
 
   return (
     <>
@@ -267,8 +307,7 @@ const Orders = () => {
             {/* Sort dropdown */}
             <Select
               defaultValue="Order Number"
-              onValueChange={(e) => setSortOrder(e)}
-            >
+              onValueChange={(e) => setSortOrder(e)}>
               <SelectTrigger className="h-10 w-[8rem] bg-white text-black">
                 <SelectValue placeholder="Order Desc.">{sortOrder}</SelectValue>
               </SelectTrigger>
@@ -287,8 +326,7 @@ const Orders = () => {
 
             <Select
               defaultValue="Order Number"
-              onValueChange={(e) => setFilterOption(e)}
-            >
+              onValueChange={(e) => setFilterOption(e)}>
               <SelectTrigger className="h-10 w-[8rem] bg-white text-black">
                 <SelectValue placeholder="All">{filterOption}</SelectValue>
               </SelectTrigger>
@@ -296,8 +334,12 @@ const Orders = () => {
                 <SelectItem value="All">All</SelectItem>
                 <SelectItem value="Last 6 Months">Last 6 Months</SelectItem>
                 <SelectItem value="Last 2 Weeks">Last 2 Weeks</SelectItem>
-                <SelectItem value="Total Paid > 100">Total Paid {'>'} 100</SelectItem>
-                <SelectItem value="Total Paid > 250">Total Paid {'>'} 250</SelectItem>
+                <SelectItem value="Total Paid > 100">
+                  Total Paid {'>'} 100
+                </SelectItem>
+                <SelectItem value="Total Paid > 250">
+                  Total Paid {'>'} 250
+                </SelectItem>
                 <SelectItem value="Payment Method">Payment Method</SelectItem>
               </SelectContent>
             </Select>
@@ -315,6 +357,7 @@ const Orders = () => {
                 <TableHead className="max-w-5 text-gray-700">
                   Total Paid
                 </TableHead>
+                <TableHead className="max-w-5 text-gray-700">Status</TableHead>
               </TableRow>
             </TableHeader>
 
@@ -322,8 +365,7 @@ const Orders = () => {
               {filteredOrders.map((order, index) => (
                 <TableRow
                   key={index}
-                  onClick={() => orderSelectHandler(order.orderID)}
-                >
+                  onClick={() => orderSelectHandler(order.orderID)}>
                   <TableCell className="max-w-6 pl-6">
                     {order.orderID}
                   </TableCell>
@@ -337,6 +379,10 @@ const Orders = () => {
                       currency: 'USD',
                     })}
                   </TableCell>
+                  {/* TODO: Implement a status check for the order */}
+                  <TableCell className="max-w-6">
+                    <span className="text-green-500">Paid</span>
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -347,62 +393,108 @@ const Orders = () => {
                 <SheetContent side="right" className="overflow-y-auto">
                   <SheetHeader>
                     <SheetTitle>Order #{selectedOrder}</SheetTitle>
-                    <SheetDescription asChild>
-                      <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead className="max-w-6 pl-6 text-gray-700">
-                              Product
-                            </TableHead>
-                            <TableHead className="max-w-5 text-gray-700">
-                              Quantity
-                            </TableHead>
-                            <TableHead className="max-w-5 text-gray-700">
-                              Price
-                            </TableHead>
-                          </TableRow>
-                        </TableHeader>
-
-                        <TableBody>
-                        {orderToDisplay && orderToDisplay.items.map(
-                            (product, index) => (
-                              <TableRow key={index}>
-                                <TableCell className="max-w-6 pl-6">
-                                  {product.productName}
-                                </TableCell>
-                                <TableCell className="max-w-5">{product.quantity}</TableCell>
-                                <TableCell className="max-w-5">
-                                  {product.totalAmount.toLocaleString('en-US', {
-                                    style: 'currency',
-                                    currency: 'USD',
-                                  })}
-                                </TableCell>
-                              </TableRow>
-                            )
-                          )}
-                          <TableRow>
-                            <TableCell className="max-w-6 pl-6">
-                              Total
-                            </TableCell>
-                            <TableCell
-                              className=" max-w-9 p-0 pr-9 text-right"
-                              colSpan={2}
-                            >
-
-                              {/* TODO: Make sure that the total amount lines up with the rest of the products if the decimal place changes. */}
-                              {orderToDisplay?.total.toLocaleString(
-                                'en-US',
-                                {
-                                  style: 'currency',
-                                  currency: 'USD',
-                                }
-                              )}
-                            </TableCell>
-                          </TableRow>
-                        </TableBody>
-                      </Table>
-                    </SheetDescription>
                   </SheetHeader>
+                  <SheetDescription asChild className="mb-3">
+                    <div>
+                      <div>Order Date: {orderToDisplay?.orderDate}</div>
+                      <div>Payment Method: {orderToDisplay?.paymentMethod}</div>
+                      <div>Order Status:</div>
+                    </div>
+                  </SheetDescription>
+                  <Table className="ml-0 max-w-full rounded-lg bg-gray-50">
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="max-w-6 pl-6 text-gray-700">
+                          Product
+                        </TableHead>
+                        <TableHead className="max-w-5 text-gray-700">
+                          Quantity
+                        </TableHead>
+                        <TableHead className="max-w-5 text-gray-700">
+                          Price
+                        </TableHead>
+                      </TableRow>
+                    </TableHeader>
+
+                    <TableBody>
+                      {orderToDisplay &&
+                        orderToDisplay.items.map((product, index) => (
+                          <TableRow key={index}>
+                            <TableCell className="max-w-6 pl-6">
+                              {product.productName}
+                            </TableCell>
+                            <TableCell className="max-w-5">
+                              {product.quantity}
+                            </TableCell>
+                            <TableCell className="max-w-5">
+                              {product.totalAmount.toLocaleString('en-US', {
+                                style: 'currency',
+                                currency: 'USD',
+                              })}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      <TableRow>
+                        <TableCell className="max-w-6 pl-6">Total</TableCell>
+                        <TableCell
+                          className=" max-w-9 p-0 pr-9 text-right"
+                          colSpan={2}>
+                          {/* TODO: Make sure that the total amount lines up with the rest of the products if the decimal place changes. */}
+                          {orderToDisplay?.total.toLocaleString('en-US', {
+                            style: 'currency',
+                            currency: 'USD',
+                          })}
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+
+                  <Dialog onOpenChange={(e) => handleDialogClose(e)}>
+                    <DialogTrigger asChild>
+                      <Button className="mt-5 w-full bg-darkblue">
+                        Request Refund?
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <form onSubmit={handleRefund}>
+                        <DialogHeader>
+                          <DialogTitle className="text-3xl">
+                            Select Items to Refund
+                          </DialogTitle>
+                        </DialogHeader>
+                        <div className="grid w-full gap-4 py-4">
+                          {orderToDisplay?.items.map((product, index) => (
+                            <div
+                              key={index}
+                              className="grid grid-cols-2 items-center gap-4">
+                              <Label htmlFor="">{product.productName}</Label>
+                              <Checkbox
+                                className="justify-self-end"
+                                id={product.productName}
+                                onCheckedChange={(e) =>
+                                  addToRefundTotal(product.totalAmount, e)
+                                }
+                              />
+                            </div>
+                          ))}
+                          <div className="grid grid-cols-2">
+                            <p className="text-lg font-medium">Total</p>
+                            <p className="justify-self-end text-left text-lg font-medium">
+                              {refundTotal.toLocaleString('en-US', {
+                                style: 'currency',
+                                currency: 'USD',
+                              })}
+                            </p>
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <DialogClose asChild>
+                            <Button type="submit">Submit Refund</Button>
+                          </DialogClose>
+                        </DialogFooter>
+                      </form>
+                    </DialogContent>
+                  </Dialog>
                 </SheetContent>
               </Sheet>
             </div>

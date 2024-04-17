@@ -14,7 +14,7 @@ CREATE TABLE product(
 	supplier varchar(255),
 	supplierStock int,
 	portion varchar(50),
-    supplierPrice decimal(10, 2),
+    active boolean default 1,
     FOREIGN KEY (categoryID) REFERENCES category(categoryID) ON DELETE
     SET NULL
 );
@@ -48,27 +48,12 @@ CREATE TABLE customer(
 CREATE TABLE membership(
     membershipID int PRIMARY KEY AUTO_INCREMENT,
     customerEmail varchar(100),
-    membershipStatus boolean,
+    membershipStatus varchar(50),
     startDate date,
     endDate date,
     renewalDate date,
     FOREIGN KEY (customerEmail) REFERENCES customer(email) ON DELETE CASCADE
 );
-
--- CREATE TABLE mbshipPayment(
---     mbPaymentID int PRIMARY KEY AUTO_INCREMENT,
---     membershipID int,
---     amount decimal(10, 2),
---     paymentDate date,
---     paymentMethod varchar(50),
---     paymentStatus varchar(50),
---     startDate date,
---     endDate date,
---     autoRenewal boolean,
---     priorityShipping boolean,
---     FOREIGN KEY (membershipID) REFERENCES membership(membershipID) ON DELETE
---     SET NULL
--- );
 
 CREATE TABLE purchaseOrder (
     orderID int PRIMARY KEY AUTO_INCREMENT,
@@ -91,11 +76,14 @@ CREATE TABLE payment(
 );
 
 CREATE TABLE paymentInfo(
-    customerEmail varchar(100) PRIMARY KEY,
-    cardtype varchar(50),
-    cardnumber varchar(16),
-    cvv INT,
-    expiration DATE
+	paymentInfoID int PRIMARY KEY AUTO_INCREMENT,
+    customerEmail varchar(100),
+    cardtype varchar(10),
+    cardnumber varchar(19),
+    cvv int,
+    expiration varchar(5),
+    nameOnCard varchar(50),
+    active boolean default 1
 );
 
 CREATE TABLE orderLine(
@@ -104,7 +92,7 @@ CREATE TABLE orderLine(
     productID int,
     quantity int,
     unitPrice decimal(10, 2),
-    subTotal decimal(10, 2),
+    totalAmount decimal(10, 2),
     active boolean default 1,
     FOREIGN KEY (orderID) REFERENCES purchaseOrder(orderID) ON DELETE CASCADE,
     FOREIGN KEY (productID) REFERENCES product(productID) ON DELETE
@@ -118,10 +106,7 @@ CREATE TABLE shipping(
     paymentID int,
     cost decimal(6, 2),
     trackingNum int,
-    carrier varchar(100),
-    shippingDate date,
     estimatedDel date,
-    actualDel date,
     shippingStatus varchar(50),
     FOREIGN KEY (membershipID) REFERENCES membership(membershipID) ON DELETE
     SET NULL ON UPDATE CASCADE,
@@ -146,7 +131,8 @@ CREATE TABLE supplier(
     streetAddress varchar(100),
     city varchar(50),
     state varchar(50),
-    zipcode varchar(20)
+    zipcode varchar(20),
+    active boolean default 1
 );
 
 CREATE TABLE inventory(
@@ -161,18 +147,10 @@ CREATE TABLE inventory(
     SET NULL ON UPDATE CASCADE
 );
 
-CREATE TABLE totalInventory(
-    totalInventoryID int PRIMARY KEY AUTO_INCREMENT,
-    inventoryValue decimal(10, 2),
-    inventoryQuantity int,
-    totalValueChange decimal(10, 2),
-    totalQuantityChange int
-);
-
 CREATE TABLE notifications (
     notificationID int PRIMARY KEY AUTO_INCREMENT,
     message varchar(255),
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
 );
 
 CREATE TABLE nutritionFacts(
@@ -205,3 +183,33 @@ CREATE TABLE shippingDetails(
     weight varchar(100),
     FOREIGN KEY (productID) REFERENCES product(productID) ON DELETE CASCADE
 );
+
+DELIMITER //
+CREATE TRIGGER low_stock_notification AFTER UPDATE ON inventory
+FOR EACH ROW
+BEGIN
+    IF NEW.quantity < 10 THEN
+        INSERT INTO notifications (message)
+        VALUES (CONCAT('Product ID ', NEW.productID, ' has low stock. Please reorder.'));
+    END IF;
+END;//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER loyalty_membership AFTER INSERT ON purchaseOrder
+FOR EACH ROW
+BEGIN
+    IF NEW.total >= 250 THEN
+		IF NOT EXISTS (Select 1 from membership where customerEmail = NEW.customerEmail) THEN
+			INSERT INTO membership(customerEmail, membershipStatus, startDate, endDate, renewalDate)
+            VALUES(NEW.customerEmail, 1, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 1 YEAR), DATE_ADD(CURDATE(), INTERVAL 1 YEAR));
+		ELSE
+            UPDATE membership
+            SET membershipStatus = 1,
+				renewalDate = CURDATE(),
+                endDate = DATE_ADD(CURDATE(), INTERVAL 1 YEAR)
+			WHERE customerEmail = NEW.customerEmail;
+		END IF;
+	END IF;
+END;//
+DELIMITER ;

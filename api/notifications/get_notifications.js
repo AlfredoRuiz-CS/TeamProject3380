@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
   }
   
   if (req.method === 'GET'){
-    await notificationsController.getNotifications();
+    await notificationsController.getNotifications(req, res);
   } else {
     res.writeHead(404, { 'Content-Type' : 'application/json' });
     res.end(JSON.stringify({ message: 'Route Not Found'}));

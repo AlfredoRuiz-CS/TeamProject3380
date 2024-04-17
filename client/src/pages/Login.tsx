@@ -70,13 +70,24 @@ const Login = () => {
           isMember: userData.isMember,
         });
         store.login(userData.accountType === 'employee');
-        // navigate('/profile');
       } catch (error) {
-        console.log(error);
-        loginFail();
+        if (axios.isAxiosError(error)) { // Type guard
+          if (error.response) {
+            console.log(error.response.data);
+            console.log(error.response.status);
+            console.log(error.response.headers);
+            loginFail(error.response.data.error);
+          } else if (error.request) {
+            console.log(error.request);
+          } else {
+            console.log('Error', error.message);
+          }
+        } else {
+          console.log('Error', error);
+        }
       }
       setSubmitting(false);
-    },
+    }
   });
 
   // ? Toast functions
@@ -96,8 +107,8 @@ const Login = () => {
     });
   }
 
-  const loginFail = () =>
-    toast.error('Invalid email or password', {
+  const loginFail = (error?: string) =>
+    toast.error(error || 'Invalid email or password', {
       position: 'bottom-right',
       className: 'font-bold text-black',
       duration: 2000,

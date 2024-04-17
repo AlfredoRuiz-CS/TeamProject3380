@@ -2,38 +2,80 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 import useUserStore from '@/components/store';
-import { PaymentMethod } from '@/pages/Profile';
-
+// import { PaymentMethod } from '@/pages/Profile';
+// import { productItem } from '@/components/store';
 import { useParams } from 'react-router-dom';
+// import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 // import { productItem } from '@/components/store';
 
 interface OrderSummaryProps {
   type: 'membership' | 'order';
 }
 
+type orderData = {
+  productID?: string;
+  productName?: string;
+  quantity?: number;
+  unitPrice?: number;
+  totalAmount?: number;
+  total?: number;
+  paymentMethod?: string;
+  nameOnCard?: string;
+}
+
 const OrderSummary = (props: OrderSummaryProps) => {
   const user = useUserStore();
-  const selectedPaymentMethod: PaymentMethod = user.selectedPaymentMethod;
-  const { orderId } = useParams();
-  console.log(orderId);
+  // const selectedPaymentMethod: PaymentMethod = user.selectedPaymentMethod;
+  const [orderDetails, setOrderDetails] = useState<orderData[]>([{ productName: '', quantity: 0, nameOnCard: '', paymentMethod: '' }]);
+  const { orderID } = useParams();
+  console.log(orderID);
   const membershipCost = 10;
-  const total =
-    props.type === 'membership'
-      ? membershipCost.toLocaleString('en-US', {
-          style: 'currency',
-          currency: 'USD',
-        })
-      : user.cartItems
-          .reduce(
-            (acc, product, index) => acc + product.price * user.quantity[index],
-            0
-          )
-          .toLocaleString('en-US', {
-            style: 'currency',
-            currency: 'USD',
-          });
+  const total = props.type === 'membership'
+    ? membershipCost.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    }) : orderDetails[0].total?.toLocaleString('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    })
 
   // const { orderId } = useParams();
+  function loyaltyMembershipNotification() {
+    toast.success('Congratulations! You have been awarded a free membership for a year for your purchase!', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      duration: 4000,
+    });
+  }
+
+  useEffect(() => {
+    const fetchOrder = async () => {
+      const data = {
+        orderID: orderID,
+      }
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.post("https://shastamart-api-deploy.vercel.app/api/orders/orderDetail", data, { 
+          headers: { Authorization: `Bearer ${token}` } })
+        console.log(response.data);
+        let orderData = await response.data;
+        orderData.res[0].paymentMethod = orderData.res[0].paymentMethod.slice(0, 19);
+        setOrderDetails(orderData.res);
+        console.log(orderDetails);
+        if (orderData.membershipStatus === "From Order"){
+          user.setUserDetails({isMember: true});
+          loyaltyMembershipNotification();
+        }
+        user.resetCart();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchOrder();
+  }, [])
 
   return (
     <>
@@ -64,13 +106,13 @@ const OrderSummary = (props: OrderSummaryProps) => {
                     </td>
                   </tr>
                 ) : (
-                  user.cartItems.map((product, index) => (
+                  orderDetails.map((product, index) => (
                     <tr key={index}>
                       <td className="pl-5">
-                        {product.name + ' x ' + user.quantity[index]}
+                        {product.productName + ' x ' + product.quantity}
                       </td>
                       <td className="pr-5 text-right">
-                        {product.price.toLocaleString('en-US', {
+                        {product.totalAmount?.toLocaleString('en-US', {
                           style: 'currency',
                           currency: 'USD',
                         })}
@@ -89,7 +131,9 @@ const OrderSummary = (props: OrderSummaryProps) => {
                     Total
                   </h3>
                 </td>
-                <td className="pr-5 text-right">{total}</td>
+                <td className="pr-5 text-right">
+                  {total}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -110,14 +154,13 @@ const OrderSummary = (props: OrderSummaryProps) => {
               <tbody>
                 <tr>
                   <td className="pl-5">
-                    <p>{selectedPaymentMethod.nameOnCard}</p>
+                    <p>{orderDetails[0]?.nameOnCard}</p>
                     <p>
-                      {selectedPaymentMethod.cardnumber
-                        .replace(/.(?=....)/g, (match) =>
-                          match === ' ' ? ' ' : '*'
-                        )
-                        .slice(0, selectedPaymentMethod.cardnumber.length - 4) +
-                        selectedPaymentMethod.cardnumber.slice(-4)}
+                    {orderDetails[0]?.paymentMethod &&
+                      orderDetails[0].paymentMethod
+                      .replace(/.(?=....)/g, match => (match === ' ' ? ' ' : '*'))
+                      .slice(0, -4) +
+                      orderDetails[0].paymentMethod.slice(-4)}
                     </p>
                   </td>
                 </tr>

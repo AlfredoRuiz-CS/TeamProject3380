@@ -119,7 +119,10 @@ const payment = (props: paymentProps) => {
           { headers: { Authorization: `Bearer ${token}` } }
         );
         console.log(response.data);
-        navigate('/orders/summary');
+        const orderData = response.data;
+        const orderID = orderData.data.orderID;
+        console.log(orderID);
+        navigate(`/orders/summary/${orderID}`);
       } catch (error) {
         console.log(error);
       }
@@ -140,7 +143,7 @@ const payment = (props: paymentProps) => {
         console.log("Response:", response.data);
         const isMember = await response.data;
         store.setUserDetails({ isMember: isMember });
-        navigate('/orders/summary');
+        navigate('/orders/summary/membership');
       } catch (error) {
         console.log(error);
       }

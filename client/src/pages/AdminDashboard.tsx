@@ -36,21 +36,23 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-import { Separator } from '@/components/ui/separator';
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
 
-// import { productItem } from '@/components/store';
-// import useUserStore from '@/components/store';
 import { useProductsStore } from '@/components/store';
 import { mapCategory, ProductApiResponse } from './Products';
-import { dummyProducts } from './Products';
-
-dummyProducts[4].stock = 2;
-dummyProducts[4].supplierStock = 0;
-dummyProducts[6].stock = 0;
-dummyProducts[6].supplierStock = 20;
 
 const AdminDashboard = () => {
   const { setProducts } = useProductsStore();
@@ -137,7 +139,7 @@ const AdminDashboard = () => {
     navigate('/suppliers');
   }
 
-  function orderToast(productName: string, quantity: string) {
+  function orderSuccessToast(productName: string, quantity: string) {
     toast.success(
       'Order for ' + quantity + ' ' + productName + ' ' + 'Submitted!',
       {
@@ -148,7 +150,7 @@ const AdminDashboard = () => {
     );
   }
 
-  function supplierToast(supplierName: string) {
+  function supplierSuccessToast(supplierName: string) {
     toast.success('Added ' + supplierName + ' to Suppliers!', {
       position: 'bottom-right',
       className: 'font-bold text-black',
@@ -199,7 +201,7 @@ const AdminDashboard = () => {
         'https://shastamart-api-deploy.vercel.app/api/suppliers/insertSupplier',
         data
       );
-      supplierToast(supplierName);
+      supplierSuccessToast(supplierName);
       console.log(response);
       console.log('Supplier Submitted for ', supplierName);
       setReloadTrigger((prev) => prev + 1);
@@ -208,7 +210,60 @@ const AdminDashboard = () => {
     }
   }
 
-  async function handleSubmitOrder(event: React.FormEvent<HTMLFormElement>) {
+  async function handleRemoveProduct(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    let productName = (
+      document.getElementById('productname') as HTMLInputElement
+    ).value;
+
+    const data = {
+      productName: productName,
+    };
+
+    try {
+      const response = await axios.post(
+        'https://shastamart-api-deploy.vercel.app/api/products/deleteProduct',
+        data
+      );
+
+      if (response.status === 200) {
+        toast.success('Product Removed!', {
+          position: 'bottom-right',
+          className: 'font-bold text-black',
+          duration: 2000,
+        });
+      }
+      console.log('Product Removed for ', productName);
+      setReloadTrigger((prev) => prev + 1);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  function handleRemoveSupplier(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    let supplierName = (
+      document.getElementById('suppliername') as HTMLInputElement
+    ).value;
+
+    const data = {
+      supplierName: supplierName,
+    };
+
+    try {
+      const response = axios.post(
+        'https://shastamart-api-deploy.vercel.app/api/suppliers/deleteSupplier',
+        data
+      );
+      console.log(response);
+      console.log('Supplier Removed for ', supplierName);
+      setReloadTrigger((prev) => prev + 1);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+   async function handleSubmitOrder(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     let productName = (
       document.getElementById('productName') as HTMLInputElement
@@ -227,7 +282,7 @@ const AdminDashboard = () => {
         data
       );
       console.log(response);
-      orderToast(productName, quantity);
+      orderSuccessToast(productName, quantity);
       console.log('Order Submitted for ', productName, ' ', quantity);
       setReloadTrigger((prev) => prev + 1);
     } catch (error) {
@@ -691,6 +746,7 @@ const AdminDashboard = () => {
                 </DialogContent>
               </Dialog>
 
+              {/* Add New Supplier */}
               <Dialog>
                 <DialogTrigger asChild>
                   <Button className=" mt-6 flex h-[4rem] w-[30rem] flex-row self-center bg-darkblue text-lg">
@@ -758,12 +814,14 @@ const AdminDashboard = () => {
                         </Label>
                         <Select onValueChange={(e) => setSelectedState(e)}>
                           <SelectTrigger className="col-span-3">
-                            <SelectValue placeholder="State"></SelectValue>
+                            <SelectValue placeholder="State" />
                           </SelectTrigger>
                           <SelectContent>
                             <SelectGroup>
-                              {states.map((state) => (
-                                <SelectItem value={state}>{state}</SelectItem>
+                              {states.map((state, index) => (
+                                <SelectItem key={index} value={state}>
+                                  {state}
+                                </SelectItem>
                               ))}
                             </SelectGroup>
                           </SelectContent>
@@ -789,24 +847,147 @@ const AdminDashboard = () => {
                   </form>
                 </DialogContent>
               </Dialog>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className=" mt-6 flex h-[4rem] w-[30rem] flex-row self-center bg-red-500 text-lg hover:bg-red-500/90">
+                    Remove Product Item?
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <form onSubmit={handleRemoveProduct}>
+                    <DialogHeader>
+                      <DialogTitle className="text-3xl">
+                        Remove Product Item
+                      </DialogTitle>
+                      <DialogDescription className="text-lg">
+                        Enter Product Name Below.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="productname" className="text-right">
+                          Product Name
+                        </Label>
+                        <Input
+                          id="productname"
+                          name="productname"
+                          placeholder="e.g. Fresh Strawberries"
+                          className="col-span-3"
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button className="bg-red-500 hover:bg-red-500/90">
+                            Remove Product Item
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you absolutely sure?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action will remove the selected product from
+                              the databse.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <DialogClose asChild>
+                              <AlertDialogAction
+                                className="bg-red-500 hover:bg-red-500/90"
+                                type="submit">
+                                Confirm
+                              </AlertDialogAction>
+                            </DialogClose>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className=" mt-6 flex h-[4rem] w-[30rem] flex-row self-center bg-red-500 text-lg hover:bg-red-500/90">
+                    Remove Supplier?
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <form onSubmit={handleRemoveSupplier}>
+                    <DialogHeader>
+                      <DialogTitle className="text-3xl">
+                        Remove Supplier
+                      </DialogTitle>
+                      <DialogDescription className="text-lg">
+                        Enter Supplier Name Below.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="suppliername" className="text-right">
+                          Supplier Name
+                        </Label>
+                        <Input
+                          id="suppliername"
+                          name="suppliername"
+                          placeholder="e.g. Berry Farms"
+                          className="col-span-3"
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button className="bg-red-500 hover:bg-red-500/90">
+                            Remove Supplier
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Are you absolutely sure?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action will remove the selected supplier from
+                              the databse.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <DialogClose asChild>
+                              <AlertDialogAction
+                                className="bg-red-500 hover:bg-red-500/90"
+                                type="submit">
+                                Confirm
+                              </AlertDialogAction>
+                            </DialogClose>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
             </div>
 
             {/* Popular Items */}
             <div className="">
-              <div className="mr-10 mt-10 flex min-h-[20rem] min-w-14 flex-col justify-center gap-5 rounded-lg bg-cardwhite pt-5">
+              <div className="mr-10 mt-10 flex min-h-[20rem] min-w-14 flex-col gap-5 rounded-lg bg-cardwhite pt-5">
                 <h1 className="text-center text-3xl font-medium">
                   Popular Items
                 </h1>
-                <div className="flex flex-row items-center justify-center gap-5 pl-10">
-                  <div>
-                    <Link to={'/product/' + popularItem1.productId}>
-                      <img
-                        className=" h-[10rem] max-w-[15rem] rounded-xl object-cover"
-                        src={popularItem1.image}></img>
-                    </Link>
-                  </div>
-                  <div className="flex flex-col">
-                    <h1 className="flex flex-row self-center text-3xl">
+                <div className="flex flex-row gap-5 self-start pl-10">
+                  <Link to={'/product/' + popularItem1.productId}>
+                    <img
+                      className=" h-[10rem] w-[15rem] place-self-start rounded-xl object-cover"
+                      src={popularItem1.image}></img>
+                  </Link>
+                  <div className="flex flex-col self-center">
+                    <h1 className="flex flex-row text-3xl">
                       {popularItem1.name}
                     </h1>
                     {popularItem1.price.toLocaleString('en-US', {
@@ -816,19 +997,16 @@ const AdminDashboard = () => {
                       ' per ' +
                       popularItem1.portion}
                   </div>
-                  <div className="flex flex-col"></div>
                 </div>
-                <div className="flex flex-row items-center justify-center gap-5 pb-12 pl-10">
-                  <div>
-                    <Link to={'/product/' + popularItem2.productId}>
-                      <img
-                        className="h-[10rem] w-[15rem] rounded-xl object-cover"
-                        src={popularItem2.image}
-                      />
-                    </Link>
-                  </div>
-                  <div className="flex flex-col">
-                    <h1 className="flex flex-row self-center text-3xl">
+                <div className="flex flex-row gap-5 self-start pb-12 pl-10">
+                  <Link to={'/product/' + popularItem2.productId}>
+                    <img
+                      className="h-[10rem] w-[15rem] place-self-start rounded-xl object-cover"
+                      src={popularItem2.image}
+                    />
+                  </Link>
+                  <div className="flex flex-col self-center">
+                    <h1 className="flex flex-row text-3xl">
                       {popularItem2.name}
                     </h1>
                     {popularItem2.price.toLocaleString('en-US', {

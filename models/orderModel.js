@@ -1,4 +1,5 @@
 const { pool } = require("../config/db");
+const { v4: uuidv4 } = require('uuid');
 
 //getAllOrder used by employee
 async function findAllOrder(){
@@ -32,7 +33,7 @@ async function findAllOrder(){
     }
 };
 
-async function createOrder(customerEmail,orderDate,items,paymentMethod){
+async function createOrder(customerEmail,orderDate,items,paymentMethod,normalD,fastD){
     const connection = await pool.getConnection();
     try{
         await connection.beginTransaction();
@@ -64,23 +65,47 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod){
 
             total += item.productPrice*item.productQuantity;
         }
-        console.log("AT PURCHASE ORDER");
+        // console.log("AT PURCHASE ORDER");
         //create new order
         const orderRes = await connection.query(`
             INSERT INTO purchaseOrder(customerEmail,orderDate,total)
-            VALUEs(?,?,?)`,[customerEmail,orderDate,total]);
+            VALUES(?,?,?)`,[customerEmail,orderDate,total]);
         //get the last insert id which is the newest orderID
         const [rows] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
         const lastId = rows[0].lastId;
-        console.log("AT PAYMENT");
+        // console.log("AT PAYMENT");
+        
         //create payment
         const createPayment = await connection.query(`
         INSERT INTO payment(orderID,paymentDate,totalAmount,paymentMethod,paymentStatus)
-        VALUE(?,?,?,?,?)`,[lastId,orderDate,total,paymentMethod,"pass"])
+        VALUES(?,?,?,?,?)`,[lastId,orderDate,total,paymentMethod,"pass"])
         //gey paymentID for return
         const [getPayment] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
         const IDpayment = getPayment[0].lastId;
-        //create detail order in orderLine
+
+        //create shipping
+        const [isMember] = await connection.query(`
+        SELECT membershipID
+        FROM membership
+        WHERE customerEmail=?`,[customerEmail]);
+        if (isMember.length==0){
+            const createShipping = await connection.query(`
+            INSERT INTO shipping(orderID,paymentID,cost,trackingNum,estimatedDel,shippingStatus)
+            VALUES(?,?,?,?,?,?)`,[lastId,IDpayment,10,uuidv4(),normalD,"Delivering"])
+        } else{
+            const createShipping = await connection.query(`
+            INSERT INTO shipping(membershipID,orderID,paymentID,cost,trackingNum,estimatedDel,shippingStatus)
+            VALUES(?,?,?,?,?,?,?)`,[isMember[0].membershipID,lastId,IDpayment,0,uuidv4(),fastD,"Delivering"])
+        }
+        const [getID] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
+        const trackingID = getID[0].lastId;
+        const getTrackNum = await connection.query(`
+        SELECT trackingNum
+        FROM shipping
+        WHERE shippingID=?`,[trackingID]);
+
+
+        // create detail order in orderLine
         for (let item of items){
             console.log(item);
             let subTotal = item.productPrice*item.productQuantity;
@@ -94,11 +119,11 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod){
             SELECT p.productName, o.quantity, o.unitPrice, o.totalAmount
             FROM orderLine o
             JOIN product p on o.productID = p.productID
-            WHERE orderLineID = ? AND active = ?`,[anotherID,1]);
+            WHERE orderLineID = ? AND o.active = 1`,[anotherID]);
             orderLineDetail.push(res[0]);
         }
         await connection.commit();
-        return {orderID: lastId, detail: orderLineDetail, paymentID: IDpayment};
+        return {orderID: lastId, detail: orderLineDetail, paymentID: IDpayment, tracking: getTrackNum[0]};
     } catch(error){
         await connection.rollback();
         console.log(error.message);
@@ -160,13 +185,20 @@ async function findOrderByLname(lname){
 async function findOrderDetail(orderID){
     try{
         const [res] = await pool.query(`
-        SELECT o.productID, o.quantity, o.unitPrice, o.subTotal
+        SELECT o.productID, pr.productName, o.quantity, o.unitPrice, o.totalAmount, p.total, pm.paymentMethod, pi.nameOnCard
         FROM purchaseOrder p
         JOIN orderLine o
         ON p.orderID = o.orderID
-        WHERE p.orderID=? AND o.active=?`,[orderID,1]);
+        JOIN product pr
+        ON pr.productID = o.productID
+        JOIN payment pm
+        ON pm.orderID = p.orderID
+        JOIN paymentInfo pi
+        ON SUBSTRING(pm.paymentMethod, 1, 19) = pi.cardnumber
+        WHERE p.orderID=? AND o.active=1`, [orderID]);
 
-        return res;
+
+        return {res};
     } catch(error){
         console.log(error.message);
         throw error;

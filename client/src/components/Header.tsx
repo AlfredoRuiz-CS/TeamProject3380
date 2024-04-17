@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Button } from './ui/button.tsx';
 import toast from 'react-hot-toast';
 import { IoMdCart } from 'react-icons/io';
@@ -16,11 +15,10 @@ import {
 } from '@/components/ui/dropdown-menu.tsx';
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-// Imports for state management
 import useUserStore from '@/components/store';
-// import { devtools, persist } from "zustand/middleware";
-import type {} from '@redux-devtools/extension'; // required for devtools typing
+import { useState, useEffect } from 'react';
 
 interface HeaderProps {
   color?: 'blue' | 'white';
@@ -29,9 +27,9 @@ interface HeaderProps {
 const Header = (props: HeaderProps) => {
   const user = useUserStore();
   const navigate = useNavigate();
+  const [notifNumber, setNotifNumber] = useState(0);
 
   // ! ADD BACKEND CALL TO DISPLAY THE NUMBER OF NOTIFICATIONS
-  const notifNumber = 5;
   useEffect(() => {}, [user.loggedIn]);
   useEffect(() => {}, [user.cartItemsNumber]);
 
@@ -57,6 +55,31 @@ const Header = (props: HeaderProps) => {
     });
     navigate('/home');
   }
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get(
+          'https://shastamart-api-deploy.vercel.app/api/notifications/get_notifications'
+        );
+        const notifData = await response.data;
+
+        const uniqueMessages: any = {};
+        const filteredData: any = [];
+        notifData.forEach((item: any) => {
+          if (!uniqueMessages[item.message]) {
+            uniqueMessages[item.message] = true;
+            filteredData.push(item);
+          }
+        });
+        console.log(filteredData);
+        setNotifNumber(filteredData.length);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchNotifications();
+  }, []);
 
   return (
     <>
@@ -109,7 +132,8 @@ const Header = (props: HeaderProps) => {
                 {textColor === 'text-white' ? (
                   user.accountType === 'employee' ? (
                     // TODO: Add notification dropdown that links to the low supply sheet
-                    <Link to="/admin" className="flex flex-row gap-1">
+
+                    <Link to="/notifications" className="flex flex-row gap-1">
                       <p className="">{notifNumber}</p>
                       <IoNotifications size={20} color="white" />
                     </Link>
