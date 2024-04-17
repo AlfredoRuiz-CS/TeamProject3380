@@ -195,7 +195,9 @@ async function findOrderDetail(orderID){
         ON pm.orderID = p.orderID
         JOIN paymentInfo pi
         ON SUBSTRING(pm.paymentMethod, 1, 19) = pi.cardnumber
-        WHERE p.orderID=? AND o.active=1`,[orderID]);
+        WHERE p.orderID=? AND o.active=?`,[orderID, 1]);
+
+        console.log(res);
 
         return {res};
     } catch(error){

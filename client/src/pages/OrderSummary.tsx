@@ -2,7 +2,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 import useUserStore from '@/components/store';
-import { PaymentMethod } from '@/pages/Profile';
+// import { PaymentMethod } from '@/pages/Profile';
 // import { productItem } from '@/components/store';
 import { useParams } from 'react-router-dom';
 // import { useState } from 'react';
@@ -16,12 +16,13 @@ interface OrderSummaryProps {
 }
 
 type orderData = {
-  productID?: string;
-  quantity?: number;
-  unitPrice?: number;
-  total?: number;
-  paymentMethod?: string;
-  nameOnCard?: string;
+  productID: string;
+  quantity: number;
+  unitPrice: number;
+  totalAmount: number;
+  total: number;
+  paymentMethod: string;
+  nameOnCard: string;
 }
 
 const OrderSummary = (props: OrderSummaryProps) => {
@@ -37,7 +38,7 @@ const OrderSummary = (props: OrderSummaryProps) => {
           style: 'currency',
           currency: 'USD',
         }) 
-      : orderDetails[0].total?.toLocaleString('en-US', {
+      : orderDetails[0].total.toLocaleString('en-US', {
             style: 'currency',
             currency: 'USD',
           });
