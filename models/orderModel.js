@@ -69,7 +69,7 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod,normalD,f
         //create new order
         const orderRes = await connection.query(`
             INSERT INTO purchaseOrder(customerEmail,orderDate,total)
-            VALUEs(?,?,?)`,[customerEmail,orderDate,total]);
+            VALUES(?,?,?)`,[customerEmail,orderDate,total]);
         //get the last insert id which is the newest orderID
         const [rows] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
         const lastId = rows[0].lastId;
@@ -78,7 +78,7 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod,normalD,f
         //create payment
         const createPayment = await connection.query(`
         INSERT INTO payment(orderID,paymentDate,totalAmount,paymentMethod,paymentStatus)
-        VALUE(?,?,?,?,?)`,[lastId,orderDate,total,paymentMethod,"pass"])
+        VALUES(?,?,?,?,?)`,[lastId,orderDate,total,paymentMethod,"pass"])
         //gey paymentID for return
         const [getPayment] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
         const IDpayment = getPayment[0].lastId;
@@ -119,7 +119,7 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod,normalD,f
             SELECT p.productName, o.quantity, o.unitPrice, o.totalAmount
             FROM orderLine o
             JOIN product p on o.productID = p.productID
-            WHERE orderLineID = ? AND active = ?`,[anotherID,1]);
+            WHERE orderLineID = ? AND o.active = 1`,[anotherID]);
             orderLineDetail.push(res[0]);
         }
         await connection.commit();
@@ -185,11 +185,18 @@ async function findOrderByLname(lname){
 async function findOrderDetail(orderID){
     try{
         const [res] = await pool.query(`
-        SELECT o.productID, o.quantity, o.unitPrice, o.totalAmount, p.total
+        SELECT o.productID, pr.productName, o.quantity, o.unitPrice, o.totalAmount, p.total, pm.paymentMethod, pi.nameOnCard
         FROM purchaseOrder p
         JOIN orderLine o
         ON p.orderID = o.orderID
-        WHERE p.orderID=? AND o.active=1`,[orderID]);
+        JOIN product pr
+        ON pr.productID = o.productID
+        JOIN payment pm
+        ON pm.orderID = p.orderID
+        JOIN paymentInfo pi
+        ON SUBSTRING(pm.paymentMethod, 1, 19) = pi.cardnumber
+        WHERE p.orderID=? AND o.active=1`, [orderID]);
+
 
         return {res};
     } catch(error){
