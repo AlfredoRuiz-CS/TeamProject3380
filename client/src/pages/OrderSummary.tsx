@@ -32,16 +32,7 @@ const OrderSummary = (props: OrderSummaryProps) => {
   const { orderID } = useParams();
   console.log(orderID);
   const membershipCost = 10;
-  const total =
-    props.type === 'membership'
-      ? membershipCost.toLocaleString('en-US', {
-          style: 'currency',
-          currency: 'USD',
-        }) 
-      : orderDetails[0].total.toLocaleString('en-US', {
-            style: 'currency',
-            currency: 'USD',
-          });
+  
 
   // const { orderId } = useParams();
   function loyaltyMembershipNotification() {
@@ -131,7 +122,17 @@ const OrderSummary = (props: OrderSummaryProps) => {
                     Total
                   </h3>
                 </td>
-                <td className="pr-5 text-right">{total}</td>
+                <td className="pr-5 text-right">{
+            props.type === 'membership'
+            ? membershipCost.toLocaleString('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            }) : 0
+          // : orderDetails[0].total.toLocaleString('en-US', {
+          //   style: 'currency',
+          //   currency: 'USD',
+          //   })}
+          }</td>
               </tr>
             </tbody>
           </table>
