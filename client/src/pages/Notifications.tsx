@@ -21,13 +21,47 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-
+import toast from 'react-hot-toast';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-function handleStockOrder() {
-  console.log('Notification Selected');
-}
+async function handleStockOrder(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    let productName = (
+      document.getElementById('productName') as HTMLInputElement
+    ).value;
+    let quantity = (document.getElementById('quantity') as HTMLInputElement)
+      .value;
+
+    const data = {
+      productName: productName,
+      quantity: quantity,
+    };
+
+    try {
+      const response = await axios.post(
+        'https://shastamart-api-deploy.vercel.app/api/orders/insertStock',
+        data
+      );
+      console.log(response);
+      orderSuccessToast(productName, quantity);
+      console.log('Order Submitted for ', productName, ' ', quantity);
+    } catch (error) {
+      console.log(error);
+    }
+    console.log('Notification Selected');
+  }
+
+  function orderSuccessToast(productName: string, quantity: string) {
+    toast.success(
+      'Order for ' + quantity + ' ' + productName + ' ' + 'Submitted!',
+      {
+        position: 'bottom-right',
+        className: 'font-bold text-black',
+        duration: 2000,
+      }
+    );
+  }
 
 function notificationSelectHandler() {
   console.log('Notification Selected');
@@ -65,7 +99,7 @@ const Notifications = () => {
     <>
       <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite font-inter text-black">
         <Header color="blue" />
-        <div className="flex w-1/2 flex-col self-center">
+        <div className="flex w-3/4 flex-col self-center">
           <h1 className=" pb-5 pt-14 font-inter text-5xl font-medium text-black">
             Admin Notifications
           </h1>
@@ -74,7 +108,7 @@ const Notifications = () => {
           <Table className="ml-0 rounded-lg bg-gray-50">
             <TableHeader>
               <TableRow>
-                <TableHead className="pl-6  text-gray-700">
+                <TableHead className="text-center text-gray-700">
                   Product Name
                 </TableHead>
                 <TableHead className="text-center text-gray-700">

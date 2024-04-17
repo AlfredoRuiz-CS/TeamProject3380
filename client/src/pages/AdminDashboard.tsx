@@ -263,7 +263,7 @@ const AdminDashboard = () => {
     }
   }
 
-  async function handleSubmitOrder(event: React.FormEvent<HTMLFormElement>) {
+   async function handleSubmitOrder(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     let productName = (
       document.getElementById('productName') as HTMLInputElement
