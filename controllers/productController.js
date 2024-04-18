@@ -19,6 +19,10 @@ const insertProductInfo = async (req, res) => {
     try {
         await connection.beginTransaction();
 
+        const currTime = new Date();
+        const formatDigit = (x) => x.toString().length === 1 ? '0' + x.toString() : x.toString();
+        let stockDate = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate())}`;
+
         const body = await getRequestBody(req);
         console.log(body);
         const { productInfo, nutritionFacts, shippingDetails } = body;
@@ -30,7 +34,7 @@ const insertProductInfo = async (req, res) => {
         const nutritionF = await productModel.insertNutritionFacts(connection, prodID, nutritionFacts);
         const shipDetails = await productModel.insertShippingDetails(connection, prodID, shippingDetails);
         //add to inventory
-        const inventory = await productModel.insertInventory(connection,prodID,productInfo);
+        const inventory = await productModel.insertInventory(connection,prodID,productInfo,stockDate);
 
         await connection.commit();
         res.writeHead(200, { 'Content-Type': 'application/json' });
