@@ -43,18 +43,18 @@ const Cart = () => {
       <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
         <Header />
 
-        <div className="max-w-1/2 flex flex-row justify-center">
+        <div className="flex flex-row justify-around">
           {/* Review Cart Section */}
-          <section className="flex flex-col pl-[5rem] pt-[6rem]">
-            <div className="flex flex-row justify-between pb-4">
+          <section className="flex w-3/5 flex-col pl-[5rem] pt-[6rem]">
+            <div className="flex w-full flex-row justify-between pb-4">
               <h1 className="pl-4 text-3xl text-white ">Review Cart</h1>
               {/* Alert to confirm cart deletion */}
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
                     variant="outline"
-                    className="border border-darkblue bg-transparent text-darkblue hover:bg-darkblue hover:text-bgwhite">
-                    <FaTrashCan className="mr-2 h-4 w-4" />
+                    className="mr-24 border border-darkblue bg-transparent text-darkblue hover:bg-darkblue hover:text-bgwhite">
+                    <FaTrashCan className="h-4 w-4" />
                     Empty Cart
                   </Button>
                 </AlertDialogTrigger>
