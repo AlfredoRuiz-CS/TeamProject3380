@@ -46,7 +46,7 @@ const Cart = () => {
         <div className="flex flex-row justify-center">
           {/* Review Cart Section */}
           <section className="flex w-fit flex-col pl-[5rem] pt-[6rem]">
-            <div className="flex w-full flex-row justify-between pb-4">
+            <div className="flex w-[45rem] flex-row justify-between pb-4">
               <h1 className="pl-4 text-3xl text-white ">Review Cart</h1>
               {/* Alert to confirm cart deletion */}
               <AlertDialog>
