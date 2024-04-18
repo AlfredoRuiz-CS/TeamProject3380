@@ -27,7 +27,7 @@ const processOrder = async(req,res)=>{
     const customerEmail = req.email;
     const currTime = new Date();
     const formatDigit = (x) => x.toString().length === 1 ? '0' + x.toString() : x.toString();
-    const orderDate = new Date().toISOString().split('T')[0];;
+    const orderDate = new Date().toISOString().split('T')[0];
     let normalD = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate()+2)}`;
     let fastD = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate()+1)}`;
     const order = await orderModel.createOrder(customerEmail,orderDate,items,paymentMethod,normalD,fastD);
