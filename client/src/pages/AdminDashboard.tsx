@@ -52,7 +52,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 
 import { useProductsStore } from '@/components/store';
-import { mapCategory, ProductApiResponse } from './Products';
+import { ProductApiResponse } from './Products';
 
 const AdminDashboard = () => {
   const { setProducts } = useProductsStore();
@@ -75,7 +75,7 @@ const AdminDashboard = () => {
             description: product.productDesc.split('. '),
             price: parseFloat(product.productPrice),
             stock: product.stockQuantity,
-            category: mapCategory(product.categoryID),
+            category: product.categName,
             image: product.image,
             supplier: product.supplier,
             supplierStock: product.supplierStock,
