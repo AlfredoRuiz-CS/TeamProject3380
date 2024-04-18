@@ -86,7 +86,8 @@ const ProductCard = (props: ProductCardProps) => {
         <Link to={`/product/${props.product.productId}`}>
           <img
             src={props.product.image}
-            className="mx-auto mt-8 h-[15rem] w-[20rem] rounded-xl object-cover"></img>
+            className="mx-auto mt-8 h-[15rem] w-[20rem] rounded-xl object-cover"
+          />
         </Link>
         {/* Product Name */}
         <h2 className="ml-6 mr-auto pt-4 text-left font-jua text-xl hover:underline hover:underline-offset-4">
