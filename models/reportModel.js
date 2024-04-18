@@ -109,20 +109,20 @@ async function getTotalInventory() {
     }
 }
 // rexamine if still useful
-async function getInventoryByProduct(productId) {
-    try {
-        const [result] = await pool.query(`
-            SELECT * 
-            FROM inventory
-            WHERE productID = ?
-        `, [productId]);
+// async function getInventoryByProduct(productId) {
+//     try {
+//         const [result] = await pool.query(`
+//             SELECT * 
+//             FROM inventory
+//             WHERE productID = ?
+//         `, [productId]);
 
-        return result;
-    } catch (error) {
-        console.error(error);
-        throw error;
-    }
-}
+//         return result;
+//     } catch (error) {
+//         console.error(error);
+//         throw error;
+//     }
+// }
 
 async function getInventoryByWeek(startDate, endDate, productId = null) {
     try {
@@ -206,7 +206,7 @@ module.exports = {
     soldProducts,
     refundedProduct,
     getTotalInventory,
-    getInventoryByProduct,
+    // getInventoryByProduct,
     getInventoryByWeek,
     getInventoryByDay,
     getInventoryByMonth,
