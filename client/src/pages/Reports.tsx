@@ -140,15 +140,13 @@ const Reports = () => {
           </h1>
           {/* Report Type Functionality */}
           <div className="mt-5 flex gap-2 place-self-start pb-5">
-            <h3 className="ml-6 items-center place-self-center font-inter text-lg font-medium">
+            <h3 className="ml-16 items-center place-self-center font-inter text-lg font-medium">
               Type:{' '}
             </h3>
             {/* Report dropdown */}
-            <Select
-              defaultValue="Report Type"
-              onValueChange={(e) => setTypeSelected(e)}>
-              <SelectTrigger className="h-10 w-[8rem] bg-white text-black">
-                <SelectValue placeholder="Select a Type" />
+            <Select onValueChange={(e) => setTypeSelected(e)}>
+              <SelectTrigger className="h-10 w-[10rem] bg-white text-black">
+                <SelectValue placeholder="Select A Type" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Sales">Sales Reports</SelectItem>
@@ -158,15 +156,17 @@ const Reports = () => {
                 </SelectItem>
               </SelectContent>
             </Select>
-            {typeSelected !== '' ? (
-              renderReport(typeSelected)
-            ) : (
-              <h1>Please Select A Report</h1>
-            )}
           </div>
+          {typeSelected !== '' ? (
+            renderReport(typeSelected)
+          ) : (
+            <h1 className="text-center text-3xl font-medium">
+              Please Select A Report
+            </h1>
+          )}
         </div>
-        <Footer />
       </div>
+      <Footer />
     </>
   );
   {
