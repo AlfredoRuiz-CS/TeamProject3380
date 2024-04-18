@@ -517,7 +517,7 @@ const Orders = () => {
                                 <Checkbox
                                   className="justify-self-end"
                                   id={product.productName}
-                                  onCheckedChange={(e) =>
+                                  onCheckedChange={(e: any) =>
                                     addToRefundTotal(
                                       e,
                                       product.totalAmount,
@@ -739,7 +739,7 @@ const Orders = () => {
                               <Checkbox
                                 className="justify-self-end"
                                 id={product.productName}
-                                onCheckedChange={(e) =>
+                                onCheckedChange={(e: any) =>
                                   addToRefundTotal(
                                     e,
                                     product.totalAmount,
