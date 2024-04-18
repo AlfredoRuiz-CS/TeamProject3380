@@ -112,7 +112,7 @@ async function insertShippingDetails(connection, productID, shippingDetails){
     }
 }
 
-async function insertInventory(connection,productID,productInfo){
+async function insertInventory(connection,productID,productInfo,stockDate){
     try{
         const [row] = await connection.execute(`
         SELECT supplierID
@@ -127,6 +127,10 @@ async function insertInventory(connection,productID,productInfo){
        const [result] = await connection.execute(`
        INSERT INTO inventory (productID,supplierID,quantity,purchasePrice)
        VALUES(?,?,?,?)`,[productID,row[0].supplierID,productInfo.stockQuantity,productInfo.productPrice*0.5]);
+
+       const [payout] = await connection.execute(`
+       INSERT INTO payout(productID,quantity,purchasePrice,payoutDate,totalPayout)
+       VALUES(?,?,?,?,?)`,[productID,productInfo.stockQuantity,productInfo.productPrice*0.5,stockDate,productInfo.productPrice*0.5*productInfo.stockQuantity]);
 
         return result;
     } catch (error){
