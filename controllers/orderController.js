@@ -23,13 +23,34 @@ const getAllOrder = async (req,res) => {
 const processOrder = async(req,res)=>{
   try{
     const body = await getRequestBody(req);
-    const {items,paymentMethod} = body;
-    const customerEmail = req.email;
-    const currTime = new Date();
-    const formatDigit = (x) => x.toString().length === 1 ? '0' + x.toString() : x.toString();
-    const orderDate = new Date().toISOString().split('T')[0];
-    let normalD = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate()+2)}`;
-    let fastD = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate()+1)}`;
+    const {customerEmail,items,paymentMethod} = body;
+    // const customerEmail = req.email;
+    // const currTime = new Date();
+    // const formatDigit = (x) => x.toString().length === 1 ? '0' + x.toString() : x.toString();
+    // const orderDate = new Date().toISOString().split('T')[0];;
+    // let normalD = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate()+2)}`;
+    // let fastD = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate()+1)}`;
+
+    //random date from 2023-01 to current date
+    const formatDigit = (x) => (x < 10 ? '0' + x : x); // Simplified formatDigit function
+    const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    const currentDate = new Date();
+    const lastYearDate = new Date(currentDate.getFullYear() - 1, 0, 1);
+    const totalDays = Math.floor((currentDate - lastYearDate) / (1000 * 60 * 60 * 24));
+    const randomDays = getRandomInt(0, totalDays);
+    const randomDate = new Date(currentDate);
+    randomDate.setDate(currentDate.getDate() - randomDays);
+    // Calculate the order date
+    const orderDate = `${randomDate.getFullYear()}-${formatDigit(randomDate.getMonth() + 1)}-${formatDigit(randomDate.getDate())}`;
+    // Calculate dates for normalD and fastD
+    const normalDate = new Date(randomDate.getTime()); // Create a new Date instance for normalD
+    normalDate.setDate(randomDate.getDate() + 2); // Add two days
+    let normalD = `${normalDate.getFullYear()}-${formatDigit(normalDate.getMonth() + 1)}-${formatDigit(normalDate.getDate())}`;  
+    const fastDate = new Date(randomDate.getTime()); // Create a new Date instance for fastD
+    fastDate.setDate(randomDate.getDate() + 1); // Add one day
+    let fastD = `${fastDate.getFullYear()}-${formatDigit(fastDate.getMonth() + 1)}-${formatDigit(fastDate.getDate())}`;
+    
+
     const order = await orderModel.createOrder(customerEmail,orderDate,items,paymentMethod,normalD,fastD);
     if(!order){
       res.writeHead(500,{'Content-Type':"application/json"});
@@ -156,7 +177,10 @@ const addStock = async (req,res)=>{
   try{
     const body = await getRequestBody(req);
     const{productName,quantity}=body;
-    const result = await orderModel.addingStock(productName,quantity);
+    const currTime = new Date();
+    const formatDigit = (x) => x.toString().length === 1 ? '0' + x.toString() : x.toString();
+    let stockDate = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate())}`;
+    const result = await orderModel.addingStock(stockDate,productName,quantity);
     if(!result){
       res.writeHead(200, { 'Content-Type': 'text/plain' });
       res.end("none");

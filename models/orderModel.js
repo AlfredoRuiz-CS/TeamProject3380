@@ -317,7 +317,7 @@ async function findAllPayment (orderID){
     }
 }
 
-async function addingStock (productName,quantity){
+async function addingStock (payoutDate,productName,quantity){
     const connection = await pool.getConnection();
     try{
         await connection.beginTransaction();
@@ -339,6 +339,17 @@ async function addingStock (productName,quantity){
         UPDATE inventory
         SET quantity=quantity+?
         WHERE productID=?`,[quantity,id[0].productID]);
+
+        //payout for stock
+        const [price] = await connection.query(`
+        SELECT purchasePrice
+        FROM inventory
+        WHERE productID=?`,[id[0].productID]);
+        console.log(payoutDate);
+
+        const [res2] = await connection.query(`
+        INSERT INTO payout(productID,quantity,purchasePrice,totalPayout,payoutDate)
+        VALUES(?,?,?,?,?)`,[id[0].productID,quantity,price[0].purchasePrice,quantity*price[0].purchasePrice,payoutDate]);
 
         await connection.commit();
         return {product: id, amount: quantity};
