@@ -43,9 +43,9 @@ const Cart = () => {
       <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
         <Header />
 
-        <div className="flex flex-row justify-around">
+        <div className="flex flex-row justify-center">
           {/* Review Cart Section */}
-          <section className="flex w-3/5 flex-col pl-[5rem] pt-[6rem]">
+          <section className="flex w-fit flex-col pl-[5rem] pt-[6rem]">
             <div className="flex w-full flex-row justify-between pb-4">
               <h1 className="pl-4 text-3xl text-white ">Review Cart</h1>
               {/* Alert to confirm cart deletion */}
@@ -53,7 +53,7 @@ const Cart = () => {
                 <AlertDialogTrigger asChild>
                   <Button
                     variant="outline"
-                    className="mr-24 border border-darkblue bg-transparent text-darkblue hover:bg-darkblue hover:text-bgwhite">
+                    className=" border border-darkblue bg-transparent text-darkblue hover:bg-darkblue hover:text-bgwhite">
                     <FaTrashCan className="h-4 w-4" />
                     Empty Cart
                   </Button>
@@ -93,7 +93,7 @@ const Cart = () => {
           </section>
 
           {/* Order Summary Section */}
-          <section className="flex w-2/5 flex-col items-center pt-[6rem]">
+          <section className="flex w-[30%] flex-col items-center pt-[6rem]">
             <div className="flex flex-col">
               <h1 className="pb-4 text-3xl text-white">Order Summary</h1>
               <div className="flex h-[20rem] w-[30rem] flex-grow flex-col rounded-lg bg-cardwhite px-2">
