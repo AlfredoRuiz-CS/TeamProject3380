@@ -43,7 +43,7 @@ const Cart = () => {
       <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
         <Header />
 
-        <div className="flex flex-row justify-center">
+        <div className="flex flex-row justify-center gap-10">
           {/* Review Cart Section */}
           <section className="flex w-fit flex-col pl-[5rem] pt-[6rem]">
             <div className="flex w-[45rem] flex-row justify-between pb-4">
