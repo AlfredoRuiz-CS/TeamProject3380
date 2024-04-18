@@ -726,19 +726,6 @@ const getLeastPurchaseCustomD = async(req,res)=>{
     }
 }
 
-
-module.exports={
-    getReport,
-    getSoldProducts,
-    getRefundedProducts,
-    getGrossSalesDay, getGrossSalesWeek, getGrossSalesMonth, getGrossSalesCustomD,
-    getNetSalesDay, getNetSalesWeek, getNetSalesMonth, getNetSalesCustomD,
-    getMemberSalesDay, getMemberSalesWeek, getMemberSalesMonth, getMemberSalesCustomDate,
-    getRefundReportDay, getRefundReportWeek, getRefundReportMonth, getRefundReportCustomDate,
-    getAvgPurchaseValueD, getAvgPurchaseValueW, getAvgPurchaseValueM, getAvgPurchaseValueCustomD,
-    getMostPurchaseD, getMostPurchaseW, getMostPurchaseM, getMostPurchaseCustomD,
-    getLeastPurchaseD, getLeastPurchaseW, getLeastPurchaseM, getLeastPurchaseCustomD
-}
 const getRefundedProducts = async (req, res) => {
   try {
     const body = await getRequestBody(req);
@@ -829,16 +816,18 @@ const getInventoryByMonth = async (req, res) => {
   }
 }
 
-
-module.exports = {
+module.exports={
   getReport,
   getSoldProducts,
   getRefundedProducts,
-  getTotalInventory,
-  getInventoryByMonth,
-  getInventoryByDay,
-  getInventoryByWeek,
+  getGrossSalesDay, getGrossSalesWeek, getGrossSalesMonth, getGrossSalesCustomD,
+  getNetSalesDay, getNetSalesWeek, getNetSalesMonth, getNetSalesCustomD,
+  getMemberSalesDay, getMemberSalesWeek, getMemberSalesMonth, getMemberSalesCustomDate,
+  getRefundReportDay, getRefundReportWeek, getRefundReportMonth, getRefundReportCustomDate,
+  getAvgPurchaseValueD, getAvgPurchaseValueW, getAvgPurchaseValueM, getAvgPurchaseValueCustomD,
+  getMostPurchaseD, getMostPurchaseW, getMostPurchaseM, getMostPurchaseCustomD,
+  getLeastPurchaseD, getLeastPurchaseW, getLeastPurchaseM, getLeastPurchaseCustomD,
+  getSoldProducts,getRefundedProducts, 
+  getTotalInventory, getInventoryByMonth, getInventoryByDay, getInventoryByWeek,
   addProductToInventory
 }
-
-
