@@ -172,8 +172,59 @@ async function refundReport(startDate,endDate){
     }
 }
 
+async function averagePurchaseValue(startDate,endDate){
+    try{
+        const [result] = await pool.query(`
+        SELECT c.email, c.fName, c.lName, ROUND(AVG(p.total), 2) AS AveragePurchaseValue
+        FROM customer c
+        LEFT JOIN purchaseOrder p ON c.email=p.customerEmail
+        WHERE p.orderDate BETWEEN ? AND ?
+        GROUP BY c.email`);
 
+        return result;
+    } catch(error){
+        console.log(error);
+        throw error;
+    }
+}
 
+async function mostPurchase(startDate,endDate){
+    try{
+        const [result] = await pool.query(`
+        SELECT  
+            c.email, c.fName, c.lName, 
+            COUNT(p.orderID) AS NumberOfOrder, 
+            ROUND(SUM(p.total),2) AS TotalPurchaseValue
+        FROM customer c
+        LEFT JOIN purchaseOrder p ON p.customerEmail=c.email
+        GROUP BY c.email
+        ORDER BY TotalPurchaseValue DESC`);
+
+        return result;
+    } catch (error){
+        console.log(error);
+        throw error;
+    }
+}
+
+async function leastPurchase(startDate,endDate){
+    try{
+        const [result] = await pool.query(`
+        SELECT  
+            c.email, c.fName, c.lName, 
+            COUNT(p.orderID) AS NumberOfOrder, 
+            ROUND(SUM(p.total),2) AS TotalPurchaseValue
+        FROM customer c
+        LEFT JOIN purchaseOrder p ON p.customerEmail=c.email
+        GROUP BY c.email
+        ORDER BY TotalPurchaseValue ASC`);
+
+        return result;
+    } catch (error){
+        console.log(error);
+        throw error;
+    }
+}
 module.exports={
     // generateReport,
     soldProducts,
@@ -181,5 +232,7 @@ module.exports={
     grossSales,
     netSales,
     membershipSales,
-    refundReport
+    refundReport,
+    averagePurchaseValue,
+    mostPurchase, leastPurchase
 }
