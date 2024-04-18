@@ -115,9 +115,14 @@ const Header = (props: HeaderProps) => {
                 <Link to="/membership">Membership</Link>
               </li>
             ) : user.loggedIn && user.accountType === 'employee' ? (
-              <li className="flex items-center justify-center">
-                <Link to="/admin">Dashboard</Link>
-              </li>
+              <>
+                <li className="flex items-center justify-center">
+                  <Link to="/admin">Dashboard</Link>
+                </li>
+                <li className="flex items-center justify-center">
+                  <Link to="/reports">Reports</Link>
+                </li>
+              </>
             ) : (
               <></>
             )}
@@ -203,7 +208,8 @@ const Header = (props: HeaderProps) => {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </li>
-            ) : user.loggedIn && user.isAdmin ? (
+            ) : // If user is logged in and is an admin, display admin dropdown
+            user.loggedIn && user.isAdmin ? (
               <li className="flex items-center justify-center">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild className="focus-visible:ring-0">
