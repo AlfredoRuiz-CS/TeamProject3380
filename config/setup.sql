@@ -142,6 +142,7 @@ CREATE TABLE inventory(
     quantity int,
     purchasePrice decimal(10, 2),
     retailPrice decimal(10, 2),
+    date_column DATE,
     FOREIGN KEY (productID) REFERENCES product(productID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (supplierID) REFERENCES supplier(supplierID) ON DELETE
     SET NULL ON UPDATE CASCADE

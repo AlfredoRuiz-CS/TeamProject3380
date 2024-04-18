@@ -1,4 +1,4 @@
-const {pool} = require("../config/db");
+const { pool } = require("../config/db");
 
 // async function generateReport(startDate,endDate){
 //     try {
@@ -36,8 +36,8 @@ const {pool} = require("../config/db");
 //     }
 // }
 
-async function soldProducts(startDate,endDate){
-    try{
+async function soldProducts(startDate, endDate) {
+    try {
         const [res] = await pool.query(`
         SELECT categName, p.productName, 
         SUM(ol.quantity) AS totalQuantitySold,
@@ -48,7 +48,7 @@ async function soldProducts(startDate,endDate){
         JOIN category c on c.categoryID = p.categoryID
         WHERE ol.active=1 AND pu.orderDate BETWEEN ? AND ?
         GROUP BY p.productID, p.productName
-        ORDER BY totalQuantitySold DESC`,[startDate,endDate]);
+        ORDER BY totalQuantitySold DESC`, [startDate, endDate]);
 
         // const [res1] = await pool.query(`
         // SELECT categName, p.productName,
@@ -56,14 +56,14 @@ async function soldProducts(startDate,endDate){
         // `)
 
         return res;
-    } catch (error){
+    } catch (error) {
         console.log(error);
         throw error;
     }
 }
 
-async function refundedProduct(startDate,endDate){
-    try{
+async function refundedProduct(startDate, endDate) {
+    try {
         const [res] = await pool.query(`
         SELECT categName, p.productName, 
         SUM(ol.quantity) AS totalQuantityReturned,
@@ -74,14 +74,65 @@ async function refundedProduct(startDate,endDate){
         JOIN category c on c.categoryID = p.categoryID
         WHERE ol.active=0 AND pu.orderDate BETWEEN ? AND ?
         GROUP BY p.productID, p.productName
-        ORDER BY totalQuantityReturned DESC`,[startDate,endDate]);
+        ORDER BY totalQuantityReturned DESC`, [startDate, endDate]);
 
         return res;
-    } catch (error){
+    } catch (error) {
         console.log(error);
         throw error;
     }
 }
+
+async function netSales(startDate,endDate){
+    try {
+        const [purchaseRes] = await pool.query(`
+            SELECT SUM(p.total) AS totalPurchases
+            FROM purchaseOrder p
+            WHERE p.orderDate BETWEEN ? AND ?`, [startDate, endDate]);
+
+//         const [refundRes] = await pool.query(`
+//             SELECT SUM(r.amount) AS totalRefund
+//             FROM refund r
+//             WHERE r.refundDate BETWEEN ? AND ?`, [startDate, endDate]);
+
+        const [payoutRes] = await pool.query(`
+            SELECT SUM(p.totalPayout) AS totalPayout
+            FROM payout p
+            WHERE p.payoutDate BETWEEN ? AND ?`,[startDate,endDate]);
+        const totalPurchases = purchaseRes[0] ? purchaseRes[0].totalPurchases : 0; // Default to 0 if null
+        const totalRefund = refundRes[0] ? refundRes[0].totalRefund : 0; // Default to 0 if null
+        const totalPayout = payoutRes[0] ? payoutRes[0].totalPayout : 0;
+        const total = totalPurchases - totalRefund - totalPayout;
+        // Combine into one object
+        const result = {
+            totalPurchases: totalPurchases || 0, // Default to 0 if undefined
+            totalRefund: totalRefund || 0, // Default to 0 if undefined
+            totalPayout: totalPayout,
+            netAmount: total.toFixed(2)
+        };
+
+        return result;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+// rexamine if still useful
+// async function getInventoryByProduct(productId) {
+//     try {
+//         const [result] = await pool.query(`
+//             SELECT * 
+//             FROM inventory
+//             WHERE productID = ?
+//         `, [productId]);
+
+//         return result;
+//     } catch (error) {
+//         console.error(error);
+//         throw error;
+//     }
+// }
 
 async function grossSales(startDate,endDate){
     try{
@@ -201,7 +252,7 @@ async function mostPurchase(startDate,endDate){
         ORDER BY TotalPurchaseValue DESC`);
 
         return result;
-    } catch (error){
+    } catch (error) {
         console.log(error);
         throw error;
     }
@@ -225,7 +276,125 @@ async function leastPurchase(startDate,endDate){
         throw error;
     }
 }
-module.exports={
+
+async function addNewProductToInventory(productData) {
+    try {
+        // Insert a new product into the inventory
+        const insertQuery = `
+            INSERT INTO inventory (productID, supplierID, quantity, purchasePrice, retailPrice)
+            VALUES (?, ?, ?, ?, ?)`;
+
+        const { productID, supplierID, quantity, purchasePrice, retailPrice } = productData;
+
+        await pool.query(insertQuery, [productID, supplierID, quantity, purchasePrice, retailPrice]);
+
+        return { success: true, message: "Product added to inventory successfully." };
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+async function getTotalInventory() {
+    try {
+        const [result] = await pool.query(`
+            SELECT SUM(quantity) AS totalInventory
+            FROM inventory
+        `);
+
+        return result[0].totalInventory || 0;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+// rexamine if still useful
+// async function getInventoryByProduct(productId) {
+//     try {
+//         const [result] = await pool.query(`
+//             SELECT * 
+//             FROM inventory
+//             WHERE productID = ?
+//         `, [productId]);
+
+//         return result;
+//     } catch (error) {
+//         console.error(error);
+//         throw error;
+//     }
+// }
+
+async function getInventoryByWeek(startDate, endDate, productId = null) {
+    try {
+        let query = `
+            SELECT * 
+            FROM inventory
+            WHERE WEEK(date_column) BETWEEN WEEK(?) AND WEEK(?)
+        `;
+
+        const params = [startDate, endDate];
+
+        if (productId) {
+            query += ` AND productID = ?`;
+            params.push(productId);
+        }
+
+        const [result] = await pool.query(query, params);
+        return result;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+async function getInventoryByDay(date, productId = null) {
+    try {
+        let query = `
+            SELECT * 
+            FROM inventory
+            WHERE DATE(date_column) = ?
+        `;
+
+        const params = [date];
+
+        if (productId) {
+            query += ` AND productID = ?`;
+            params.push(productId);
+        }
+
+        const [result] = await pool.query(query, params);
+        return result;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+async function getInventoryByMonth(month, year, productId = null) {
+    try {
+        let query = `
+            SELECT * 
+            FROM inventory
+            WHERE MONTH(date_column) = ? AND YEAR(date_column) = ?
+        `;
+
+        const params = [month, year];
+
+        if (productId) {
+            query += ` AND productID = ?`;
+            params.push(productId);
+        }
+
+        const [result] = await pool.query(query, params);
+        return result;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+
+module.exports = {
     // generateReport,
     soldProducts,
     refundedProduct,
@@ -234,5 +403,10 @@ module.exports={
     membershipSales,
     refundReport,
     averagePurchaseValue,
-    mostPurchase, leastPurchase
+    mostPurchase, leastPurchase,
+    getTotalInventory,
+    getInventoryByWeek,
+    getInventoryByDay,
+    getInventoryByMonth,
+    addNewProductToInventory,
 }
