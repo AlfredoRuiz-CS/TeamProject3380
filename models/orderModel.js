@@ -214,10 +214,11 @@ async function refundItems(orderID,items,refundDate){
         }
         let amount = 0;
         let removedItems = [];
-
+        
+        console.log("About to refund items")
         //calculate total amount of refund for record, add refunded items into a list, and update orderLine
         for(let item of items){
-            amount += item.productPrice*item.productQuantity;
+            amount += Number(item.totalAmount);
             const [res] = await connection.query(`
             SELECT productName, orderLineID
             FROM purchaseOrder p 
@@ -227,29 +228,37 @@ async function refundItems(orderID,items,refundDate){
             ON o.productID = product.productID
             WHERE p.orderID=? AND o.productID=?`,[orderID,item.productID]);
 
+            console.log(res[0]);
+
             //store refunded items
             if (res.length > 0) {
                 removedItems.push(res[0].productName);
               } else {
                 console.log("No product found for this orderID and productID:", orderID, item.productID);
               }
-
+            
             //update order line by hiding refunded items: active = 0
             const [updateLine] = await connection.query(`
             UPDATE orderLine
             SET active=0
             WHERE orderLineID=?`,[res[0].orderLineID]);
         }
-       
+        console.log("Finished the refund on orderLine")
+
+        console.log("Getting payment info")
         const [payment] = await connection.query(`
         SELECT paymentMethod, paymentID
         FROM payment
         WHERE orderID=?`,[orderID]);
+        console.log(payment[0]);
 
+        console.log("Inserting refund into DB")
+        console.log(payment[0].paymentID, refundDate, amount, payment[0].paymentMethod)
         //record the refund
         const [createRefund] = await connection.query(`
         INSERT INTO refund(paymentID,refundDate,amount,refundMethod,refundStatus)
         VALUES(?,?,?,?,?)`,[payment[0].paymentID,refundDate,amount,payment[0].paymentMethod,"pass"]);
+        console.log("Finished Refund Insertion")
 
         await connection.commit();
         return {refund: createRefund,refundedItems: removedItems};
@@ -361,6 +370,7 @@ async function addingStock (payoutDate,productName,quantity){
         await connection.release();
     }
 }
+
 module.exports={
     findAllOrder,
     createOrder,

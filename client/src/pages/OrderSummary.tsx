@@ -28,7 +28,6 @@ type orderData = {
 
 const OrderSummary = (props: OrderSummaryProps) => {
   const user = useUserStore();
-  // const selectedPaymentMethod: PaymentMethod = user.selectedPaymentMethod;
   const [orderDetails, setOrderDetails] = useState<orderData[]>([{ productName: '', quantity: 0, nameOnCard: '', paymentMethod: '' }]);
   const { orderID } = useParams();
   console.log(orderID);
@@ -44,7 +43,7 @@ const OrderSummary = (props: OrderSummaryProps) => {
 
   // const { orderId } = useParams();
   function loyaltyMembershipNotification() {
-    toast.success('Congratulations! You have been awarded a free membership for a year for your purchase!', {
+    toast.success('Congratulations! You have been awarded three free months of membership for your purchase!', {
       position: 'bottom-right',
       className: 'font-bold text-black',
       duration: 4000,

@@ -8,7 +8,7 @@ module.exports = async (req, res) => {
     res.end();
     return;
   }
-  if (req.method === 'GET'){
+  if (req.method === 'POST'){
     await reportController.getGrossSalesCustomD(req, res);
   } else {
     res.writeHead(404, { 'Content-Type' : 'application/json' });

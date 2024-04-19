@@ -38,7 +38,7 @@ const { pool } = require("../config/db");
 
 async function soldProducts(startDate, endDate) {
     try {
-        const [res] = await pool.query(`
+        const [result] = await pool.query(`
         SELECT categName, p.productName, 
         SUM(ol.quantity) AS totalQuantitySold,
         SUM(ol.totalAmount) AS totalGain
@@ -55,7 +55,7 @@ async function soldProducts(startDate, endDate) {
         // SUM(ol.quantity) AS totalQuantitySold,
         // `)
 
-        return res;
+        return result;
     } catch (error) {
         console.log(error);
         throw error;
@@ -64,7 +64,7 @@ async function soldProducts(startDate, endDate) {
 
 async function refundedProduct(startDate, endDate) {
     try {
-        const [res] = await pool.query(`
+        const [result] = await pool.query(`
         SELECT categName, p.productName, 
         SUM(ol.quantity) AS totalQuantityReturned,
         SUM(ol.totalAmount) AS totalLoss
@@ -76,41 +76,6 @@ async function refundedProduct(startDate, endDate) {
         GROUP BY p.productID, p.productName
         ORDER BY totalQuantityReturned DESC`, [startDate, endDate]);
 
-        return res;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-}
-
-async function netSales(startDate, endDate) {
-    try {
-        const [purchaseRes] = await pool.query(`
-            SELECT SUM(p.total) AS totalPurchases
-            FROM purchaseOrder p
-            WHERE p.orderDate BETWEEN ? AND ?`, [startDate, endDate]);
-
-        //         const [refundRes] = await pool.query(`
-        //             SELECT SUM(r.amount) AS totalRefund
-        //             FROM refund r
-        //             WHERE r.refundDate BETWEEN ? AND ?`, [startDate, endDate]);
-
-        const [payoutRes] = await pool.query(`
-            SELECT SUM(p.totalPayout) AS totalPayout
-            FROM payout p
-            WHERE p.payoutDate BETWEEN ? AND ?`, [startDate, endDate]);
-        const totalPurchases = purchaseRes[0] ? purchaseRes[0].totalPurchases : 0; // Default to 0 if null
-        const totalRefund = refundRes[0] ? refundRes[0].totalRefund : 0; // Default to 0 if null
-        const totalPayout = payoutRes[0] ? payoutRes[0].totalPayout : 0;
-        const total = totalPurchases - totalRefund - totalPayout;
-        // Combine into one object
-        const result = {
-            totalPurchases: totalPurchases || 0, // Default to 0 if undefined
-            totalRefund: totalRefund || 0, // Default to 0 if undefined
-            totalPayout: totalPayout,
-            netAmount: total.toFixed(2)
-        };
-
         return result;
     } catch (error) {
         console.log(error);
@@ -118,16 +83,31 @@ async function netSales(startDate, endDate) {
     }
 }
 
+// rexamine if still useful
+// async function getInventoryByProduct(productId) {
+//     try {
+//         const [result] = await pool.query(`
+//             SELECT * 
+//             FROM inventory
+//             WHERE productID = ?
+//         `, [productId]);
 
-async function grossSales(startDate, endDate) {
-    try {
-        const [res] = await pool.query(`
+//         return result;
+//     } catch (error) {
+//         console.error(error);
+//         throw error;
+//     }
+// }
+
+async function grossSales(startDate,endDate){
+    try{
+        const [result] = await pool.query(`
         SELECT SUM(p.total) AS totalPurchases
         FROM purchaseOrder p
         WHERE p.orderDate BETWEEN ? AND ?`, [startDate, endDate]);
 
-        return res;
-    } catch (error) {
+        return result;
+    } catch(error){
         console.log(error);
         throw error;
     }
@@ -168,9 +148,9 @@ async function netSales(startDate, endDate) {
     }
 }
 
-async function membershipSales(startDate, endDate) {
-    try {
-        const [sales] = await pool.query(`
+async function membershipSales(startDate,endDate){
+    try{
+        const [result] = await pool.query(`
         SELECT 
             COUNT(DISTINCT m.membershipID) AS totalMember,
             SUM(ol.quantity) AS totalMembershipSale,
@@ -182,8 +162,8 @@ async function membershipSales(startDate, endDate) {
         ON ol.orderID = p.orderID
         WHERE ol.productID=? AND p.orderDate BETWEEN ? AND ?`, [999, startDate, endDate]);
 
-        return sales;
-    } catch (error) {
+        return result;
+    } catch (error){
         console.log(error);
         throw error;
     }
@@ -208,14 +188,15 @@ async function refundReport(startDate, endDate) {
     }
 }
 
-async function averagePurchaseValue(startDate, endDate) {
-    try {
+async function averagePurchaseValue(startDate,endDate){
+    console.log(startDate, endDate);
+    try{
         const [result] = await pool.query(`
         SELECT c.email, c.fName, c.lName, ROUND(AVG(p.total), 2) AS AveragePurchaseValue
         FROM customer c
         LEFT JOIN purchaseOrder p ON c.email=p.customerEmail
         WHERE p.orderDate BETWEEN ? AND ?
-        GROUP BY c.email`);
+        GROUP BY c.email`, [startDate,endDate]);
 
         return result;
     } catch (error) {

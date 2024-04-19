@@ -13,9 +13,9 @@ module.exports = async (req, res) => {
   if (req.method === 'POST'){
     try {
 
-      // const decoded = await verifyToken(req);
+      const decoded = await verifyToken(req);
 
-      // req.email = decoded.email;
+      req.email = decoded.email;
 
       await orderController.processOrder(req, res);
 

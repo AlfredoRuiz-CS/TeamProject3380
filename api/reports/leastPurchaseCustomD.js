@@ -8,8 +8,9 @@ module.exports = async (req, res) => {
     res.end();
     return;
   }
+  
   if (req.method === 'POST'){
-    await reportController.getNetSalesCustomD(req, res);
+    await reportController.getLeastPurchaseCustomD(req, res);
   } else {
     res.writeHead(404, { 'Content-Type' : 'application/json' });
     res.end(JSON.stringify({ message: 'Route Not Found'}));
