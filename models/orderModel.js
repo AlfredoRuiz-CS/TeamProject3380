@@ -236,23 +236,27 @@ async function refundItems(orderID,items,refundDate){
               } else {
                 console.log("No product found for this orderID and productID:", orderID, item.productID);
               }
-
+            
             //update order line by hiding refunded items: active = 0
             const [updateLine] = await connection.query(`
             UPDATE orderLine
             SET active=0
             WHERE orderLineID=?`,[res[0].orderLineID]);
         }
-       
+        console.log("Finished the refund on orderLine")
+
+        console.log("Getting payment info")
         const [payment] = await connection.query(`
         SELECT paymentMethod, paymentID
         FROM payment
         WHERE orderID=?`,[orderID]);
 
+        console.log("Inserting refund into DB")
         //record the refund
         const [createRefund] = await connection.query(`
         INSERT INTO refund(paymentID,refundDate,amount,refundMethod,refundStatus)
         VALUES(?,?,?,?,?)`,[payment[0].paymentID,refundDate,amount,payment[0].paymentMethod,"pass"]);
+        console.log("Finished Refund Insertion")
 
         await connection.commit();
         return {refund: createRefund,refundedItems: removedItems};
