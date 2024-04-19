@@ -218,7 +218,7 @@ async function refundItems(orderID,items,refundDate){
         console.log("About to refund items")
         //calculate total amount of refund for record, add refunded items into a list, and update orderLine
         for(let item of items){
-            amount += item.totalAmount;
+            amount += Number(item.totalAmount);
             const [res] = await connection.query(`
             SELECT productName, orderLineID
             FROM purchaseOrder p 
