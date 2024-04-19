@@ -36,10 +36,10 @@ import {
 // import { Label } from '@/components/ui/label';
 
 type SalesData = {
-  totalPurchases?: number;
-  totalRefund?: number;
-  totalPayout?: number;
-  netAmount?: number;
+  totalPurchases?: string;
+  totalRefund?: string;
+  totalPayout?: string;
+  netAmount?: string;
   categName?: string;
   productName?: string;
   totalQuantityReturned?: number;
