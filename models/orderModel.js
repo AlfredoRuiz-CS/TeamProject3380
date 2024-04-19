@@ -250,8 +250,10 @@ async function refundItems(orderID,items,refundDate){
         SELECT paymentMethod, paymentID
         FROM payment
         WHERE orderID=?`,[orderID]);
+        console.log(payment[0]);
 
         console.log("Inserting refund into DB")
+        console.log(payment[0].paymentID, refundDate, amount, payment[0].paymentMethod)
         //record the refund
         const [createRefund] = await connection.query(`
         INSERT INTO refund(paymentID,refundDate,amount,refundMethod,refundStatus)
