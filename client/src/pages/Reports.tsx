@@ -909,12 +909,21 @@ const Reports = () => {
                   />
                 )}
                 {selectedReport === ''}
-                <Button
-                  className="ml-5 self-center bg-blue-400 px-10 py-4 hover:bg-slate-600"
-                  size="lg"
-                  onClick={generateReport}>
-                  Generate Report
-                </Button>
+                {selectedReport !== '' ? (
+                  <Button
+                    className="ml-5 self-center bg-blue-400 px-10 py-4 hover:bg-slate-600"
+                    size="lg"
+                    onClick={generateReport}>
+                    Generate Report
+                  </Button>
+                ) : (
+                  <Button
+                    className="ml-5 self-center bg-slate-600 px-10 py-4"
+                    size="lg"
+                    disabled>
+                    Generate Report
+                  </Button>
+                )}
               </div>
               {!loading && reportGenerated ? renderReport(selectedType) : null}
             </>
