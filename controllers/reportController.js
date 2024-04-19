@@ -710,7 +710,7 @@ const getLeastPurchaseCustomD = async(req,res)=>{
   try{
     const body = await getRequestBody(req);
     const {startDate,endDate}=body;
-    const result = await reportModel.mostPurchase(startDate,endDate);
+    const result = await reportModel.leastPurchase(startDate,endDate);
 
     if(!result) {
       res.writeHead(500,{'Content-Type':"application/json"});
@@ -768,7 +768,7 @@ const addProductToInventory = async (req, res) => {
 
 const getTotalInventory = async (req, res) => {
   try {
-    const totalInventory = await inventoryModel.getTotalInventory();
+    const totalInventory = await reportModel.getTotalInventory();
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ "totalInventory": totalInventory }));
   } catch (error) {
@@ -782,7 +782,7 @@ const getInventoryByWeek = async (req, res) => {
   try {
     const body = await getRequestBody(req);
     const { startDate, endDate, productId } = body;
-    const inventoryByWeek = await inventoryModel.getInventoryByWeek(startDate, endDate, productId);
+    const inventoryByWeek = await reportModel.getInventoryByWeek(startDate, endDate, productId);
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ "inventoryByWeek": inventoryByWeek }));
   } catch (error) {
@@ -795,7 +795,7 @@ const getInventoryByDay = async (req, res) => {
   try {
     const body = await getRequestBody(req);
     const { date, productId } = body;
-    const inventoryByDay = await inventoryModel.getInventoryByDay(date, productId);
+    const inventoryByDay = await reportModel.getInventoryByDay(date, productId);
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ "inventoryByDay": inventoryByDay }));
   } catch (error) {
@@ -808,7 +808,7 @@ const getInventoryByMonth = async (req, res) => {
   try {
     const body = await getRequestBody(req);
     const { month, year, productId } = body;
-    const inventoryByMonth = await inventoryModel.getInventoryByMonth(month, year, productId);
+    const inventoryByMonth = await reportModel.getInventoryByMonth(month, year, productId);
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ "inventoryByMonth": inventoryByMonth }));
   } catch (error) {
