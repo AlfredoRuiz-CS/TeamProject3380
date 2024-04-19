@@ -2,7 +2,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 // import ErrorText from '../components/ErrorText';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
-import React, { useState, useEffect } from 'react'; // reacteventhandler removed from imports
+import { useState, useEffect } from 'react'; // reacteventhandler removed from imports
 import toast from 'react-hot-toast'; // react toasts for notifications
 // import { Button } from '../components/ui/button.tsx';
 import { useFormik } from 'formik'; // error message removed from imports
@@ -172,11 +172,34 @@ const Register = () => {
     }
   }, [store.loggedIn, navigate]);
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    if (value.match(/^\d*$/)) {
-      formik.setFieldValue('phoneNumber', value);
+  const handleCityChange = (event: any) => {
+    const { value } = event.target;
+    if (/^[a-zA-Z\s]*$/.test(value)) {
+      formik.setFieldValue('city', value);
     }
+  };
+
+  const handleZipChange = (event: any) => {
+    const { value } = event.target;
+    if (/^\d{0,5}$/.test(value)) {
+      formik.setFieldValue('zipcode', value);
+    }
+  };
+
+  const handlePhoneChange = (event: any) => {
+    const valueToSend = event.target.value.replace(/\D/g, '');
+    let { value } = event.target;
+    value = value.replace(/\D/g, "");
+    value = value.slice(0, 10); // limit the length
+    if (value.length > 6) {
+      value = `(${value.slice(0, 3)}) ${value.slice(3, 6)}-${value.slice(6)}`;
+    } else if (value.length > 3) {
+      value = `(${value.slice(0, 3)}) ${value.slice(3)}`;
+    } else if (value.length > 0) {
+      value = `(${value}`;
+    }
+    console.log(valueToSend);
+    formik.setFieldValue('phoneNumber', valueToSend);
   };
 
   const [message] = useTypewriter({
@@ -202,6 +225,10 @@ const Register = () => {
             name="fName"
             onChange={formik.handleChange}
             value={formik.values.fName}
+            onKeyDown={(event) => {
+              if (!/[a-z]/i.test(event.key)) 
+                event.preventDefault();
+              }}
           />
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
@@ -210,10 +237,14 @@ const Register = () => {
             name="lName"
             onChange={formik.handleChange}
             value={formik.values.lName}
+            onKeyDown={(event) => {
+              if (!/[a-z]/i.test(event.key)) 
+                event.preventDefault();
+              }}
           />
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
-            type="text"
+            type="email"
             placeholder="Email"
             name="email"
             onChange={formik.handleChange}
@@ -232,18 +263,16 @@ const Register = () => {
             type="text"
             placeholder="City"
             name="city"
-            onChange={formik.handleChange}
+            onChange={(e) => handleCityChange(e)}
             value={formik.values.city}
-          />
+            />
           <Select
             onValueChange={(value) => formik.setFieldValue('state', value)}
-            defaultValue={store.address.state}
             name="state">
-            <SelectTrigger className="h-10 w-full max-w-md border border-gray-300 bg-white px-4 focus:border-logoblue focus:ring-logoblue">
+            <SelectTrigger className="h-10 w-full max-w-md border border-gray-300 bg-white px-4 text-slate-400 text-md focus:border-logoblue focus:ring-logoblue">
               <SelectValue
-                // placeholder={store.address.state}
-                className="text-gray-200"
-              />
+                placeholder="State"
+              ></SelectValue>
             </SelectTrigger>
             <SelectContent side="bottom">
               {states.map((state, index) => (
@@ -258,15 +287,16 @@ const Register = () => {
             type="text"
             placeholder="Zipcode"
             name="zipcode"
-            onChange={formik.handleChange}
+            onChange={(e) => handleZipChange(e)}
             value={formik.values.zipcode}
+            maxLength={5}
           />
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="tel"
             placeholder="Phone number"
             name="phoneNumber"
-            onChange={handlePhoneChange}
+            onChange={(e) => handlePhoneChange(e)}
             value={formik.values.phoneNumber}
           />
           {/* <ErrorMessage name="phone" component={ErrorText} /> */}

@@ -248,6 +248,8 @@ const Profile = () => {
     updateProfile('address', { street, city, state, zip });
   }
 
+
+
   function handleSelectPaymentMethod(p: PaymentMethod) {
     setCollapsibleOpen(!collapsibleOpen);
     paymentMethodSelectedToast(p);
@@ -472,6 +474,10 @@ const Profile = () => {
                         type="text"
                         placeholder={store.fname}
                         name="firstName"
+                        onKeyDown={(event) => {
+                          if (!/[a-z]/i.test(event.key)) 
+                            event.preventDefault();
+                          }}
                       />
                       <h3 className="pl-4 pt-2 text-lg font-semibold text-white">
                         Last Name
@@ -480,7 +486,14 @@ const Profile = () => {
                         className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                         type="text"
                         placeholder={store.lname}
-                        name="lastName"></input>
+                        name="lastName"
+                        onKeyDown={(event) => {
+                          if (!/[a-z]/i.test(event.key)) 
+                            event.preventDefault();
+                          }}/>
+                        
+                      
+                        
                       <Button
                         className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
                         size="lg"
@@ -561,7 +574,7 @@ const Profile = () => {
                             // onValueChange={(e) => setState(e)}
                             defaultValue={store.address.state}
                             name="state">
-                            <SelectTrigger className="h-10 w-[5rem] flex-grow border-none bg-gray-200 text-gray-500">
+                            <SelectTrigger className="h-10 w-[5rem] flex-grow border-none bg-white text-gray-500">
                               <SelectValue
                                 placeholder={store.address.state}
                                 className="text-gray-200"
@@ -583,14 +596,15 @@ const Profile = () => {
                             placeholder={
                               store.address.city ? store.address.city : 'City'
                             }
-                            name="city"></input>
+                            name="city"/>
                           <input
                             className="mt-2 h-10 w-[6.5rem] rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                             type="zipcode"
                             placeholder={
                               store.address.zip ? store.address.zip : 'Zip Code'
                             }
-                            name="zipcode"></input>
+                            name="zipcode"
+                            />
                         </div>
                         <Button
                           className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
@@ -619,7 +633,7 @@ const Profile = () => {
                   </h3>
                   <input
                     className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
-                    type="text"
+                    type="email"
                     placeholder={store.email ? store.email : 'Email'}
                     name="email"
                   />
