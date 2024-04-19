@@ -121,7 +121,7 @@ const Notifications = () => {
             <TableBody>
               {notifications.map((notification: any, index) => (
                 <TableRow key={index}>
-                  <TableCell className="pl-16 ">
+                  <TableCell className="text-center">
                     {notification.productName}
                   </TableCell>
                   <TableCell className="text-center">
