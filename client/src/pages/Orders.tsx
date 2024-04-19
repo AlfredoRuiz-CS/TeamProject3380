@@ -112,7 +112,6 @@ const Orders = () => {
     console.log('Dialog Closed: ', e);
   }
 
-  // ! BACKEND ENDPINT HERE
   async function handleRefund(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -278,7 +277,7 @@ const Orders = () => {
               ? new Date(order.orderDate).toLocaleDateString()
               : 'N/A', // Handle invalid or null dates
             paymentMethod: order.paymentMethod || 'N/A', // Handle null payment methods
-            total: order.total,
+            total: order.items.reduce((acc, item) => acc + Number(item.totalAmount), 0),
             items: order.items.map((item: productOrder) => ({
               productID: item.productID,
               productName: item.productName,

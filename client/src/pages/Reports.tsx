@@ -42,7 +42,8 @@ type SalesData = {
   netAmount?: number;
   categName?: string;
   productName?: string;
-  totalQuantityReturned?: string;
+  totalQuantityReturned?: number;
+  totalQuantitySold?: number;
   totalLoss?: number;
   totalGain?: number;
   totalMember?: number;
@@ -110,6 +111,10 @@ const Reports = () => {
   //   fetchData();
   // }, [selectedType, selectedReport])
 
+  function capitalizeFirstLetter(string: any) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
   const handleSalesReportChange = (e: any) => {
     const value = e as SalesReport;
     setSelectedReport(value);
@@ -129,12 +134,12 @@ const Reports = () => {
     Sales: {
       "Net Sales": "https://shastamart-api-deploy.vercel.app/api/reports/netSaleCustomD",
       "Most Sold Products": "https://shastamart-api-deploy.vercel.app/api/reports/bestSoldItems",
-      "Refunded Products":"https://shastamart-api-deploy.vercel.app/api/reports/refundCustomD",
+      "Refunded Products":"https://shastamart-api-deploy.vercel.app/api/reports/mostRefundedItems",
+      "Custom Gross Sales": "https://shastamart-api-deploy.vercel.app/api/reports/grossSaleCustomD",
+      "Custom Membership Sales": "https://shastamart-api-deploy.vercel.app/api/reports/memberSaleCustomDate",
       // "Daily Gross Sales": "https://shastamart-api-deploy.vercel.app/api/reports/grossSaleD",
       // "Weekly Gross Sales": "https://shastamart-api-deploy.vercel.app/api/reports/grossSaleW",
       // "Monthly Gross Sales": "https://shastamart-api-deploy.vercel.app/api/reports/grossSaleM",
-      "Custom Gross Sales": "https://shastamart-api-deploy.vercel.app/api/reports/grossSaleCustomD",
-      "Custom Membership Sales": "https://shastamart-api-deploy.vercel.app/api/reports/memberSaleCustomDate"
     },
     Inventory: {
       "TotalInventory": "https://shastamart-api-deploy.vercel.app/api/reports/",
@@ -184,7 +189,7 @@ const Reports = () => {
             const mappedData = responseData.map((data: SalesData) => ({
               categName : data.categName,
               productName : data.productName,
-              totalQuantityReturned : data.totalQuantityReturned,
+              totalQuantitySold : data.totalQuantitySold,
               totalGain : data.totalGain,
             }))
             setSalesReport(mappedData);
@@ -339,25 +344,22 @@ const Reports = () => {
                   ))}
                 </TableBody>
               </Table>
-            </>) : selectedReport === 'MostPurchases' ? (
+            </>) : selectedReport === 'Most Sold Products' ? (
             <>
               <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
                 <TableHeader>
                   <TableRow>
                     <TableHead className="max-w-5 pl-5 text-gray-700">
-                      Customer Email
+                      Category Name
                     </TableHead>
                     <TableHead className="max-w-5 text-gray-700">
-                      First Name
+                      Product Name
                     </TableHead>
                     <TableHead className="max-w-5 text-gray-700">
-                      Last Name
+                      Total Quantity Sold
                     </TableHead>
                     <TableHead className="max-w-5 text-gray-700">
-                      Number of Orders
-                    </TableHead>
-                    <TableHead className="max-w-5 text-gray-700">
-                     Total Purchase Value
+                      Total Gain
                     </TableHead>
                   </TableRow>
                 </TableHeader>
@@ -366,44 +368,41 @@ const Reports = () => {
                     <TableRow
                       key={index}
                       >
-                      <TableCell className="max-w-6 pl-6">
-                        {/* {item.email} */}
+                      <TableCell className="max-w-6 pl-5">
+                        {capitalizeFirstLetter(item.categName)}
                       </TableCell>
                       <TableCell className="max-w-6">
-                        {/* {item.fName} */}
+                        {item.productName}
                       </TableCell>
                       <TableCell className="max-w-6">
-                        {/* {item.lName} */}
+                        {item.totalQuantitySold}
                       </TableCell>
                       <TableCell className="max-w-6">
-                        {/* {item.NumberOfOrder} */}
-                      </TableCell>
-                      <TableCell className="max-w-6">
-                      {/* {item.TotalPurchaseValue} */}
+                        {item.totalGain?.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                      })}
                       </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
-            </>) : selectedReport === 'LeastPurchases' ? (
+            </>) : selectedReport === 'Refunded Products' ? (
             <>
               <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="max-w-5 pl-5 text-gray-700">
-                      Customer Email
+                  <TableHead className="max-w-5 pl-5 text-gray-700">
+                      Category Name
                     </TableHead>
                     <TableHead className="max-w-5 text-gray-700">
-                      First Name
+                      Product Name
                     </TableHead>
                     <TableHead className="max-w-5 text-gray-700">
-                      Last Name
+                      Total Quantity Returned
                     </TableHead>
                     <TableHead className="max-w-5 text-gray-700">
-                      Number of Orders
-                    </TableHead>
-                    <TableHead className="max-w-5 text-gray-700">
-                     Total Purchase Value
+                      Total Loss
                     </TableHead>
                   </TableRow>
                 </TableHeader>
@@ -413,19 +412,75 @@ const Reports = () => {
                       key={index}
                       >
                       <TableCell className="max-w-6 pl-6">
-                        {/* {item.email} */}
+                        {capitalizeFirstLetter(item.categName)}
                       </TableCell>
                       <TableCell className="max-w-6">
-                        {/* {item.fName} */}
+                        {item.productName}
                       </TableCell>
                       <TableCell className="max-w-6">
-                        {/* {item.lName} */}
+                        {item.totalQuantityReturned}
                       </TableCell>
                       <TableCell className="max-w-6">
-                        {/* {item.NumberOfOrder} */}
+                        {item.totalLoss?.toLocaleString('en-US', {
+                        style: 'currency',
+                        currency: 'USD',
+                      })}
                       </TableCell>
-                      <TableCell className="max-w-6">
-                      {/* {item.TotalPurchaseValue} */}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </>) : selectedReport === 'Custom Gross Sales' ? (
+            <>
+              <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
+                <TableHeader>
+                  <TableRow>
+                  <TableHead className="max-w-5 pl-5 text-gray-700">
+                      Total Revenue
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Array.isArray(salesReport) && salesReport.map((item, index) => (
+                    <TableRow
+                      key={index}
+                      >
+                      <TableCell className="max-w-6 pl-6">
+                        {item.totalPurchases}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </>) : selectedReport === 'Custom Membership Sales' ? (
+            <>
+              <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
+                <TableHeader>
+                  <TableRow>
+                  <TableHead className="text-center max-w-5 text-gray-700">
+                      Total Amount of Members
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      Total Memberships Purchased
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      Total Membership Revenue
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Array.isArray(salesReport) && salesReport.map((item, index) => (
+                    <TableRow
+                      key={index}
+                      >
+                      <TableCell className="max-w-5 pl-5 text-center">
+                        {item.totalMember}
+                      </TableCell>
+                      <TableCell className="max-w-5 text-center">
+                        {item.totalMembershipSale}
+                      </TableCell>
+                      <TableCell className="max-w-5 text-center">
+                        {item.totalAmount}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -640,7 +695,7 @@ const Reports = () => {
                     <TableHead className="max-w-5 text-gray-700">
                       Last Name
                     </TableHead>
-                    <TableHead className="max-w-5 text-gray-700">
+                    <TableHead className="text-center max-w-5 text-gray-700">
                      Average Purchase Value
                     </TableHead>
                   </TableRow>
@@ -806,19 +861,20 @@ const Reports = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Net Sales">Net Sales</SelectItem>
-                    <SelectItem value="Most Sold Products">Best Sold Products</SelectItem>
+                    <SelectItem value="Most Sold Products">Most Sold Products</SelectItem>
                     <SelectItem value="Refunded Products">Refunded Products</SelectItem>
-                    <SelectItem value="Daily Gross Sales">Daily Gross Sales</SelectItem>
-                    <SelectItem value="Weekly Gross Sales">Weekly Gross Sales</SelectItem>
-                    <SelectItem value="Monthly Gross Sales">Monthly Gross Sales</SelectItem>
+                    {/* <SelectItem value="Daily Gross Sales">Daily Gross Sales</SelectItem> */}
+                    {/* <SelectItem value="Weekly Gross Sales">Weekly Gross Sales</SelectItem> */}
+                    {/* <SelectItem value="Monthly Gross Sales">Monthly Gross Sales</SelectItem> */}
                     <SelectItem value="Custom Gross Sales">Custom Gross Sales</SelectItem>
-                    <SelectItem value="Daily Gross Sales">Daily Gross Sales</SelectItem>
-                    <SelectItem value="Daily Membership Sales">Daily Membership Sales</SelectItem>
+                    {/* <SelectItem value="Daily Gross Sales">Daily Gross Sales</SelectItem> */}
+                    {/* <SelectItem value="Daily Membership Sales">Daily Membership Sales</SelectItem>
                     <SelectItem value="Weekly Membership Sales">Weekly Membership Sales</SelectItem>
-                    <SelectItem value="Monthly Membership Sales">Monthly Membership Sales</SelectItem>
-                    <SelectItem value="Daily Refunds">Daily Refunds</SelectItem>
-                    <SelectItem value="Weekly Refunds">Weekly Refunds</SelectItem>
-                    <SelectItem value="Monthly Refunds">Monthly Refunds</SelectItem>
+                    <SelectItem value="Monthly Membership Sales">Monthly Membership Sales</SelectItem> */}
+                    <SelectItem value="Custom Membership Sales">Custom Membership Sales</SelectItem>
+                    {/* <SelectItem value="Daily Refunds">Daily Refunds</SelectItem> */}
+                    {/* <SelectItem value="Weekly Refunds">Weekly Refunds</SelectItem> */}
+                    {/* <SelectItem value="Monthly Refunds">Monthly Refunds</SelectItem> */}
                   </SelectContent>
                 </Select>
               </>
