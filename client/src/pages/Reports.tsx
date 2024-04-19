@@ -51,12 +51,12 @@ type SalesData = {
   totalAmount?: number;
 };
 
-type InventoryData = {
-  productID?: number;
-  productName?: string;
-  totalQuantitySold?: number;
-  totalGain?: number;
-};
+// type InventoryData = {
+//   productID?: number;
+//   productName?: string;
+//   totalQuantitySold?: number;
+//   totalGain?: number;
+// };
 
 type CustomerInsight = {
   email?: string;
