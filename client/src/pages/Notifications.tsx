@@ -143,7 +143,7 @@ const Notifications = () => {
                             </DialogTitle>
                             <DialogDescription className="text-lg">
                               {'Enter Quantity of ' +
-                                notification.notificationID +
+                                notification.productName +
                                 ' below to submit order.'}
                             </DialogDescription>
                           </DialogHeader>
