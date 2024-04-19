@@ -23,8 +23,9 @@ const getAllOrder = async (req,res) => {
 const processOrder = async(req,res)=>{
   try{
     const body = await getRequestBody(req);
-    const {customerEmail,items,paymentMethod} = body;
-    // const customerEmail = req.email;
+    // const {customerEmail,items,paymentMethod} = body;
+    const {items,paymentMethod} = body;
+    const customerEmail = req.email;
     // const currTime = new Date();
     // const formatDigit = (x) => x.toString().length === 1 ? '0' + x.toString() : x.toString();
     // const orderDate = new Date().toISOString().split('T')[0];;
