@@ -248,8 +248,6 @@ const Profile = () => {
     updateProfile('address', { street, city, state, zip });
   }
 
-
-
   function handleSelectPaymentMethod(p: PaymentMethod) {
     setCollapsibleOpen(!collapsibleOpen);
     paymentMethodSelectedToast(p);
@@ -475,9 +473,8 @@ const Profile = () => {
                         placeholder={store.fname}
                         name="firstName"
                         onKeyDown={(event) => {
-                          if (!/[a-z]/i.test(event.key)) 
-                            event.preventDefault();
-                          }}
+                          if (!/[a-z]/i.test(event.key)) event.preventDefault();
+                        }}
                       />
                       <h3 className="pl-4 pt-2 text-lg font-semibold text-white">
                         Last Name
@@ -488,12 +485,10 @@ const Profile = () => {
                         placeholder={store.lname}
                         name="lastName"
                         onKeyDown={(event) => {
-                          if (!/[a-z]/i.test(event.key)) 
-                            event.preventDefault();
-                          }}/>
-                        
-                      
-                        
+                          if (!/[a-z]/i.test(event.key)) event.preventDefault();
+                        }}
+                      />
+
                       <Button
                         className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
                         size="lg"
@@ -521,7 +516,9 @@ const Profile = () => {
                           className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                           type="tel"
                           placeholder={store.phone}
-                          name="phone"></input>
+                          name="phone"
+                          maxLength={10}
+                        />
                         <Button
                           className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
                           size="lg"
@@ -596,7 +593,8 @@ const Profile = () => {
                             placeholder={
                               store.address.city ? store.address.city : 'City'
                             }
-                            name="city"/>
+                            name="city"
+                          />
                           <input
                             className="mt-2 h-10 w-[6.5rem] rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                             type="zipcode"
@@ -604,7 +602,8 @@ const Profile = () => {
                               store.address.zip ? store.address.zip : 'Zip Code'
                             }
                             name="zipcode"
-                            />
+                            maxLength={5}
+                          />
                         </div>
                         <Button
                           className="ml-4 mt-3 self-start bg-slate-500 hover:bg-slate-600"
@@ -686,30 +685,31 @@ const Profile = () => {
                     Change Password
                   </Button>
                 </form>
-                {!store.isAdmin &&
-                (<AlertDialog>
-                <AlertDialogTrigger asChild>
-                <Button className=" mt-10 bg-red-500 hover:bg-red-500/90">
-                  Delete Account
-                </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>
-                      Are you absolutely sure?
-                    </AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This action will delete your account.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDeleteAccount}>
-                      Confirm
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-                </AlertDialog>) }
+                {!store.isAdmin && (
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button className=" mt-10 bg-red-500 hover:bg-red-500/90">
+                        Delete Account
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          Are you absolutely sure?
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This action will delete your account.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleDeleteAccount}>
+                          Confirm
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                )}
                 {/* {!store.isAdmin && (<Button
                   className=" mt-10 bg-red-500 hover:bg-red-500/90"
                   onClick={handleDeleteAccount}>
