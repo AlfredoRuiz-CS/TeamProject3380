@@ -82,9 +82,9 @@ const addProductToInventory = async (req, res) => {
   }
 }
 
-const getTotalInventory = async (req, res) => {
+const getTotalInventory = async (_req, res) => {
   try {
-    const totalInventory = await inventoryModel.getTotalInventory();
+    const totalInventory = await reportModel.getTotalInventory();
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ "totalInventory": totalInventory }));
   } catch (error) {
