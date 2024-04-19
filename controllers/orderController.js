@@ -193,6 +193,7 @@ const addStock = async (req,res)=>{
     res.end(JSON.stringify({"status": "Could not add more stock", "error" : error.message }));
   }
 }
+
 module.exports={
   getAllOrder,
   processOrder,

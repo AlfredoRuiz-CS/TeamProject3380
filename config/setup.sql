@@ -151,7 +151,8 @@ CREATE TABLE inventory(
 CREATE TABLE notifications (
     notificationID int PRIMARY KEY AUTO_INCREMENT,
     message varchar(255),
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    active boolean default 1 
 );
 
 CREATE TABLE nutritionFacts(
@@ -199,9 +200,31 @@ DELIMITER //
 CREATE TRIGGER low_stock_notification AFTER UPDATE ON inventory
 FOR EACH ROW
 BEGIN
-    IF NEW.quantity < 10 THEN
-        INSERT INTO notifications (message)
-        VALUES (CONCAT('Product ID ', NEW.productID, ' has low stock. Please reorder.'));
+   
+    DECLARE existingNotificationCount INT;
+
+    SELECT COUNT(*)
+    INTO existingNotificationCount
+    FROM notifications
+    WHERE message LIKE CONCAT('Product ID ', NEW.productID, ' has low stock. Please reorder.%')
+      AND active = 1;
+
+    IF NEW.quantity < 10 AND existingNotificationCount = 0 THEN
+        INSERT INTO notifications (message, active)
+        VALUES (CONCAT('Product ID ', NEW.productID, ' has low stock. Please reorder.'), 1);
+    END IF;
+END;//
+DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER update_stock_notification AFTER UPDATE ON product
+FOR EACH ROW
+BEGIN
+    IF NEW.stockQuantity > 10 THEN
+        UPDATE notifications
+        SET active = 0
+        WHERE message LIKE CONCAT('Product ID ', NEW.productID, ' has low stock. Please reorder.%')
+        AND active = 1;
     END IF;
 END;//
 DELIMITER ;
@@ -211,16 +234,16 @@ CREATE TRIGGER loyalty_membership AFTER INSERT ON purchaseOrder
 FOR EACH ROW
 BEGIN
     IF NEW.total >= 250 THEN
-		IF NOT EXISTS (Select 1 from membership where customerEmail = NEW.customerEmail) THEN
-			INSERT INTO membership(customerEmail, membershipStatus, startDate, endDate, renewalDate)
-            VALUES(NEW.customerEmail, 1, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 1 YEAR), DATE_ADD(CURDATE(), INTERVAL 1 YEAR));
-		ELSE
+        IF NOT EXISTS (SELECT 1 FROM membership WHERE customerEmail = NEW.customerEmail) THEN
+            INSERT INTO membership(customerEmail, membershipStatus, startDate, endDate, renewalDate)
+            VALUES(NEW.customerEmail, 1, CURDATE(), DATE_ADD(CURDATE(), INTERVAL 3 MONTH), DATE_ADD(CURDATE(), INTERVAL 3 MONTH));
+        ELSE
             UPDATE membership
             SET membershipStatus = 1,
-				renewalDate = CURDATE(),
-                endDate = DATE_ADD(CURDATE(), INTERVAL 1 YEAR)
-			WHERE customerEmail = NEW.customerEmail;
-		END IF;
-	END IF;
+                renewalDate = CURDATE(),
+                endDate = DATE_ADD(CURDATE(), INTERVAL 3 MONTH)
+            WHERE customerEmail = NEW.customerEmail;
+        END IF;
+    END IF;
 END;//
 DELIMITER ;

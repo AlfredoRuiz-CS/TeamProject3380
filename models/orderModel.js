@@ -361,6 +361,7 @@ async function addingStock (payoutDate,productName,quantity){
         await connection.release();
     }
 }
+
 module.exports={
     findAllOrder,
     createOrder,

@@ -63,10 +63,10 @@ async function getMembershipStatus(customerEmail) {
         const [rows] = await pool.query(`
         SELECT *
         FROM membership
-        where customerEmail = ?`, [customerEmail])
-        if (!rows) throw error("Couldn't find membership")
+        WHERE customerEmail = ?`, [customerEmail]);
+        if (!rows) throw new Error("Couldn't find membership");
 
-        let membershipStatus = "None"
+        let membershipStatus = "None";
             
         if (rows.length > 0) {
             const membership = rows[0];
@@ -74,10 +74,9 @@ async function getMembershipStatus(customerEmail) {
             const startDate = new Date(membership.startDate);
             const endDate = new Date(membership.endDate);
 
-            const timeDiff = Math.abs(endDate.getTime() - startDate.getTime());
-            const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-            if (diffDays === 365 || diffDays === 366) {
+            const monthDiff = endDate.getMonth() - startDate.getMonth() + (12 * (endDate.getFullYear() - startDate.getFullYear()));
+            
+            if (monthDiff === 3) {
                 membershipStatus = "From Order";
             } else {
                 membershipStatus = "Purchased";
