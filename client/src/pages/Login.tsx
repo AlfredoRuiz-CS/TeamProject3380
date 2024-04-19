@@ -145,6 +145,7 @@ const Login = () => {
             type="email"
             placeholder="Email"
             name="email"
+            required
             onChange={formik.handleChange}
             value={formik.values.email}
           />
@@ -153,6 +154,7 @@ const Login = () => {
             type={isPasswordVisible ? 'text' : 'password'}
             placeholder="Password"
             name="password"
+            required
             onChange={formik.handleChange}
             value={formik.values.password}
           />

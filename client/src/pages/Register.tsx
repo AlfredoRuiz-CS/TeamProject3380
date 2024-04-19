@@ -223,16 +223,19 @@ const Register = () => {
             type="text"
             placeholder="First name"
             name="fName"
+            required
             onChange={formik.handleChange}
             value={formik.values.fName}
             onKeyDown={(event) => {
               if (!/[a-z]/i.test(event.key)) 
                 event.preventDefault();
               }}
+              
           />
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="text"
+            required
             placeholder="Last name"
             name="lName"
             onChange={formik.handleChange}
@@ -247,6 +250,7 @@ const Register = () => {
             type="email"
             placeholder="Email"
             name="email"
+            required
             onChange={formik.handleChange}
             value={formik.values.email}
           />
@@ -255,6 +259,7 @@ const Register = () => {
             type="text"
             placeholder="Street address"
             name="streetAddress"
+            required
             onChange={formik.handleChange}
             value={formik.values.streetAddress}
           />
@@ -263,6 +268,7 @@ const Register = () => {
             type="text"
             placeholder="City"
             name="city"
+            required
             onChange={(e) => handleCityChange(e)}
             value={formik.values.city}
             />
@@ -287,6 +293,7 @@ const Register = () => {
             type="text"
             placeholder="Zipcode"
             name="zipcode"
+            required
             onChange={(e) => handleZipChange(e)}
             value={formik.values.zipcode}
             maxLength={5}
@@ -296,6 +303,7 @@ const Register = () => {
             type="tel"
             placeholder="Phone number"
             name="phoneNumber"
+            required
             onChange={(e) => handlePhoneChange(e)}
             value={formik.values.phoneNumber}
           />
@@ -305,6 +313,7 @@ const Register = () => {
             type={isPasswordVisible ? 'text' : 'password'}
             placeholder="Password"
             name="password"
+            required
             onChange={formik.handleChange}
             value={formik.values.password}
           />
@@ -312,6 +321,7 @@ const Register = () => {
             <input
               id="show-password"
               type="checkbox"
+              required
               className="mr-2"
               onChange={(e) => setIsPasswordVisible(e.target.checked)}
               checked={isPasswordVisible}
