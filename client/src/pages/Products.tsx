@@ -20,7 +20,7 @@ export interface ProductApiResponse {
   productDesc: string;
   productPrice: string;
   stockQuantity: number;
-  categoryID: number;
+  categName: string;
   image: string;
   supplier: string;
   supplierStock: number;
@@ -49,23 +49,22 @@ export interface ProductApiResponse {
   weight: string;
 }
 
-export enum Category {
-  produce = 1,
-  meat = 2,
-  fish = 3,
-  dairy = 4,
-  snacks = 5,
-}
+// export enum Category {
+//   produce = 1,
+//   meat = 2,
+//   fish = 3,
+//   dairy = 4,
+//   snacks = 5,
+// }
 
-export function mapCategory(categoryID: number): string {
-  return Category[categoryID] || 'Unknown Category';
-}
+// export function mapCategory(categoryID: number): string {
+//   return Category[categoryID] || 'Unknown Category';
+// }
 
 const Products = () => {
   const store = useUserStore();
   let [valueSortOrder, setValueSortOrder] = useState('Price Desc.');
   let [catSortOrder, setCatSortOrder] = useState('All');
-  // ! CHANGE TO DATABASE CALL FOR FINAL VERSION!!
   const { setProducts } = useProductsStore();
 
   useEffect(() => {
@@ -82,7 +81,7 @@ const Products = () => {
             description: product.productDesc.split('. '),
             price: parseFloat(product.productPrice),
             stock: product.stockQuantity,
-            category: mapCategory(product.categoryID),
+            category: product.categName,
             image: product.image,
             supplier: product.supplier,
             supplierStock: product.supplierStock,
@@ -122,12 +121,10 @@ const Products = () => {
         console.log(error);
       }
     };
-
     fetchProducts();
   }, [setProducts]);
 
   const products = useProductsStore((state) => state.products);
-  // const products = dummyProducts;
   const [orderedProducts, setOrderedProducts] = useState<productItem[]>([]);
 
   useEffect(() => {

@@ -185,6 +185,16 @@ CREATE TABLE shippingDetails(
     FOREIGN KEY (productID) REFERENCES product(productID) ON DELETE CASCADE
 );
 
+CREATE TABLE payout(
+    payoutID int PRIMARY KEY AUTO_INCREMENT,
+    productID int,
+    quantity int,
+    purchasePrice int,
+    payoutDate date,
+    totalPayout int,
+    FOREIGN KEY (productID) REFERENCES product(productID) ON DELETE SET NULL
+);
+
 DELIMITER //
 CREATE TRIGGER low_stock_notification AFTER UPDATE ON inventory
 FOR EACH ROW

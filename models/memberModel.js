@@ -10,13 +10,38 @@ async function createMembership(customerEmail,startDate,endDate,renewalDate,paym
         //get orderID
         const [rows] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
         const lastId = rows[0].lastId;
+        //create order line
+        const [orderLine] = await connection.query(`
+        INSERT INTO orderLine(orderID,productID,quantity,unitPrice,totalAmount)
+        VALUES(?,?,?,?,?)`,[lastId,999,1,10,10]);
         //create payment
         const [createPayment] = await connection.query(`
         INSERT INTO payment(orderID,paymentDate,totalAmount,paymentMethod,paymentStatus)
         VALUES(?,?,?,?,?)`,[lastId,startDate,10,paymentMethod,"pass"])
-        const [createMember] = await connection.query(`
-        INSERT INTO membership(customerEmail,membershipStatus,startDate,endDate,renewalDate)
-        VALUES(?,?,?,?,?)`,[customerEmail,1,startDate,endDate,renewalDate])
+        // const [createMember] = await connection.query(`
+        // INSERT INTO membership(customerEmail,membershipStatus,startDate,endDate,renewalDate)
+        // VALUES(?,?,?,?,?)`,[customerEmail,1,startDate,endDate,renewalDate])
+        const [checkMembership] = await connection.query(`
+        SELECT endDate
+        FROM membership
+        WHERE customerEmail=? AND membershipStatus=?`,[customerEmail,1]);
+        if (checkMembership.length===0){
+            const [createMember] = await connection.query(`
+            INSERT INTO membership(customerEmail,membershipStatus,startDate,endDate,renewalDate)
+            VALUES(?,?,?,?,?)`,[customerEmail,1,startDate,endDate,renewalDate])
+        } else {
+            const curEndDate = checkMembership[0].endDate;
+            let newEndDate = new Date(curEndDate);
+            newEndDate.setMonth(newEndDate.getMonth()+1);
+            const formattedED = newEndDate.toISOString().split('T')[0];
+            let renewalDate = new Date(newEndDate);
+            renewalDate.setDate(newEndDate.getDate() - 1);
+            const formattedRD = renewalDate.toISOString().split('T')[0];
+            const [updateMembership] = await connection.query(`
+            UPDATE membership
+            SET endDate=?, renewalDate=?
+            WHERE customerEmail=?`,[formattedED,formattedRD,customerEmail]);
+        }
 
         const result = {
             isMember: true

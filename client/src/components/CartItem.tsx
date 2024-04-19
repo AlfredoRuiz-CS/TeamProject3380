@@ -43,7 +43,7 @@ const CartItem = (props: CartItemProps) => {
           className="mr-2 h-20 w-20 rounded-lg object-cover"
         />
         {/* Product Description and Price */}
-        <div className="ml-2 flex flex-col">
+        <div className="ml-2 flex w-[200px] flex-col">
           <Link to={`/product/${props.product.productId}`}>
             <h2 className="text-md underline-offset-2 hover:underline">
               {props.product.name}
@@ -63,7 +63,7 @@ const CartItem = (props: CartItemProps) => {
         {/* Quantity Selector */}
         <div className="flex flex-row content-center items-center gap-1 text-center">
           <button
-            className=" h-[3rem] w-[3.2rem] rounded-full  bg-xanthousyellow text-center text-3xl text-black"
+            className=" h-[3rem] w-[3.2rem] rounded-full bg-xanthousyellow text-center text-3xl text-black"
             onClick={(e) => handleSubtractQuantity(e)}>
             -
           </button>
@@ -78,6 +78,7 @@ const CartItem = (props: CartItemProps) => {
             +
           </button>
         </div>
+        {/* Price Total For Item */}
         <p className="mx-auto min-w-[10rem] px-4 text-3xl">
           {totalCartPrice.toLocaleString('en-US', {
             style: 'currency',

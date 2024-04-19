@@ -5,7 +5,7 @@ const ShippingController = {
     // Controller function to retrieve shipping information for all orders
     getAllShippingInfo: async (req, res) => {
         try {
-            const shippingInfo = await ShippingModel.findAllShippingInfo();
+            const shippingInfo = await shippingModel.findAllShippingInfo();
             res.status(200).json(shippingInfo);
         } catch (error) {
             res.status(500).json({ error: 'Could not retrieve shipping information', message: error.message });
@@ -16,7 +16,7 @@ const ShippingController = {
     getShippingInfoById: async (req, res) => {
         try {
             const { shippingId } = req.params;
-            const shippingInfo = await ShippingModel.findShippingInfoById(shippingId);
+            const shippingInfo = await shippingModel.findShippingInfoById(shippingId);
             if (shippingInfo) {
                 res.status(200).json(shippingInfo);
             } else {
@@ -48,7 +48,7 @@ const ShippingController = {
     createShippingInfo: async (req, res) => {
         try {
             const shippingData = req.body;
-            const newShippingId = await ShippingModel.createShippingInfo(shippingData);
+            const newShippingId = await shippingModel.createShippingInfo(shippingData);
             res.status(201).json({ message: 'Shipping information created successfully', shippingId: newShippingId });
         } catch (error) {
             res.status(500).json({ error: 'Could not create shipping information', message: error.message });
@@ -60,7 +60,7 @@ const ShippingController = {
         try {
             const { shippingId } = req.params;
             const newData = req.body;
-            const success = await ShippingModel.updateShippingInfo(shippingId, newData);
+            const success = await shippingModel.updateShippingInfo(shippingId, newData);
             if (success) {
                 res.status(200).json({ message: 'Shipping information updated successfully' });
             } else {
@@ -75,7 +75,7 @@ const ShippingController = {
     deleteShippingInfo: async (req, res) => {
         try {
             const { shippingId } = req.params;
-            const success = await ShippingModel.deleteShippingInfo(shippingId);
+            const success = await shippingModel.deleteShippingInfo(shippingId);
             if (success) {
                 res.status(200).json({ message: 'Shipping information deleted successfully' });
             } else {
