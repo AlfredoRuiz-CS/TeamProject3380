@@ -517,6 +517,7 @@ const getAvgPurchaseValueCustomD = async(req,res)=>{
   try{
     const body = await getRequestBody(req);
     const {startDate,endDate}=body;
+    console.log(startDate,endDate);
     const result = await reportModel.averagePurchaseValue(startDate,endDate);
 
     if(!result) {

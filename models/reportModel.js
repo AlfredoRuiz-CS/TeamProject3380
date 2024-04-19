@@ -83,41 +83,6 @@ async function refundedProduct(startDate, endDate) {
     }
 }
 
-async function netSales(startDate,endDate){
-    try {
-        const [purchaseRes] = await pool.query(`
-            SELECT SUM(p.total) AS totalPurchases
-            FROM purchaseOrder p
-            WHERE p.orderDate BETWEEN ? AND ?`, [startDate, endDate]);
-
-//         const [refundRes] = await pool.query(`
-//             SELECT SUM(r.amount) AS totalRefund
-//             FROM refund r
-//             WHERE r.refundDate BETWEEN ? AND ?`, [startDate, endDate]);
-
-        const [payoutRes] = await pool.query(`
-            SELECT SUM(p.totalPayout) AS totalPayout
-            FROM payout p
-            WHERE p.payoutDate BETWEEN ? AND ?`,[startDate,endDate]);
-        const totalPurchases = purchaseRes[0] ? purchaseRes[0].totalPurchases : 0; // Default to 0 if null
-        const totalRefund = refundRes[0] ? refundRes[0].totalRefund : 0; // Default to 0 if null
-        const totalPayout = payoutRes[0] ? payoutRes[0].totalPayout : 0;
-        const total = totalPurchases - totalRefund - totalPayout;
-        // Combine into one object
-        const result = {
-            totalPurchases: totalPurchases || 0, // Default to 0 if undefined
-            totalRefund: totalRefund || 0, // Default to 0 if undefined
-            totalPayout: totalPayout,
-            netAmount: total.toFixed(2)
-        };
-
-        return result;
-    } catch (error) {
-        console.log(error);
-        throw error;
-    }
-}
-
 // rexamine if still useful
 // async function getInventoryByProduct(productId) {
 //     try {
@@ -224,13 +189,14 @@ async function refundReport(startDate,endDate){
 }
 
 async function averagePurchaseValue(startDate,endDate){
+    console.log(startDate, endDate);
     try{
         const [result] = await pool.query(`
         SELECT c.email, c.fName, c.lName, ROUND(AVG(p.total), 2) AS AveragePurchaseValue
         FROM customer c
         LEFT JOIN purchaseOrder p ON c.email=p.customerEmail
         WHERE p.orderDate BETWEEN ? AND ?
-        GROUP BY c.email`);
+        GROUP BY c.email`, [startDate,endDate]);
 
         return result;
     } catch(error){

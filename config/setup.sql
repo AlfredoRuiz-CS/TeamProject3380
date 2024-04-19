@@ -247,6 +247,3 @@ BEGIN
     END IF;
 END;//
 DELIMITER ;
-
--- @block
-delete from membership where membershipID = 15;
