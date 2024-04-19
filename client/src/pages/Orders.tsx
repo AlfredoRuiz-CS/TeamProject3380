@@ -73,7 +73,7 @@ const Orders = () => {
   const [selectedRefundItems, setSelectedRefundItems] = useState<
     productOrder[]
   >([]);
-
+  const [reloadTrigger, setReloadTrigger] = useState(0);
   const [orders, setOrders] = useState<Order[]>([]);
   const [sortedOrders, setSortedOrders] = useState<Order[]>(orders);
 
@@ -137,6 +137,9 @@ const Orders = () => {
       console.log(error);
     }
     console.log('Refund Requested');
+    setSelectedRefundItems([]);
+    setReloadTrigger(prev => prev + 1);
+    // setSheetOpen(false);
   }
 
   function addToRefundTotal(
@@ -303,7 +306,7 @@ const Orders = () => {
             orderID: order.orderID,
             orderDate: new Date(order.orderDate).toLocaleDateString(),
             paymentMethod: order.paymentMethod,
-            total: order.total,
+            total: order.items.reduce((acc, item) => acc + Number(item.totalAmount), 0),
             items: order.items.map((item: productOrder) => ({
               productID: item.productID,
               productName: item.productName,
@@ -320,7 +323,7 @@ const Orders = () => {
       }
     };
     fetchOrders();
-  }, [setOrders]);
+  }, [setOrders, reloadTrigger]);
 
   // useEffect(() => {
   //   console.log('Refund Total: ', refundTotal);
@@ -443,7 +446,6 @@ const Orders = () => {
                         <div>
                           Payment Method: {orderToDisplay?.paymentMethod}
                         </div>
-                        <div>Order Status:</div>
                       </div>
                     </SheetDescription>
                     <Table className="ml-0 max-w-full rounded-lg bg-gray-50">
