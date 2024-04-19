@@ -18,7 +18,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 import useUserStore from '@/components/store';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
 interface HeaderProps {
   color?: 'blue' | 'white';
@@ -27,7 +27,7 @@ interface HeaderProps {
 const Header = (props: HeaderProps) => {
   const user = useUserStore();
   const navigate = useNavigate();
-  const [notifNumber, setNotifNumber] = useState(0);
+  // const [notifNumber, setNotifNumber] = useState(0);
 
   // ! ADD BACKEND CALL TO DISPLAY THE NUMBER OF NOTIFICATIONS
   useEffect(() => {}, [user.loggedIn]);
@@ -73,7 +73,9 @@ const Header = (props: HeaderProps) => {
           }
         });
         console.log(filteredData);
-        setNotifNumber(filteredData.length);
+        user.setUserDetails({
+          notificationsCount: filteredData.length
+        });
       } catch (error) {
         console.error(error);
       }
@@ -139,7 +141,7 @@ const Header = (props: HeaderProps) => {
                     // TODO: Add notification dropdown that links to the low supply sheet
 
                     <Link to="/notifications" className="flex flex-row gap-1">
-                      <p className="">{notifNumber}</p>
+                      <p className="">{user.notificationsCount}</p>
                       <IoNotifications size={20} color="white" />
                     </Link>
                   ) : (
@@ -150,7 +152,7 @@ const Header = (props: HeaderProps) => {
                   )
                 ) : user.accountType === 'employee' ? (
                   <Link to="/admin" className="flex flex-row gap-1">
-                    <p className="">{notifNumber}</p>
+                    <p className="">{user.notificationsCount}</p>
                     <IoNotifications size={20} color="primary" />
                   </Link>
                 ) : (

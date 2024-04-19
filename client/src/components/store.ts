@@ -115,6 +115,7 @@ type UserState = {
   cartItems: productItem[];
   quantity: number[];
   selectedPaymentMethod: PaymentMethod;
+  notificationsCount: number;
 
   // Actions for user login
   // setUserfName: (firstname: string) => void;
@@ -164,6 +165,7 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
   cartItems: [],
   quantity: [],
   List: [],
+  notificationsCount: 0,
   setUserDetails: (details: Partial<UserState>) =>
     set((state) => ({ ...state, ...details })),
   logout: () =>
@@ -180,6 +182,7 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
       cartItems: [],
       List: [],
       quantity: [],
+      notificationsCount: 0
     }),
   login: (isEmployee) => {
     set((state) => ({

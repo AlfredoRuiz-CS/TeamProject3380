@@ -24,33 +24,7 @@ import { Label } from '@/components/ui/label';
 import toast from 'react-hot-toast';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-
-async function handleStockOrder(
-  event: React.FormEvent<HTMLFormElement>,
-  productName: string
-) {
-  event.preventDefault();
-  let quantity = (document.getElementById('quantity') as HTMLInputElement)
-    .value;
-
-  const data = {
-    productName: productName,
-    quantity: quantity,
-  };
-
-  try {
-    const response = await axios.post(
-      'https://shastamart-api-deploy.vercel.app/api/orders/insertStock',
-      data
-    );
-    console.log(response);
-    orderSuccessToast(productName, quantity);
-    console.log('Order Submitted for ', productName, ' ', quantity);
-  } catch (error) {
-    console.log(error);
-  }
-  console.log('Notification Selected');
-}
+import useUserStore from '@/components/store';
 
 function orderSuccessToast(productName: string, quantity: string) {
   toast.success(
@@ -65,6 +39,37 @@ function orderSuccessToast(productName: string, quantity: string) {
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
+  const [reloadTrigger, setReloadTrigger] = useState(0);
+  const user = useUserStore();
+
+  async function handleStockOrder(
+    event: React.FormEvent<HTMLFormElement>,
+    productName: string
+  ) {
+    event.preventDefault();
+    let quantity = (document.getElementById('quantity') as HTMLInputElement)
+      .value;
+  
+    const data = {
+      productName: productName,
+      quantity: quantity,
+    };
+  
+    try {
+      const response = await axios.post(
+        'https://shastamart-api-deploy.vercel.app/api/orders/insertStock',
+        data
+      );
+      console.log(response);
+      orderSuccessToast(productName, quantity);
+      console.log('Order Submitted for ', productName, ' ', quantity);
+      setReloadTrigger(prev => prev + 1)
+    } catch (error) {
+      console.log(error);
+    }
+    console.log('Notification Selected');
+  }
+
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
@@ -87,12 +92,15 @@ const Notifications = () => {
         });
         console.log(filteredData);
         setNotifications(filteredData);
+        user.setUserDetails({
+          notificationsCount: filteredData.length
+        })
       } catch (error) {
         console.error(error);
       }
     };
     fetchNotifications();
-  }, []);
+  }, [reloadTrigger]);
 
   return (
     <>

@@ -214,7 +214,8 @@ async function refundItems(orderID,items,refundDate){
         }
         let amount = 0;
         let removedItems = [];
-
+        
+        console.log("About to refund items")
         //calculate total amount of refund for record, add refunded items into a list, and update orderLine
         for(let item of items){
             amount += item.productPrice*item.productQuantity;
@@ -226,6 +227,8 @@ async function refundItems(orderID,items,refundDate){
             JOIN product
             ON o.productID = product.productID
             WHERE p.orderID=? AND o.productID=?`,[orderID,item.productID]);
+
+            console.log(res[0]);
 
             //store refunded items
             if (res.length > 0) {
