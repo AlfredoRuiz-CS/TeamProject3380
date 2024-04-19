@@ -35,31 +35,40 @@ import {
 // import { Separator } from '@/components/ui/separator';
 // import { Label } from '@/components/ui/label';
 
-interface SalesData {
+type SalesData = {
   totalPurchases?: number;
   totalRefund?: number;
   totalPayout?: number;
   netAmount?: number;
+  categName?: string;
+  productName?: string;
+  totalQuantityReturned?: string;
+  totalLoss?: number;
+  totalGain?: number;
+  totalMember?: number;
+  totalMembershipSale?: number;
+  totalAmount?: number;
 }
 
-interface InventoryData {
+type InventoryData = {
   productID?: number;
   productName?: string;
   totalQuantitySold?: number;
   totalGain?: number;
 }
 
-interface CustomerInsight {
+type CustomerInsight = {
   email?: string;
   fName?: string;
   lName?: string;
-  numberOfOrder?: number;
-  totalPurchaseValue?: number;
+  NumberOfOrder?: number;
+  TotalPurchaseValue?: String;
+  AveragePurchaseValue?: String;
 }
 
 type ReportType = 'Sales' | 'Inventory' | 'CustomerInsight';
-type SalesReport = 'Net Sales' | 'Best Sold Products' | 'Refunded Products' | 'Daily Gross Sales' | 'Weekly Gross Sales' | 'Monthly Gross Sales'
-| 'Custom Gross Sales';
+type SalesReport = 'Net Sales' | 'Most Sold Products' | 'Refunded Products' | 'Daily Gross Sales' | 'Weekly Gross Sales' | 'Monthly Gross Sales'
+| 'Custom Gross Sales' | 'Custom Membership Sales';
 type InventoryReport = 'TotalInventory' | 'DailyInventory' | 'WeeklyInventory' | 'MonthlyInventory';
 type CustomerInsightReport = 'AveragePurchaseValue' | 'MostPurchases' | 'LeastPurchases';
 
@@ -74,40 +83,15 @@ const Reports = () => {
   // ? Data Report Type Selector
   const [selectedType, setSelectedType] = useState<ReportType | ''>('');
   const [selectedReport, setSelectedReport] = useState<SalesReport | InventoryReport | CustomerInsightReport | ''>('');
-  const [isDateFilterVisible, setDateFilterVisible] = useState(false);
   const [salesReport, setSalesReport] = useState<SalesData[]>([]);
   const [inventoryReport, setInventoryReport] = useState<InventoryData[]>([]);
   const [customerInsightReport, setCustomerInsightReport] = useState<CustomerInsight[]>([]);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [reportGenerated, setReportGenerated] = useState(false);
   
-
-  // ? Inventory Variables
-  const [filteredInventory, setFilteredInventory] = useState([]);
-
-  // ? Sales Variables
-
-  // ? Customer Insight Variables
-
-  // * FUNCTIONS SECTION * //
-  // ? Inventory Functions
-  // function selectInventoryHandler(e: any) {
-  //   console.log('Inventory Selected', e);
-  // }
-
-  // ? Sales Functions
-
-  // ? Customer Insight Functions
-
-  // * USEEFFECT SECTION * //
-  // ? Data Report Type Selector UseEffect
   useEffect(() => {}, [selectedType]);
-
-  // ? Inventory UseEffect
-
-  // ? Sales UseEffect
-
-  // ? Customer Insight UseEffect
 
   // useEffect(() => {
   //   async function fetchData() {
@@ -125,11 +109,6 @@ const Reports = () => {
 
   //   fetchData();
   // }, [selectedType, selectedReport])
-
-  const handleTypeChange = (e: any) => {
-    const value = e as ReportType;
-    setSelectedType(value);
-  };
 
   const handleSalesReportChange = (e: any) => {
     const value = e as SalesReport;
@@ -149,12 +128,13 @@ const Reports = () => {
   const endpointMap : EndpointMap = {
     Sales: {
       "Net Sales": "https://shastamart-api-deploy.vercel.app/api/reports/netSaleCustomD",
-      "Best Sold Products": "https://shastamart-api-deploy.vercel.app/api/reports/bestSoldItems",
-      "Refunded Products":"https://shastamart-api-deploy.vercel.app/reports/refundCustomD",
-      "Daily Gross Sales": "https://shastamart-api-deploy.vercel.app/api/reports/grossSaleD",
-      "Weekly Gross Sales": "https://shastamart-api-deploy.vercel.app/api/reports/grossSaleW",
-      "Monthly Gross Sales": "https://shastamart-api-deploy.vercel.app/api/reports/grossSaleM",
+      "Most Sold Products": "https://shastamart-api-deploy.vercel.app/api/reports/bestSoldItems",
+      "Refunded Products":"https://shastamart-api-deploy.vercel.app/api/reports/refundCustomD",
+      // "Daily Gross Sales": "https://shastamart-api-deploy.vercel.app/api/reports/grossSaleD",
+      // "Weekly Gross Sales": "https://shastamart-api-deploy.vercel.app/api/reports/grossSaleW",
+      // "Monthly Gross Sales": "https://shastamart-api-deploy.vercel.app/api/reports/grossSaleM",
       "Custom Gross Sales": "https://shastamart-api-deploy.vercel.app/api/reports/grossSaleCustomD",
+      "Custom Membership Sales": "https://shastamart-api-deploy.vercel.app/api/reports/memberSaleCustomDate"
     },
     Inventory: {
       "TotalInventory": "https://shastamart-api-deploy.vercel.app/api/reports/",
@@ -170,6 +150,8 @@ const Reports = () => {
   };
 
   const generateReport = async () => {
+    setLoading(true);
+    setReportGenerated(false);
     const endpoint = selectedType && selectedReport
   ? (endpointMap[selectedType] as Record<string, string>)[selectedReport]
   : undefined;
@@ -185,16 +167,122 @@ const Reports = () => {
         startDate: startDate,
         endDate: endDate,
       });
+      const responseData = response.data.result
       console.log(response.data);
       switch (selectedType) {
         case 'Sales':
-          setSalesReport(response.data);
+          if (selectedReport === 'Net Sales') {
+            const mappedData = responseData.map((data: SalesData) => ({
+              totalPurchases : data.totalPurchases || "0",
+              totalRefund : data.totalRefund,
+              totalPayout : data.totalPayout,
+              netAmount : data.netAmount,
+            }))
+            setSalesReport(mappedData);
+          }
+          else if (selectedReport === 'Most Sold Products') {
+            const mappedData = responseData.map((data: SalesData) => ({
+              categName : data.categName,
+              productName : data.productName,
+              totalQuantityReturned : data.totalQuantityReturned,
+              totalGain : data.totalGain,
+            }))
+            setSalesReport(mappedData);
+          }
+          else if (selectedReport === 'Refunded Products') {
+            const mappedData = responseData.map((data: SalesData) => ({
+              categName : data.categName,
+              productName : data.productName,
+              totalQuantityReturned : data.totalQuantityReturned,
+              totalLoss : data.totalLoss,
+            }))
+            setSalesReport(mappedData);
+          }
+          else if (selectedReport === 'Custom Gross Sales'){
+            const mappedData = responseData.map((data: SalesData) => ({
+              totalPurchases : data.totalPurchases || "0"
+            }))
+            setSalesReport(mappedData);
+          }
+          else if (selectedReport === 'Custom Membership Sales'){
+            const mappedData = responseData.map((data: SalesData) => ({
+              totalMember: data.totalMember,
+              totalMembershipSale: data.totalMembershipSale,
+              totalAmount: data.totalAmount,
+            }))
+            setSalesReport(mappedData);
+          }
           break;
+
         case 'Inventory':
-          setInventoryReport(response.data);
+          if (selectedReport === 'TotalInventory') {
+            // const mappedData = responseData.map((data: InventoryData) => ({
+            //   totalPurchases : data.totalPurchases || "0",
+            //   totalRefund : data.totalRefund,
+            //   totalPayout : data.totalPayout,
+            //   netAmount : data.netAmount,
+            // }))
+            // setInventoryReport(mappedData);
+          }
+          else if (selectedReport === 'DailyInventory') {
+            // const mappedData = responseData.map((data: InventoryData) => ({
+            //   totalPurchases : data.totalPurchases || "0",
+            //   totalRefund : data.totalRefund,
+            //   totalPayout : data.totalPayout,
+            //   netAmount : data.netAmount,
+            // }))
+            // setInventoryReport(mappedData);
+          }
+          else if (selectedReport === 'WeeklyInventory') {
+            // const mappedData = responseData.map((data: InventoryData) => ({
+            //   totalPurchases : data.totalPurchases || "0",
+            //   totalRefund : data.totalRefund,
+            //   totalPayout : data.totalPayout,
+            //   netAmount : data.netAmount,
+            // }))
+            // setInventoryReport(mappedData);
+          }
+          else if (selectedReport === 'MonthlyInventory'){
+            // const mappedData = responseData.map((data: InventoryData) => ({
+            //   totalPurchases : data.totalPurchases || "0",
+            //   totalRefund : data.totalRefund,
+            //   totalPayout : data.totalPayout,
+            //   netAmount : data.netAmount,
+            // }))
+            // setInventoryReport(mappedData);
+          }
           break;
+          
         case 'CustomerInsight':
-          setCustomerInsightReport(response.data);
+          if (selectedReport === 'AveragePurchaseValue') { 
+            const mappedData = responseData.map((data: CustomerInsight) => ({
+              AveragePurchaseValue : data.AveragePurchaseValue || "0",
+              email : data.email,
+              fName : data.fName,
+              lName : data.lName,
+            }))
+            setCustomerInsightReport(mappedData);
+          }
+          else if (selectedReport === 'MostPurchases'){
+            const mappedData = responseData.map((data: CustomerInsight) => ({
+              email : data.email,
+              fName : data.fName,
+              lName : data.lName,
+              NumberOfOrder : data.NumberOfOrder,
+              TotalPurchaseValue : data.TotalPurchaseValue || "0"
+            }))
+            setCustomerInsightReport(mappedData);
+          }
+          else if (selectedReport === 'LeastPurchases'){
+            const mappedData = responseData.map((data: CustomerInsight) => ({
+              email : data.email,
+              fName : data.fName,
+              lName : data.lName,
+              NumberOfOrder : data.NumberOfOrder,
+              TotalPurchaseValue : data.TotalPurchaseValue || "0"
+            }))
+            setCustomerInsightReport(mappedData);
+          }
           break;
         default:
           break;
@@ -202,65 +290,481 @@ const Reports = () => {
     } catch (error) {
       console.log(error);
     }
+    setLoading(false);
+    setReportGenerated(true);
   }
 
   function renderReport(e: any) {
     switch (e) {
-      //   * SAMPLE PAGE FOR THE REPORTS, EACH ONE NEEDS TO BE CUSTOMIZED
+      case 'Sales':
+        return (
+        <>
+          {selectedReport === 'Net Sales' ? (
+            <>
+              <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="max-w-5 pl-5 text-gray-700">
+                      Total Purchases
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      Total Refund
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      Total Payout
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                     Net Amount
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Array.isArray(salesReport) && salesReport.map((item, index) => (
+                    <TableRow
+                      key={index}
+                      >
+                      <TableCell className="max-w-6 pl-6">
+                        {item.totalPurchases}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {item.totalRefund}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {item.totalPayout}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {item.netAmount}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </>) : selectedReport === 'MostPurchases' ? (
+            <>
+              <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="max-w-5 pl-5 text-gray-700">
+                      Customer Email
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      First Name
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      Last Name
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      Number of Orders
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                     Total Purchase Value
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Array.isArray(salesReport) && salesReport.map((item, index) => (
+                    <TableRow
+                      key={index}
+                      >
+                      <TableCell className="max-w-6 pl-6">
+                        {/* {item.email} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {/* {item.fName} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {/* {item.lName} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {/* {item.NumberOfOrder} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                      {/* {item.TotalPurchaseValue} */}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </>) : selectedReport === 'LeastPurchases' ? (
+            <>
+              <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="max-w-5 pl-5 text-gray-700">
+                      Customer Email
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      First Name
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      Last Name
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      Number of Orders
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                     Total Purchase Value
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Array.isArray(salesReport) && salesReport.map((item, index) => (
+                    <TableRow
+                      key={index}
+                      >
+                      <TableCell className="max-w-6 pl-6">
+                        {/* {item.email} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {/* {item.fName} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {/* {item.lName} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {/* {item.NumberOfOrder} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                      {/* {item.TotalPurchaseValue} */}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </>) : <></>
+          }
+        </>
+      );
       case 'Inventory':
         return (
           <>
-            <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="max-w-6 pl-6 text-gray-700">
-                    Order Number
-                  </TableHead>
-                  <TableHead className="max-w-5 text-gray-700">Date</TableHead>
-                  <TableHead className="max-w-5 text-gray-700">
-                    Payment Method
-                  </TableHead>
-                  <TableHead className="max-w-5 text-gray-700">
-                    Total Paid
-                  </TableHead>
-                  <TableHead className="max-w-5 text-gray-700">
-                    Status
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredInventory.map((item, index) => (
-                  <TableRow
-                    key={index}
-                    onClick={() => setFilteredInventory(item)}>
-                    <TableCell className="max-w-6 pl-6">
-                      {/* {item.orderID} */}
-                    </TableCell>
-                    <TableCell className="max-w-6">
-                      {/* {item.orderDate} */}
-                    </TableCell>
-                    <TableCell className="max-w-6">
-                      {/* {item.paymentMethod} */}
-                    </TableCell>
-                    <TableCell className="max-w-6">
-                      {/* {item.total.toLocaleString('en-US', {
-                          style: 'currency',
-                          currency: 'USD',
-                        })} */}
-                    </TableCell>
-                    <TableCell className="max-w-6">
-                      <span className="text-green-500">Paid</span>
-                    </TableCell>
+            {selectedReport === 'TotalInventory' ? (
+            <>
+              <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="max-w-5 pl-5 text-gray-700">
+                      Customer Email
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      First Name
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      Last Name
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                     Average Purchase Value
+                    </TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {Array.isArray(inventoryReport) && inventoryReport.map((item, index) => (
+                    <TableRow
+                      key={index}
+                      >
+                      <TableCell className="max-w-6 pl-6">
+                        {/* {item.email} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {/* {item.fName} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {/* {item.lName} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {/* {item.NumberOfOrder} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                      {/* {item.AveragePurchaseValue} */}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </>) : selectedReport === 'DailyInventory' ? (
+            <>
+              <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="max-w-5 pl-5 text-gray-700">
+                      Customer Email
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      First Name
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      Last Name
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      Number of Orders
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                     Total Purchase Value
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Array.isArray(inventoryReport) && inventoryReport.map((item, index) => (
+                    <TableRow
+                      key={index}
+                      >
+                      <TableCell className="max-w-6 pl-6">
+                        {/* {item.email} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {/* {item.fName} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {/* {item.lName} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {/* {item.NumberOfOrder} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                      {/* {item.TotalPurchaseValue} */}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </>) : selectedReport === 'WeeklyInventory' ? (
+            <>
+              <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="max-w-5 pl-5 text-gray-700">
+                      Customer Email
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      First Name
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      Last Name
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      Number of Orders
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                     Total Purchase Value
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Array.isArray(inventoryReport) && inventoryReport.map((item, index) => (
+                    <TableRow
+                      key={index}
+                      >
+                      <TableCell className="max-w-6 pl-6">
+                        {/* {item.email} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {/* {item.fName} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {/* {item.lName} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {/* {item.NumberOfOrder} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                      {/* {item.TotalPurchaseValue} */}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </>) : selectedReport === 'MonthlyInventory' ? (
+            <>
+              <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="max-w-5 pl-5 text-gray-700">
+                      Customer Email
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      First Name
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      Last Name
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      Number of Orders
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                     Total Purchase Value
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Array.isArray(inventoryReport) && inventoryReport.map((item, index) => (
+                    <TableRow
+                      key={index}
+                      >
+                      <TableCell className="max-w-6 pl-6">
+                        {/* {item.email} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {/* {item.fName} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {/* {item.lName} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {/* {item.NumberOfOrder} */}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                      {/* {item.TotalPurchaseValue} */}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </>) : <></>
+          }
           </>
         );
-      case 'Sales':
-        return <></>;
       case 'CustomerInsight':
-        return <></>;
+        return (
+          <>
+            {selectedReport === 'AveragePurchaseValue' ? (
+            <>
+              <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="max-w-5 pl-5 text-gray-700">
+                      Customer Email
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      First Name
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      Last Name
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                     Average Purchase Value
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Array.isArray(customerInsightReport) && customerInsightReport.map((item, index) => (
+                    <TableRow
+                      key={index}
+                      >
+                      <TableCell className="max-w-6 pl-6">
+                        {item.email}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {item.fName}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {item.lName}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {item.NumberOfOrder}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                      {item.AveragePurchaseValue}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </>) : selectedReport === 'MostPurchases' ? (
+            <>
+              <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="max-w-5 pl-5 text-gray-700">
+                      Customer Email
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      First Name
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      Last Name
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      Number of Orders
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                     Total Purchase Value
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Array.isArray(customerInsightReport) && customerInsightReport.map((item, index) => (
+                    <TableRow
+                      key={index}
+                      >
+                      <TableCell className="max-w-6 pl-6">
+                        {item.email}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {item.fName}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {item.lName}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {item.NumberOfOrder}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                      {item.TotalPurchaseValue}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </>) : selectedReport === 'LeastPurchases' ? (
+            <>
+              <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="max-w-5 pl-5 text-gray-700">
+                      Customer Email
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      First Name
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      Last Name
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                      Number of Orders
+                    </TableHead>
+                    <TableHead className="max-w-5 text-gray-700">
+                     Total Purchase Value
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Array.isArray(customerInsightReport) && customerInsightReport.map((item, index) => (
+                    <TableRow
+                      key={index}
+                      >
+                      <TableCell className="max-w-6 pl-6">
+                        {item.email}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {item.fName}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {item.lName}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                        {item.NumberOfOrder}
+                      </TableCell>
+                      <TableCell className="max-w-6">
+                      {item.TotalPurchaseValue}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </>) : <></>
+          }
+        </>
+      );
       default:
         return <></>;
     }
@@ -302,7 +806,7 @@ const Reports = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Net Sales">Net Sales</SelectItem>
-                    <SelectItem value="Best Sold Products">Best Sold Products</SelectItem>
+                    <SelectItem value="Most Sold Products">Best Sold Products</SelectItem>
                     <SelectItem value="Refunded Products">Refunded Products</SelectItem>
                     <SelectItem value="Daily Gross Sales">Daily Gross Sales</SelectItem>
                     <SelectItem value="Weekly Gross Sales">Weekly Gross Sales</SelectItem>
@@ -369,7 +873,7 @@ const Reports = () => {
                   onChange={(e) => {setStartDate(e.target.value)}}
                 />
 
-                <label htmlFor="end-date" className="ml-16 items-center place-self-center font-inter text-lg font-medium">End Date:</label>
+                <label htmlFor="end-date" className="ml-10 items-center place-self-center font-inter text-lg font-medium">End Date:</label>
                 <input
                   className="h-10 w-[10rem] bg-white text-black rounded-md border-2 border-solid"
                   type="date"
@@ -380,13 +884,13 @@ const Reports = () => {
                 />
                 {selectedReport === ''}
                 <Button
-                    className="ml-5 self-center bg-blue-400 px-4 py-4 hover:bg-slate-600"
+                    className="ml-5 self-center bg-blue-400 px-10 py-4 hover:bg-slate-600"
                     size="lg"
                     onClick={generateReport}>
                     Generate Report
                 </Button>
               </div>
-              {renderReport(selectedType)}
+              {!loading && reportGenerated ? renderReport(selectedType) : null}
             </>
           ) : (
             <h1 className="text-center text-3xl font-medium">

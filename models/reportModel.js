@@ -38,7 +38,7 @@ const { pool } = require("../config/db");
 
 async function soldProducts(startDate, endDate) {
     try {
-        const [res] = await pool.query(`
+        const [result] = await pool.query(`
         SELECT categName, p.productName, 
         SUM(ol.quantity) AS totalQuantitySold,
         SUM(ol.totalAmount) AS totalGain
@@ -55,7 +55,7 @@ async function soldProducts(startDate, endDate) {
         // SUM(ol.quantity) AS totalQuantitySold,
         // `)
 
-        return res;
+        return result;
     } catch (error) {
         console.log(error);
         throw error;
@@ -64,7 +64,7 @@ async function soldProducts(startDate, endDate) {
 
 async function refundedProduct(startDate, endDate) {
     try {
-        const [res] = await pool.query(`
+        const [result] = await pool.query(`
         SELECT categName, p.productName, 
         SUM(ol.quantity) AS totalQuantityReturned,
         SUM(ol.totalAmount) AS totalLoss
@@ -76,7 +76,7 @@ async function refundedProduct(startDate, endDate) {
         GROUP BY p.productID, p.productName
         ORDER BY totalQuantityReturned DESC`, [startDate, endDate]);
 
-        return res;
+        return result;
     } catch (error) {
         console.log(error);
         throw error;
@@ -101,12 +101,12 @@ async function refundedProduct(startDate, endDate) {
 
 async function grossSales(startDate,endDate){
     try{
-        const [res] = await pool.query(`
+        const [result] = await pool.query(`
         SELECT SUM(p.total) AS totalPurchases
         FROM purchaseOrder p
         WHERE p.orderDate BETWEEN ? AND ?`,[startDate,endDate]);
 
-        return res;
+        return result;
     } catch(error){
         console.log(error);
         throw error;
@@ -150,7 +150,7 @@ async function netSales(startDate,endDate){
 
 async function membershipSales(startDate,endDate){
     try{
-        const [sales] = await pool.query(`
+        const [result] = await pool.query(`
         SELECT 
             COUNT(DISTINCT m.membershipID) AS totalMember,
             SUM(ol.quantity) AS totalMembershipSale,
@@ -162,7 +162,7 @@ async function membershipSales(startDate,endDate){
         ON ol.orderID = p.orderID
         WHERE ol.productID=? AND p.orderDate BETWEEN ? AND ?`,[999,startDate,endDate]);
 
-        return sales;
+        return result;
     } catch (error){
         console.log(error);
         throw error;
