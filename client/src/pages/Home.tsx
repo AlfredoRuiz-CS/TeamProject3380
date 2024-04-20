@@ -17,19 +17,21 @@ const Home = () => {
           </h1>
           {/* Buttons */}
           {user.loggedIn ? (
-            <Button asChild className="" size="lg">
-              <Link to="/products">Start Shopping</Link>
-            </Button>
-              <Link to="/products">Start Shopping</Link>
-            </Button>
+            <>
+              <Button asChild className="" size="lg">
+                <Link to="/products">Start Shopping</Link>
+              </Button>
+              <Button>
+                <Link to="/products">Start Shopping</Link>
+              </Button>
+            </>
           ) : (
             <div className="mb-2 mt-6 flex flex-row gap-6 lg:mb-12">
               <Button
                 asChild
                 variant="outline"
                 className="border-primary bg-transparent"
-                size="lg"
-              >
+                size="lg">
                 <Link to="/login">Login</Link>
               </Button>
               <Button asChild className="" size="lg">
