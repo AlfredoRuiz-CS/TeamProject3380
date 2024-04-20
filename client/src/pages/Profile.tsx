@@ -225,30 +225,18 @@ const Profile = () => {
 
   function handleNameChange(firstName: string, lastName: string) {
     updateProfile('name', { firstName, lastName });
-    if (formRef.current) {
-      formRef.current.reset();
-    }
   }
 
   function handleEmailChange(email: string) {
     updateProfile('email', { email });
-    if (formRef.current) {
-      formRef.current.reset();
-    }
   }
 
   function handlePasswordChange( currentPassword: string, password: string) {
     updateProfile('password', { currentPassword, password });
-    if (formRef.current) {
-      formRef.current.reset();
-    }
   }
 
   function handlePhoneChange(phone: string) {
     updateProfile('phone', { phone });
-    if (formRef.current) {
-      formRef.current.reset();
-    }
   }
 
   function handleAddressChange(
@@ -258,9 +246,6 @@ const Profile = () => {
     zip: string
   ) {
     updateProfile('address', { street, city, state, zip });
-    if (formRef.current) {
-      formRef.current.reset();
-    }
   }
 
   function handleSelectPaymentMethod(p: PaymentMethod) {
@@ -427,6 +412,8 @@ const Profile = () => {
       // setPaymentMethodSelected(null);
     }
   }, [paymentMethods, setPaymentMethods, isLoading]);
+
+  useEffect(() => {}, [reloadTrigger]);
 
   return (
     <>
