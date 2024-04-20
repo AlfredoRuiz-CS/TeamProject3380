@@ -86,7 +86,7 @@ const getUserPaymentInfo = async (req, res) => {
       res.end("none");
     }
     console.log(paymentInfoQuery);
-    // let paymentInfo = paymentInfo[0]; //Should it be paymentInfoQuery
+    // let paymentInfo = paymentInfoQuery[0];
     // let expirationDate = `${paymentInfo.expiration.getMonth() + 1}-${paymentInfo.expiration.getDate()}-${paymentInfo.expiration.getFullYear()}`;
     // paymentInfo.expiration = expirationDate;
 
@@ -214,9 +214,7 @@ const updateUserAddress = async (req, res) => {
 const updateUserName = async (req, res) => {
   try {
     const body = await getRequestBody(req);
-    const { firstName: fName, lastName: lName } = body;
-
-    const email = req.email;
+    const { currentEmail: email, firstName: fName, lastName: lName } = body;
 
     const updateUserName = await userModel.updateUserName(email, fName, lName);
 

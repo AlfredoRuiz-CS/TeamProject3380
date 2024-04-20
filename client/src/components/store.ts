@@ -71,6 +71,7 @@ export type Supplier = {
   city: string;
   state: string;
   zipcode: string;
+  products: string;
 };
 
 type SupplierState = {

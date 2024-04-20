@@ -48,7 +48,7 @@ CREATE TABLE customer(
 CREATE TABLE membership(
     membershipID int PRIMARY KEY AUTO_INCREMENT,
     customerEmail varchar(100),
-    membershipStatus varchar(50),
+    membershipStatus active boolean default 1,
     startDate date,
     endDate date,
     renewalDate date,
@@ -105,7 +105,7 @@ CREATE TABLE shipping(
     orderID int,
     paymentID int,
     cost decimal(6, 2),
-    trackingNum int,
+    trackingNum varchar(40),
     estimatedDel date,
     shippingStatus varchar(50),
     FOREIGN KEY (membershipID) REFERENCES membership(membershipID) ON DELETE
@@ -142,7 +142,6 @@ CREATE TABLE inventory(
     quantity int,
     purchasePrice decimal(10, 2),
     retailPrice decimal(10, 2),
-    date_column DATE,
     FOREIGN KEY (productID) REFERENCES product(productID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (supplierID) REFERENCES supplier(supplierID) ON DELETE
     SET NULL ON UPDATE CASCADE

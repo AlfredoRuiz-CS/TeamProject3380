@@ -134,6 +134,7 @@ const payment = (props: paymentProps) => {
     } else if (props.type === 'membership') {
       const data = {
         customerEmail: store.email,
+        items: "membership",
         paymentMethod: paymentMethod,
       };
 

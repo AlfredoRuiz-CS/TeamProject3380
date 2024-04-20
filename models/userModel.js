@@ -65,7 +65,7 @@ async function login(email, password) {
     const [result] = await pool.query(`
     SELECT *
     FROM membership
-    where customerEmail = ?`, [email]);
+    where customerEmail = ? and membershipStatus = 1`, [email]);
 
     if (result.length > 0){
       isMember = true;
@@ -221,9 +221,6 @@ async function updateUserEmail(currentEmail, newEmail){
 }
 
 async function updateUserPassword(email, oldPassword, newPassword){
-    // password validation
-    // TODO
-
     try {
       const [users] = await pool.query(`
       SELECT password

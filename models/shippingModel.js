@@ -5,8 +5,11 @@ const ShippingModel = {
     findAllShippingInfo: async () => {
         try {
             const [shippingInfo] = await pool.query(`
-        SELECT * FROM shipping
-      `);
+        SELECT s.shippingID, s.orderID, s.trackingNum, p.customerEmail, s.cost, s.estimatedDel, 
+        c.streetAddress, c.city, c.state, c.zipcode
+        FROM shipping s
+        LEFT JOIN purchaseOrder p ON s.orderID = p.orderID
+        LEFT JOIN customer c on p.customerEmail = c.customerEmail`);
             return shippingInfo;
         } catch (error) {
             throw error;

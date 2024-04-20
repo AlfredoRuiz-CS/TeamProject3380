@@ -40,6 +40,7 @@ function orderSuccessToast(productName: string, quantity: string) {
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
   const [reloadTrigger, setReloadTrigger] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
   const user = useUserStore();
 
   async function handleStockOrder(
@@ -95,6 +96,7 @@ const Notifications = () => {
         user.setUserDetails({
           notificationsCount: filteredData.length
         })
+        setIsLoading(false);
       } catch (error) {
         console.error(error);
       }
@@ -112,7 +114,8 @@ const Notifications = () => {
           </h1>
 
           {/* Sorting Funcitonality */}
-          <Table className="ml-0 rounded-lg bg-gray-50">
+          {!isLoading ?
+            (notifications.length > 0 ? (<Table className="ml-0 rounded-lg bg-gray-50">
             <TableHeader>
               <TableRow>
                 <TableHead className="text-center text-gray-700">
@@ -180,7 +183,20 @@ const Notifications = () => {
                 </TableRow>
               ))}
             </TableBody>
-          </Table>
+          </Table> ) 
+          : (
+            <div className="flex w-auto items-center justify-center text-3xl rounded-lg">
+              {' '}
+              No Messages
+            </div>
+            )
+          )
+          : (
+              <div className="flex w-auto items-center justify-center text-3xl rounded-lg">
+                Loading messages...
+              </div>
+            )
+          }
         </div>
       </div>
       <Footer />
