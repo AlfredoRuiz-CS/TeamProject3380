@@ -15,14 +15,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 
-// import {
-//   Sheet,
-//   SheetContent,
-//   SheetDescription,
-//   SheetHeader,
-//   SheetTitle,
-// } from '@/components/ui/sheet';
-
 import {
   Select,
   SelectContent,
@@ -406,9 +398,9 @@ const Reports = () => {
             )}
           </>
         );
-        case 'CustomerInsight':
-          return (
-            <>
+      case 'CustomerInsight':
+        return (
+          <>
             {selectedReport === 'AveragePurchaseValue' ? (
               <>
                 <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
@@ -672,76 +664,6 @@ const Reports = () => {
       <Footer />
     </>
   );
-  {
-    /*             
-          {sheetOpen ? (
-            <div>
-              <Sheet defaultOpen={true} onOpenChange={sheetCloseHandler}>
-                <SheetContent side="right" className="overflow-y-auto">
-                  <SheetHeader>
-                    <SheetTitle>Order #{selectedOrder}</SheetTitle>
-                  </SheetHeader>
-                  <SheetDescription asChild className="mb-3">
-                    <div>
-                      <div>Order Date: {orderToDisplay?.orderDate}</div>
-                      <div>Payment Method: {orderToDisplay?.paymentMethod}</div>
-                      <div>Order Status:</div>
-                    </div>
-                  </SheetDescription>
-                  <Table className="ml-0 max-w-full rounded-lg bg-gray-50">
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="max-w-6 pl-6 text-gray-700">
-                          Product
-                        </TableHead>
-                        <TableHead className="max-w-5 text-gray-700">
-                          Quantity
-                        </TableHead>
-                        <TableHead className="max-w-5 text-gray-700">
-                          Price
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-
-                    <TableBody>
-                      {orderToDisplay &&
-                        orderToDisplay.items.map((product, index) => (
-                          <TableRow key={index}>
-                            <TableCell className="max-w-6 pl-6">
-                              {product.productName}
-                            </TableCell>
-                            <TableCell className="max-w-5">
-                              {product.quantity}
-                            </TableCell>
-                            <TableCell className="max-w-5">
-                              {product.totalAmount.toLocaleString('en-US', {
-                                style: 'currency',
-                                currency: 'USD',
-                              })}
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      <Separator />
-                      <TableRow>
-                        <TableCell className="max-w-6 pl-6">Total</TableCell>
-                        <TableCell
-                          className=" max-w-9 p-0 pr-9 text-right"
-                          colSpan={2}>
-                          {orderToDisplay?.total.toLocaleString('en-US', {
-                            style: 'currency',
-                            currency: 'USD',
-                          })}
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </SheetContent>
-              </Sheet>
-            </div>
-          ) : (
-            <></>
-          )} */
-  }
 };
 
 export default Reports;
