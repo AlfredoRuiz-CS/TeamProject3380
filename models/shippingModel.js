@@ -9,9 +9,10 @@ const ShippingModel = {
         c.streetAddress, c.city, c.state, c.zipcode
         FROM shipping s
         LEFT JOIN purchaseOrder p ON s.orderID = p.orderID
-        LEFT JOIN customer c on p.customerEmail = c.customerEmail`);
+        LEFT JOIN customer c on p.customerEmail = c.email`);
             return shippingInfo;
         } catch (error) {
+            console.log(error);
             throw error;
         }
     },

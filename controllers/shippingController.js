@@ -3,7 +3,7 @@ const shippingModel = require('../models/shippingModel')
 
 const ShippingController = {
     // Controller function to retrieve shipping information for all orders
-    getAllShippingInfo: async (_req, res) => {
+    getAllShippingInfo: async (req, res) => {
         try {
             const shippingInfo = await shippingModel.findAllShippingInfo();
             res.status(200).json(shippingInfo);

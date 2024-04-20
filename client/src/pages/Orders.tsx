@@ -411,7 +411,7 @@ const Orders = () => {
                     key={index}
                     onClick={() => orderSelectHandler(order.orderID)}>
                     <TableCell className="max-w-6 pl-6">
-                      {index += 1}
+                      {(index += 1)}
                     </TableCell>
                     <TableCell className="max-w-6">{order.orderDate}</TableCell>
                     <TableCell className="max-w-6">
