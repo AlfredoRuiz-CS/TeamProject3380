@@ -9,7 +9,7 @@ async function getAllSuppliers() {
         FROM supplier s
         INNER JOIN product p ON p.supplier = s.name
         WHERE s.active=1
-        GROUP BY s.name, s.phoneNumber, s.streetAddress, s.city, s.state, s.zipcode`);
+        GROUP BY s.supplierID, s.name, s.phoneNumber, s.streetAddress, s.city, s.state, s.zipcode`);
         
 
         return rows;
