@@ -48,7 +48,7 @@ CREATE TABLE customer(
 CREATE TABLE membership(
     membershipID int PRIMARY KEY AUTO_INCREMENT,
     customerEmail varchar(100),
-    membershipStatus active boolean default 1,
+    membershipStatus boolean default 1,
     startDate date,
     endDate date,
     renewalDate date,
