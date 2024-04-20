@@ -4,7 +4,7 @@ async function getAllSuppliers() {
     try {
 
         const [rows] = await pool.query(`
-        SELECT s.name, s.phoneNumber, s.streetAddress, s.city, s.state, s.zipcode,
+        SELECT s.supplierID, s.name, s.phoneNumber, s.streetAddress, s.city, s.state, s.zipcode,
             GROUP_CONCAT (p.productName ORDER BY p.productName SEPARATOR ', ') AS products
         FROM supplier s
         INNER JOIN product p ON p.supplier = s.name

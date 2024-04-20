@@ -134,14 +134,14 @@ async function netSales(startDate, endDate) {
         const totalPayout = payoutRes[0] ? payoutRes[0].totalPayout : 0;
         const total = totalPurchases - totalRefund - totalPayout;
         // Combine into one object
-        const result = {
-            totalPurchases: totalPurchases || 0, // Default to 0 if undefined
-            totalRefund: totalRefund || 0, // Default to 0 if undefined
-            totalPayout: totalPayout,
-            netAmount: total.toFixed(2)
-        };
+        const result = [
+            totalPurchases = totalPurchases || 0, // Default to 0 if undefined
+            totalRefund = totalRefund || 0, // Default to 0 if undefined
+            totalPayout = totalPayout,
+            netAmount = total.toFixed(2),
+        ];
 
-        return result;
+        return {result};
     } catch (error) {
         console.log(error.message);
         throw error;

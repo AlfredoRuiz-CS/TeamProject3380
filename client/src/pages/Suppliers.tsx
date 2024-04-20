@@ -61,6 +61,7 @@ const Suppliers = () => {
                 <TableHead className="max-w-5 text-gray-700">City</TableHead>
                 <TableHead className="max-w-5 text-gray-700">State</TableHead>
                 <TableHead className="max-w-5 text-gray-700">Zipcode</TableHead>
+                <TableHead className="max-w-8 text-gray-700">Products</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -79,6 +80,7 @@ const Suppliers = () => {
                   <TableCell className="max-w-6">{supplier.city}</TableCell>
                   <TableCell className="max-w-6">{supplier.state}</TableCell>
                   <TableCell className="max-w-6">{supplier.zipcode}</TableCell>
+                  <TableCell className="max-w-8 pr-5">{supplier.products}</TableCell>
                 </TableRow>
               ))}
             </TableBody>

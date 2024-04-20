@@ -3,7 +3,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useEffect } from 'react'; // Remove useState import
 // import { useNavigate } from 'react-router-dom';
-// import axios from 'axios';
+import axios from 'axios';
 import {
     Table,
     TableBody,
@@ -13,70 +13,97 @@ import {
     TableRow,
 } from '@/components/ui/table';
 
-import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetHeader,
-    SheetTitle,
-} from '@/components/ui/sheet';
+// import {
+//     Sheet,
+//     SheetContent,
+//     SheetDescription,
+//     SheetHeader,
+//     SheetTitle,
+// } from '@/components/ui/sheet';
+
+type shippingData = {
+    shippingID?: number;
+    customerEmail?: string;
+    orderID?: number;
+    paymentID?: number;
+    cost?: number;
+    trackingNum?: string;
+    estimatedDel?: string;
+    shippingStatus?: string;
+    streetAddress?: string;
+    city?: string;
+    state?: string;
+    zipcode?: string;
+}
 
 export const ShippingInformation = () => {
-    const [sheetOpen, setSheetOpen] = useState(false); // State for sheet open/close
-    const [selectedOrder, setSelectedOrder] = useState(''); // State for selected order
+    // const [sheetOpen, setSheetOpen] = useState(false); // State for sheet open/close
+    // const [selectedOrder, setSelectedOrder] = useState(''); // State for selected order
+    const [shippingInfo, setShippingInfo] = useState<shippingData[]>([]);
 
-    const shippingData = [
-        // Sample shipping data
-        {
-            id: 12345,
-            email: 'test@gmail.com',
-            cost: 50,
-            date: '2024-04-15',
-            address: '123 Main St',
-            city: 'City',
-            state: 'State',
-            zipcode: '12345',
-        },
-        {
-            id: 67890,
-            email: 'email@gmail.com',
-            cost: 50,
-            date: '2024-04-15',
-            address: '123 Main St',
-            city: 'City',
-            state: 'State',
-            zipcode: '12345',
-        },
-        // Add more shipping data as needed
-    ];
+    // const shippingData = [
+    //     // Sample shipping data
+    //     {
+    //         id: 12345,
+    //         email: 'test@gmail.com',
+    //         cost: 50,
+    //         date: '2024-04-15',
+    //         address: '123 Main St',
+    //         city: 'City',
+    //         state: 'State',
+    //         zipcode: '12345',
+    //     },
+    //     {
+    //         id: 67890,
+    //         email: 'email@gmail.com',
+    //         cost: 50,
+    //         date: '2024-04-15',
+    //         address: '123 Main St',
+    //         city: 'City',
+    //         state: 'State',
+    //         zipcode: '12345',
+    //     },
+    //     // Add more shipping data as needed
+    // ];
 
     useEffect(() => {
         const fetchShippingData = async () => {
-            // Fetch shipping data
+            try {
+                const response = await axios.get("https://shastamart-api-deploy.vercel.app/api/shipping/getShippingInfo");
+                setShippingInfo(response.data);
+            } catch(error) {
+                console.log(error);
+            }
         };
 
         fetchShippingData();
-    }, [selectedOrder]);
+    }, []);
 
     // Function to handle order selection
-    const orderSelectHandler = (orderId: string) => {
-        console.log(orderId);
-        setSelectedOrder(orderId); // Set selected order
-        setSheetOpen(true); // Open the sheet
-    };
+    // const orderSelectHandler = (orderId: string) => {
+    //     console.log(orderId);
+    //     setSelectedOrder(orderId); // Set selected order
+    //     setSheetOpen(true); // Open the sheet
+    // };
 
-    // Function to handle sheet open/close
-    const sheetOpenHandler = () => {
-        setSheetOpen(!sheetOpen); // Toggle sheet open/close
-        setSelectedOrder(''); // Reset selected order when closing sheet
-    };
+    // // Function to handle sheet open/close
+    // function sheetOpenHandler(order: number) {
+    //     console.log('Sheet Opened for order: ', order);
+    //     setSelectedOrder(order);
+    //     setSheetOpen(!sheetOpen);
+    //   }
+    
+    //   function sheetCloseHandler() {
+    //     console.log('Sheet Closed');
+    //     setSheetOpen(!sheetOpen);
+    //   }
 
     return (
         <>
             <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite font-inter text-black">
                 <Header color="blue" />
                 <div className="flex w-screen flex-col">
-                    <h1 className="m-16 pt-14 font-inter text-5xl font-medium text-black">
+                    <h1 className="m-10 pt-14 font-inter text-5xl font-medium text-black">
                         Shipping Information
                     </h1>
                     <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
@@ -85,9 +112,11 @@ export const ShippingInformation = () => {
                                 <TableHead className="ml-8 max-w-5 pl-3 text-gray-700">
                                     Shipping ID
                                 </TableHead>
+                                <TableHead className="max-w-5 text-gray-700">Order ID</TableHead>
+                                <TableHead className="max-w-5 text-gray-700">Tracking Number</TableHead>
                                 <TableHead className="max-w-5 text-gray-700">Email</TableHead>
                                 <TableHead className="max-w-5 text-gray-700">Cost</TableHead>
-                                <TableHead className="max-w-5 text-gray-700">Date</TableHead>
+                                <TableHead className="max-w-5 text-gray-700">Est. Date</TableHead>
                                 <TableHead className="max-w-5 text-gray-700">Address</TableHead>
                                 <TableHead className="max-w-5 text-gray-700">City</TableHead>
                                 <TableHead className="max-w-5 text-gray-700">State</TableHead>
@@ -95,15 +124,17 @@ export const ShippingInformation = () => {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {shippingData.map((item) => (
+                            {shippingInfo.map((item) => (
                                 <TableRow
-                                    key={item.id}
-                                    onClick={() => orderSelectHandler(item.email)}>
-                                    <TableCell>{item.id}</TableCell>
-                                    <TableCell>{item.email}</TableCell>
+                                    key={item.shippingID}>
+                                    {/* onClick={() => orderSelectHandler(item.email)}> */}
+                                    <TableCell>{item.shippingID}</TableCell>
+                                    <TableCell>{item.orderID}</TableCell>
+                                    <TableCell>{item.trackingNum}</TableCell>
+                                    <TableCell>{item.customerEmail}</TableCell>
                                     <TableCell>{item.cost}</TableCell>
-                                    <TableCell>{item.date}</TableCell>
-                                    <TableCell>{item.address}</TableCell>
+                                    <TableCell>{item.estimatedDel}</TableCell>
+                                    <TableCell>{item.streetAddress}</TableCell>
                                     <TableCell>{item.city}</TableCell>
                                     <TableCell>{item.state}</TableCell>
                                     <TableCell>{item.zipcode}</TableCell>
@@ -111,19 +142,73 @@ export const ShippingInformation = () => {
                             ))}
                         </TableBody>
                     </Table>
-                    {sheetOpen && (
-                        <Sheet defaultOpen={true} onOpenChange={sheetOpenHandler}>
+                    {/* {sheetOpen ? (
+                        <div>
+                        <Sheet defaultOpen={true} onOpenChange={sheetCloseHandler}>
                             <SheetContent side="right" className="overflow-y-auto">
-                                <SheetHeader>
-                                    <SheetTitle>Shipping Details</SheetTitle>
-                                    <SheetDescription asChild>
-                                        {/* Sheet content */}
-                                        {/* Add detailed shipping information here */}
-                                    </SheetDescription>
-                                </SheetHeader>
+                            <SheetHeader>
+                                <SheetTitle>Shipping Order #{selectedOrder}</SheetTitle>
+                            </SheetHeader>
+                            <SheetDescription asChild className="mb-3">
+                                <div>
+                                <div>Order Date: {orderToDisplay?.orderDate}</div>
+                                <div>Payment Method: {orderToDisplay?.paymentMethod}</div>
+                                <div>Order Status:</div>
+                                </div>
+                            </SheetDescription>
+                            <Table className="ml-0 max-w-full rounded-lg bg-gray-50">
+                                <TableHeader>
+                                <TableRow>
+                                    <TableHead className="max-w-6 pl-6 text-gray-700">
+                                    Product
+                                    </TableHead>
+                                    <TableHead className="max-w-5 text-gray-700">
+                                    Quantity
+                                    </TableHead>
+                                    <TableHead className="max-w-5 text-gray-700">
+                                    Price
+                                    </TableHead>
+                                </TableRow>
+                                </TableHeader>
+
+                                <TableBody>
+                                {orderToDisplay &&
+                                    orderToDisplay.items.map((product, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell className="max-w-6 pl-6">
+                                        {product.productName}
+                                        </TableCell>
+                                        <TableCell className="max-w-5">
+                                        {product.quantity}
+                                        </TableCell>
+                                        <TableCell className="max-w-5">
+                                        {product.totalAmount.toLocaleString('en-US', {
+                                            style: 'currency',
+                                            currency: 'USD',
+                                        })}
+                                        </TableCell>
+                                    </TableRow>
+                                    ))}
+                                <Separator />
+                                <TableRow>
+                                    <TableCell className="max-w-6 pl-6">Total</TableCell>
+                                    <TableCell
+                                    className=" max-w-9 p-0 pr-9 text-right"
+                                    colSpan={2}>
+                                    {orderToDisplay?.total.toLocaleString('en-US', {
+                                        style: 'currency',
+                                        currency: 'USD',
+                                    })}
+                                    </TableCell>
+                                </TableRow>
+                                </TableBody>
+                            </Table>
                             </SheetContent>
                         </Sheet>
-                    )}
+                        </div>
+                    ) : (
+                        <></>
+                    )} */}
                 </div>
             </div>
             <Footer />
