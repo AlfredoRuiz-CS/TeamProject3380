@@ -411,7 +411,7 @@ const Orders = () => {
                     key={index}
                     onClick={() => orderSelectHandler(order.orderID)}>
                     <TableCell className="max-w-6 pl-6">
-                      {(index += 1)}
+                      {order.orderID}
                     </TableCell>
                     <TableCell className="max-w-6">{order.orderDate}</TableCell>
                     <TableCell className="max-w-6">
@@ -499,7 +499,7 @@ const Orders = () => {
                     <Dialog onOpenChange={(e) => handleDialogClose(e)}>
                       <DialogTrigger asChild>
                         <Button className="mt-5 w-full bg-darkblue">
-                          Request Refund?
+                          Submit Refund?
                         </Button>
                       </DialogTrigger>
                       <DialogContent>
@@ -635,7 +635,7 @@ const Orders = () => {
                     key={index}
                     onClick={() => orderSelectHandler(order.orderID)}>
                     <TableCell className="max-w-6 pl-6">
-                      {order.orderID}
+                      {(index += 1)}
                     </TableCell>
                     <TableCell className="max-w-6">{order.orderDate}</TableCell>
                     <TableCell className="max-w-6">
@@ -667,7 +667,6 @@ const Orders = () => {
                     <div>
                       <div>Order Date: {orderToDisplay?.orderDate}</div>
                       <div>Payment Method: {orderToDisplay?.paymentMethod}</div>
-                      <div>Order Status:</div>
                     </div>
                   </SheetDescription>
                   <Table className="ml-0 max-w-full rounded-lg bg-gray-50">
