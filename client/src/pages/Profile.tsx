@@ -161,8 +161,9 @@ const Profile = () => {
     cardtype: 'Debit',
   };
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
-  const [paymentMethodSelected, setPaymentMethodSelected] =
-    useState<PaymentMethod>(paymentMethods[0]);
+  const [paymentMethodSelected, setPaymentMethodSelected] = useState<PaymentMethod>(
+    paymentMethods[0]
+  );
 
   const paymentForms = ['Debit', 'Credit'];
 
@@ -170,11 +171,9 @@ const Profile = () => {
     const endpointMap: { [K in ProfileSection]: string } = {
       name: 'https://shastamart-api-deploy.vercel.app/api/users/update_name',
       email: 'https://shastamart-api-deploy.vercel.app/api/users/update_email',
-      password:
-        'https://shastamart-api-deploy.vercel.app/api/users/update_password',
+      password: 'https://shastamart-api-deploy.vercel.app/api/users/update_password',
       phone: 'https://shastamart-api-deploy.vercel.app/api/users/update_phone',
-      address:
-        'https://shastamart-api-deploy.vercel.app/api/users/update_address',
+      address: 'https://shastamart-api-deploy.vercel.app/api/users/update_address',
     };
 
     const endpoint = endpointMap[section];
@@ -192,15 +191,30 @@ const Profile = () => {
                 fname: response.data.fName,
                 lname: response.data.lName,
               });
+              toast.success('Updated Name to ' + store.fname + ' ' + store.lname, {
+                position: 'bottom-right',
+                className: 'font-bold text-black',
+                duration: 2000,
+              });
               break;
             case 'email':
               store.setUserDetails({
                 email: response.data.email,
               });
+              toast.success('Updated Email to ' + response.data.email, {
+                position: 'bottom-right',
+                className: 'font-bold text-black',
+                duration: 2000,
+              });
               break;
             case 'phone':
               store.setUserDetails({
-                phone: response.data.phone,
+                phone: response.data.phoneNumber,
+              });
+              toast.success('Updated Phone to ' + response.data.phoneNumber, {
+                position: 'bottom-right',
+                className: 'font-bold text-black',
+                duration: 2000,
               });
               break;
             case 'address':
@@ -212,6 +226,21 @@ const Profile = () => {
                   zip: response.data.zipcode,
                 },
               });
+              toast.success(
+                'Updated Address to ' +
+                  response.data.streetAddress +
+                  ', ' +
+                  response.data.city +
+                  ', ' +
+                  response.data.state +
+                  ', ' +
+                  response.data.zipcode,
+                {
+                  position: 'bottom-right',
+                  className: 'font-bold text-black',
+                  duration: 2000,
+                }
+              );
               break;
             default:
               break;
@@ -239,12 +268,7 @@ const Profile = () => {
     updateProfile('phone', { phone });
   }
 
-  function handleAddressChange(
-    street: string,
-    city: string,
-    state: string,
-    zip: string
-  ) {
+  function handleAddressChange(street: string, city: string, state: string, zip: string) {
     updateProfile('address', { street, city, state, zip });
   }
 
@@ -300,13 +324,10 @@ const Profile = () => {
   }, [reloadTrigger]);
 
   function paymentMethodSelectedToast(p: PaymentMethod) {
-    toast.success(
-      'Payment method ending in ' + p.cardnumber.slice(-4) + ' selected.',
-      {
-        position: 'bottom-right',
-        className: 'font-bold text-black',
-      }
-    );
+    toast.success('Payment method ending in ' + p.cardnumber.slice(-4) + ' selected.', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+    });
   }
 
   async function handleNewPayment(
@@ -380,15 +401,13 @@ const Profile = () => {
         );
         console.log(response.data);
         const paymentData = await response.data;
-        const transformedPayments = paymentData.map(
-          (paymentMethod: PaymentMethod) => ({
-            nameOnCard: paymentMethod.nameOnCard,
-            cardnumber: paymentMethod.cardnumber,
-            expiration: paymentMethod.expiration,
-            cvv: paymentMethod.cvv,
-            cardtype: paymentMethod.cardtype,
-          })
-        );
+        const transformedPayments = paymentData.map((paymentMethod: PaymentMethod) => ({
+          nameOnCard: paymentMethod.nameOnCard,
+          cardnumber: paymentMethod.cardnumber,
+          expiration: paymentMethod.expiration,
+          cvv: paymentMethod.cvv,
+          cardtype: paymentMethod.cardtype,
+        }));
         console.log(transformedPayments);
         setPaymentMethods(transformedPayments);
         setIsLoading(false);
@@ -415,14 +434,11 @@ const Profile = () => {
         <Header />
         <div className="flex flex-grow flex-col items-center">
           <h1 className="flex flex-row self-center pt-28 font-jua text-6xl">
-            {store.accountType.charAt(0).toUpperCase() +
-              store.accountType.slice(1)}{' '}
+            {store.accountType.charAt(0).toUpperCase() + store.accountType.slice(1)}{' '}
             Profile
           </h1>
           <BsFillPersonLinesFill className="h-[20rem] w-[20rem]" />
-          <div className=" pt-2 font-jua text-6xl">
-            {store.fname + ' ' + store.lname}
-          </div>
+          <div className=" pt-2 font-jua text-6xl">{store.fname + ' ' + store.lname}</div>
 
           {/* Member Since: AccountCreatedDate */}
           <div className="pb-6 pt-4 font-inter text-3xl">
@@ -472,6 +488,7 @@ const Profile = () => {
                         type="text"
                         placeholder={store.fname}
                         name="firstName"
+                        required
                         onKeyDown={(event) => {
                           if (!/[a-z]/i.test(event.key)) event.preventDefault();
                         }}
@@ -484,6 +501,7 @@ const Profile = () => {
                         type="text"
                         placeholder={store.lname}
                         name="lastName"
+                        required
                         onKeyDown={(event) => {
                           if (!/[a-z]/i.test(event.key)) event.preventDefault();
                         }}
@@ -517,6 +535,7 @@ const Profile = () => {
                           type="tel"
                           placeholder={store.phone}
                           name="phone"
+                          required
                           maxLength={10}
                         />
                         <Button
@@ -537,9 +556,7 @@ const Profile = () => {
                         const street = form.elements.namedItem(
                           'street'
                         ) as HTMLInputElement;
-                        const city = form.elements.namedItem(
-                          'city'
-                        ) as HTMLInputElement;
+                        const city = form.elements.namedItem('city') as HTMLInputElement;
                         const state = form.elements.namedItem(
                           'state'
                         ) as HTMLInputElement;
@@ -562,15 +579,15 @@ const Profile = () => {
                             className="ml-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                             type="street"
                             placeholder={
-                              store.address.street
-                                ? store.address.street
-                                : 'Address'
+                              store.address.street ? store.address.street : 'Address'
                             }
-                            name="street"></input>
+                            name="street"
+                            required
+                          />
                           <Select
-                            // onValueChange={(e) => setState(e)}
                             defaultValue={store.address.state}
-                            name="state">
+                            name="state"
+                            required>
                             <SelectTrigger className="h-10 w-[5rem] flex-grow border-none bg-white text-gray-500">
                               <SelectValue
                                 placeholder={store.address.state}
@@ -590,10 +607,9 @@ const Profile = () => {
                           <input
                             className="ml-4 mt-2 h-10 w-[8rem] rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                             type="city"
-                            placeholder={
-                              store.address.city ? store.address.city : 'City'
-                            }
+                            placeholder={store.address.city ? store.address.city : 'City'}
                             name="city"
+                            required
                           />
                           <input
                             className="mt-2 h-10 w-[6.5rem] rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
@@ -602,6 +618,7 @@ const Profile = () => {
                               store.address.zip ? store.address.zip : 'Zip Code'
                             }
                             name="zipcode"
+                            required
                             maxLength={5}
                           />
                         </div>
@@ -622,14 +639,10 @@ const Profile = () => {
                   onSubmit={(event) => {
                     event.preventDefault();
                     const form = event.target as HTMLFormElement;
-                    const email = form.elements.namedItem(
-                      'email'
-                    ) as HTMLInputElement;
+                    const email = form.elements.namedItem('email') as HTMLInputElement;
                     handleEmailChange(email.value);
                   }}>
-                  <h3 className="pl-4 text-lg font-semibold text-white">
-                    Email
-                  </h3>
+                  <h3 className="pl-4 text-lg font-semibold text-white">Email</h3>
                   <input
                     className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                     type="email"
@@ -653,9 +666,7 @@ const Profile = () => {
                     ) as HTMLInputElement;
                     handlePasswordChange(password.value);
                   }}>
-                  <h3 className="mt-2 pl-4 text-lg font-semibold text-white">
-                    Password
-                  </h3>
+                  <h3 className="mt-2 pl-4 text-lg font-semibold text-white">Password</h3>
 
                   <input
                     className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
@@ -694,9 +705,7 @@ const Profile = () => {
                     </AlertDialogTrigger>
                     <AlertDialogContent>
                       <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Are you absolutely sure?
-                        </AlertDialogTitle>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                         <AlertDialogDescription>
                           This action will delete your account.
                         </AlertDialogDescription>
@@ -786,9 +795,7 @@ const Profile = () => {
                         ))}
                       </Collapsible>
                     </div>
-                    <h3 className="my-2 pl-4 text-lg font-semibold text-white">
-                      OR
-                    </h3>
+                    <h3 className="my-2 pl-4 text-lg font-semibold text-white">OR</h3>
                     <form
                       ref={formRef}
                       onSubmit={(event) => {
@@ -803,9 +810,7 @@ const Profile = () => {
                         const expiration = form.elements.namedItem(
                           'expiration'
                         ) as HTMLInputElement;
-                        const cvv = form.elements.namedItem(
-                          'cvv'
-                        ) as HTMLInputElement;
+                        const cvv = form.elements.namedItem('cvv') as HTMLInputElement;
                         const cardType = form.elements.namedItem(
                           'cardType'
                         ) as HTMLInputElement;
