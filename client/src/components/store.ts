@@ -2,6 +2,7 @@
 import type {} from '@redux-devtools/extension'; // required for devtools typing
 import { create, StateCreator } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import { PaymentMethod } from '@/pages/Profile';
 import type {} from '@redux-devtools/extension'; // required for devtools typing
 
 export type productItem = {
@@ -34,12 +35,11 @@ export type productItem = {
     weight: string;
   };
 
-  // * I have no idea how to grab an image from the backend...
   image: string;
-
   stock: number;
   supplier: string;
   supplierStock: number;
+  supplierPrice: number;
   portion: 'lb.' | 'oz.' | 'item' | 'gal.';
 };
 
@@ -48,7 +48,10 @@ type ProductState = {
   setProducts: (products: productItem[]) => void;
 };
 
-const productsStore: StateCreator<ProductState, [['zustand/persist', unknown]]> = (set) => ({
+const productsStore: StateCreator<
+  ProductState,
+  [['zustand/persist', unknown]]
+> = (set) => ({
   products: [],
   setProducts: (products: productItem[]) => set({ products }),
 });
@@ -56,6 +59,37 @@ const productsStore: StateCreator<ProductState, [['zustand/persist', unknown]]> 
 export const useProductsStore = create(
   persist(productsStore, {
     name: 'products-store',
+    storage: createJSONStorage(() => localStorage),
+  })
+);
+
+export type Supplier = {
+  supplierID: number;
+  name: string;
+  phoneNumber: string;
+  streetAddress: string;
+  city: string;
+  state: string;
+  zipcode: string;
+  products: string;
+};
+
+type SupplierState = {
+  suppliers: Supplier[];
+  setSuppliers: (suppliers: Supplier[]) => void;
+};
+
+const supplierStore: StateCreator<
+  SupplierState,
+  [['zustand/persist', unknown]]
+> = (set) => ({
+  suppliers: [],
+  setSuppliers: (suppliers: Supplier[]) => set({ suppliers }),
+});
+
+export const useSupplierStore = create(
+  persist(supplierStore, {
+    name: 'supplier-store',
     storage: createJSONStorage(() => localStorage),
   })
 );
@@ -81,6 +115,8 @@ type UserState = {
   List: productItem[];
   cartItems: productItem[];
   quantity: number[];
+  selectedPaymentMethod: PaymentMethod;
+  notificationsCount: number;
 
   // Actions for user login
   // setUserfName: (firstname: string) => void;
@@ -93,9 +129,11 @@ type UserState = {
   logout: () => void;
   addToCart: (productToAdd: productItem, quantity: number) => void;
   addToList: (product: productItem) => void;
-  // removeFromCart: (product: productItem) => void;
+  removeFromList: (product: productItem) => void;
+  removeFromCart: (product: productItem) => void;
   changeQuantity: (product: productItem, quantity: number) => void;
   resetCart: () => void;
+  resetList: () => void;
 };
 
 const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
@@ -116,15 +154,26 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
     state: 'CA',
     zip: '12345',
   },
+  selectedPaymentMethod: {
+    cardId: 2,
+    nameOnCard: 'NULL NULL',
+    cardnumber: '0000 0000 0000 0000',
+    expiration: '00/00',
+    cvv: '111',
+    cardtype: 'Credit',
+  },
   cartItemsNumber: 0,
   cartItems: [],
   quantity: [],
   List: [],
+  notificationsCount: 0,
   setUserDetails: (details: Partial<UserState>) =>
     set((state) => ({ ...state, ...details })),
   logout: () =>
     set({
       loggedIn: false,
+      isMember: false,
+      isAdmin: false,
       fname: '',
       lname: '',
       email: '',
@@ -133,18 +182,21 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
       cartItemsNumber: 0,
       cartItems: [],
       List: [],
-      quantity: []
+      quantity: [],
+      notificationsCount: 0
     }),
   login: (isEmployee) => {
-    set((state) => ({ 
+    set((state) => ({
       loggedIn: true,
       isAdmin: isEmployee,
-      isMember: isEmployee || state.isMember
+      isMember: isEmployee || state.isMember,
     }));
   },
-  addToCart: (productToAdd, quantity=1) =>
+  addToCart: (productToAdd, quantity = 1) =>
     set((state) => {
-      const existingProductIndex = state.cartItems.findIndex(item => item.productId === productToAdd.productId);
+      const existingProductIndex = state.cartItems.findIndex(
+        (item) => item.productId === productToAdd.productId
+      );
       let newCartItems: productItem[] = [...state.cartItems];
       let newQuantity = [...state.quantity];
 
@@ -155,34 +207,37 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
         newQuantity.push(quantity);
       }
 
-      const newCartItemsNumber = newQuantity.reduce((total, qty) => total + qty, 0);
+      const newCartItemsNumber = newQuantity.reduce(
+        (total, qty) => total + qty,
+        0
+      );
       return {
         cartItemsNumber: newCartItemsNumber,
         cartItems: newCartItems,
         quantity: newQuantity,
       };
     }),
-    addToList: (productToAdd) =>
+  addToList: (productToAdd) =>
     set((state) => {
-      const isProductInList = state.List.some(item => item.productId === productToAdd.productId);
+      const isProductInList = state.List.some(
+        (item) => item.productId === productToAdd.productId
+      );
       if (!isProductInList) {
         return {
-          List: [...state.List, productToAdd]
+          List: [...state.List, productToAdd],
         };
       }
       return {};
     }),
-  /*removeFromCart: (product) =>
-    set((state) => {
-      const newCartItems = state.cartItems.filter((item) => item !== product);
-      return {
-        quantity: state.quantity.filter(
-          (q, i) => state.cartItems[i] !== product
-        ),
-        cartItemsNumber: newCartItems.length,
-        cartItems: newCartItems,
-      };
-    }),*/
+  removeFromCart: (product) =>
+    set((state) => ({
+      quantity: state.quantity.filter(
+        (index) => state.cartItems[index] !== product
+      ),
+      cartItemsNumber: state.cartItems.filter((item) => item !== product)
+        .length,
+      cartItems: state.cartItems.filter((item) => item !== product),
+    })),
   changeQuantity: (product, quantity) =>
     set((state) => {
       const newQuantity = state.quantity.map((q, i) =>
@@ -194,7 +249,8 @@ const userStore: StateCreator<UserState, [['zustand/persist', unknown]]> = (
     set((state) => ({
       List: state.List.filter((item) => item !== product),
     })),
-  resetCart: () => set({ cartItemsNumber: 0, cartItems: [] }),
+  resetCart: () => set({ cartItemsNumber: 0, cartItems: [], quantity: [] }),
+  resetList: () => set({ List: [] }),
 });
 
 const useUserStore = create(

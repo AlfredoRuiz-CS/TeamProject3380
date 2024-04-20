@@ -41,6 +41,7 @@ async function login(email, password) {
     
     let user;
     let accountType;
+    let isMember;
 
     // Check if user exists
     const [customers] = await pool.query(`
@@ -61,8 +62,24 @@ async function login(email, password) {
       }
     }
 
+    const [result] = await pool.query(`
+    SELECT *
+    FROM membership
+    where customerEmail = ? and membershipStatus = 1`, [email]);
+
+    if (result.length > 0){
+      isMember = true;
+    }
+    else {
+      isMember = false;
+    }
+
     if (!user) {
       throw Error('Incorrect email');
+    }
+
+    if (user.active === 0){
+      throw new Error('Customer is not active');
     }
   
     // Check if password matches
@@ -72,7 +89,7 @@ async function login(email, password) {
       throw Error('Incorrect password');
     }
   
-    return { email: user.email, fName: user.fName, lName: user.lName, phoneNumber: user.phoneNumber, streetAddress: user.streetAddress, city: user.city, state: user.state, zipcode: user.zipcode, accountType };
+    return { email: user.email, fName: user.fName, lName: user.lName, phoneNumber: user.phoneNumber, streetAddress: user.streetAddress, city: user.city, state: user.state, zipcode: user.zipcode, accountType, isMember };
   }
 
 async function findAllCustomers() {
@@ -89,23 +106,35 @@ async function findAllCustomers() {
   }
 }
 
-  // async function findUserbyEmail(email){
-  //   try { 
-  //       const [rows] = await pool.query('SELECT email FROM customer as c WHERE c.email = ?', [email]);
-  //       return rows[0];
-  //   } catch (error){
-  //     console.log(error.message);
-  //     throw error;
-  //   }
-  // }
+async function findUserbyEmail(email){
+  try { 
+      const [customerRows] = await pool.query(`SELECT email, active FROM customer WHERE email = ?`, [email]);
+      if (customerRows.length > 0){
+        if (customerRows[0].active === 0){
+          throw new Error('Customer is not active');
+        }
+        return customerRows[0];
+      }
+
+      const [employeeRows] = await pool.query(`SELECT email FROM employee WHERE email = ?`, [email]);
+      if (employeeRows.length > 0) {
+        return employeeRows[0];
+      }
+
+      throw new Error('Cannot find user with the provided email');
+  } catch (error){
+    console.log(error.message);
+    throw error;
+  }
+}
 
 async function getUserPaymentInfo(email){
   try {
 
     const [rows] = await pool.query(`
-    SELECT p.cardtype, p.cardnumber, p.cvv, p.expiration 
+    SELECT p.nameOnCard, p.cardtype, p.cardnumber, p.cvv, p.expiration 
     FROM paymentInfo p
-    where p.customerEmail = ?`, [email]);
+    where p.customerEmail = ? and active = 1`, [email]);
 
     return rows;
 
@@ -115,23 +144,32 @@ async function getUserPaymentInfo(email){
   }
 }
 
-async function createUserPaymentInfo(customerEmail, cardtype, cardnumber, cvv, expiration) {
+async function createUserPaymentInfo(customerEmail, cardtype, cardnumber, cvv, expiration, nameOnCard) {
   const connection = await pool.getConnection();
 
   try {
     await connection.beginTransaction();
 
     const [rows] = await connection.execute(`
-    INSERT INTO paymentInfo (customerEmail, cardtype, cardnumber, cvv, expiration)
+    INSERT INTO paymentInfo (customerEmail, cardtype, cardnumber, cvv, expiration, nameOnCard)
     VALUES
-    (?,?,?,?,?) 
-    `, [customerEmail, cardtype, cardnumber, cvv, expiration]);
+    (?,?,?,?,?,?) 
+    `, [customerEmail, cardtype, cardnumber, cvv, expiration, nameOnCard]);
 
     await connection.commit();
 
-    return rows;
+    const paymentInfo = {
+      nameOnCard,
+      cardtype,
+      cardnumber,
+      cvv,
+      expiration
+    }
+
+    return paymentInfo;
 
   } catch (error){
+    await connection.rollback();
     console.log(error.message);
     throw error;
 
@@ -183,9 +221,6 @@ async function updateUserEmail(currentEmail, newEmail){
 }
 
 async function updateUserPassword(email, oldPassword, newPassword){
-    // password validation
-    // TODO
-
     try {
       const [users] = await pool.query(`
       SELECT password
@@ -264,6 +299,34 @@ async function updateUserName(email, fName, lName){
   }
 }
 
+async function deleteUser(email){
+  try {
+    const [rows] = await pool.query(`
+    UPDATE customer
+    set active = 0
+    where email = ?`, [email]);
+
+    return rows;
+  } catch (error) {
+    console.log(error.message);
+    throw error;
+  }
+}
+
+async function deletePaymentMethod(email, cardnumber){
+  try {
+    const [rows] = await pool.query(`
+    UPDATE paymentInfo
+    set active = 0
+    where customerEmail = ? and cardnumber = ?`, [email, cardnumber]);
+
+    return rows;
+  } catch (error) {
+    console.log(error.message);
+    throw error;
+  }
+}
+
 // async function updateUserlName(email, lName){
 //   try{
 //     const [rows] = await pool.query(`
@@ -291,5 +354,7 @@ module.exports = {
     updateUserPhone,
     updateUserAddress,
     updateUserName,
-    // updateUserlName
+    findUserbyEmail,
+    deleteUser,
+    deletePaymentMethod
 }

@@ -1,5 +1,6 @@
 const userController = require("../../controllers/userController");
 const { setCorsHeaders } = require("../../lib/cors");
+const { verifyToken } = require('../../utils/auth');
 
 module.exports = async (req, res) => {
   setCorsHeaders(req, res);
@@ -8,6 +9,7 @@ module.exports = async (req, res) => {
     res.end();
     return;
   }
+
   if (req.method === 'POST'){
     await userController.updateUserName(req, res);
   } else {

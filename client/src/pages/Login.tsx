@@ -2,8 +2,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
 import { useState, useEffect } from 'react';
-// import { Button } from '@/components/ui/button';
-// import { Sonner } from '@/components/ui/sonner';
+import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
 // import * as Yup from 'yup';
@@ -13,8 +12,6 @@ import { Link } from 'react-router-dom';
 // Imports for state management
 import useUserStore from '@/components/store';
 import type {} from '@redux-devtools/extension'; // required for devtools typing
-// import { Toaster } from 'sonner';
-// import { devtools, persist } from "zustand/middleware";
 
 // const validationSchema = Yup.object({
 //   email: Yup.string()
@@ -51,10 +48,13 @@ const Login = () => {
     onSubmit: async (values, { setSubmitting }) => {
       console.log('Form submitted:', values);
       try {
-        const response = await axios.post('https://shastamart-api-deploy.vercel.app/api/users/login',values);
-        const userData = await response.data;
+        const response = await axios.post(
+          'https://shastamart-api-deploy.vercel.app/api/users/login',
+          values
+        );
+        const { token, ...userData } = await response.data;
+        localStorage.setItem('token', token);
         console.log(userData);
-        store.login(userData.accountType === 'employee');
         setUserDetails({
           fname: userData.fName,
           lname: userData.lName,
@@ -66,40 +66,73 @@ const Login = () => {
             state: userData.state,
             zip: userData.zipcode,
           },
-          accountType: userData.accountType
+          accountType: userData.accountType,
+          isMember: userData.isMember,
         });
-        // navigate('/profile');
+        store.login(userData.accountType === 'employee');
       } catch (error) {
-        console.log(error);
+        if (axios.isAxiosError(error)) { // Type guard
+          if (error.response) {
+            console.log(error.response.data);
+            console.log(error.response.status);
+            console.log(error.response.headers);
+            loginFail(error.response.data.error);
+          } else if (error.request) {
+            console.log(error.request);
+          } else {
+            console.log('Error', error.message);
+          }
+        } else {
+          console.log('Error', error);
+        }
       }
       setSubmitting(false);
-    },
-    // },
+    }
   });
-  // function handleSubmit(e: React.FormEvent) {
-  //   e.preventDefault();
-  //   // TODO: Add calls to backend to check if user exists
-  //   // TODO: If user exists, then update the userStore
-  //   updateUserInfo();
-  //   navigate('/profile');
-  // }
+
+  // ? Toast functions
+  function loginSuccess() {
+    toast.success('Log in successful... Redirecting', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      duration: 2000,
+    });
+  }
+
+  function loginSuccessAdmin() {
+    toast.success('(ADMIN) Log in successful... Redirecting', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      duration: 2000,
+    });
+  }
+
+  const loginFail = (error?: string) =>
+    toast.error(error || 'Invalid email or password', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      duration: 2000,
+    });
 
   useEffect(() => {
-    if (store.loggedIn) {
+    if (store.loggedIn && store.isAdmin) {
       console.log('User is loggin in...redirecting');
+      loginSuccessAdmin();
+      navigate('/admin');
+    } else if (store.loggedIn) {
+      console.log('User is loggin in...redirecting');
+      loginSuccess();
       navigate('/products');
     }
   }, [store.loggedIn, navigate]);
 
-  // console.log(store.name);
   return (
     <>
       <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
         <Header />
         <form
           className="flex w-full flex-col items-center gap-5 py-5"
-          onSubmit={formik.handleSubmit}
-        >
+          onSubmit={formik.handleSubmit}>
           <h1 className="mb-10 font-jua text-8xl">Login</h1>
           <p className="mb-10 font-jua text-5xl">
             Don't have an account?{' '}
@@ -109,9 +142,10 @@ const Login = () => {
           </p>
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
-            type="text"
+            type="email"
             placeholder="Email"
             name="email"
+            required
             onChange={formik.handleChange}
             value={formik.values.email}
           />
@@ -120,6 +154,7 @@ const Login = () => {
             type={isPasswordVisible ? 'text' : 'password'}
             placeholder="Password"
             name="password"
+            required
             onChange={formik.handleChange}
             value={formik.values.password}
           />
@@ -137,8 +172,7 @@ const Login = () => {
           </div>
           <button
             className="inline-flex h-10 select-none items-center justify-center whitespace-nowrap rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
-            type="submit"
-          >
+            type="submit">
             <p>Log in</p>
           </button>
         </form>

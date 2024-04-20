@@ -1,152 +1,388 @@
-const {pool} = require("../config/db");
+const { pool } = require("../config/db");
+const { v4: uuidv4 } = require('uuid');
 
-//createOrder should include shipping address and items???
-async function createOrder(customerEmail, orderDate, items){
+//getAllOrder used by employee
+async function findAllOrder(){
+    try{
+        const [orders] = await pool.query(`
+        SELECT po.orderID, po.customerEmail, po.orderDate, po.total,
+        CONCAT(RIGHT(SUBSTRING_INDEX(p.paymentMethod, ' ', 1), 4), ' ', 
+        CASE 
+            WHEN p.paymentMethod LIKE '%Debit%' THEN 'Debit'
+            WHEN p.paymentMethod LIKE '%Credit%' THEN 'Credit'
+            ELSE ''
+        END) AS paymentMethod
+        FROM purchaseOrder po
+        LEFT JOIN payment p ON po.orderID = p.orderID`);
+
+        for (let order of orders) {
+            const [details] = await pool.query(`
+                SELECT ol.productID, ol.quantity, ol.unitPrice, ol.totalAmount, p.productName
+                FROM orderLine ol
+                JOIN product p ON ol.productID = p.productID
+                WHERE ol.orderID = ? AND ol.active = 1
+            `, [order.orderID]);
+
+            order.items = details;
+        }
+
+        return orders;
+    } catch(error){
+        console.log(error.message);
+        throw error;
+    }
+};
+
+async function createOrder(customerEmail,orderDate,items,paymentMethod,normalD,fastD){
     const connection = await pool.getConnection();
     try{
         await connection.beginTransaction();
 
-        //total tax and amount
-        let totalTax = 0;
-        let totalAmount = 0;
-
-        items.forEach(item => {
-            const tax = item.quantity * item.unitPrice * 0.0825;
-            totalTax += tax;
-            totalAmount += (item.quantity * item.unitPrice) + tax;
-        });
-
-        const result = await connection.query(`
-        INSERT INTO purchaseOrder(customerEmail, orderDate, tax, totalAmount)
-        VALUES(?,?,?,?)`,[customerEmail,orderDate,totalTax,totalAmount]);
-        const orderID = result.insertId;
-        
-        for(const item of items){
-            const tax = item.quantity * item.unitPrice * 0.0825;
-            const amount = item.quantity * item.unitPrice + tax;
-            await connection.query(`
-            INSERT INTO orderLine(orderID,productID,quantity,unitPrice,tax,totalAmount)
-            VALUE(?,?,?,?,?,?)`,[orderID,item.productID,item.quantity,item.unitPrice,tax,amount]);
+        if (items.length==0){
+            throw new Error(`No item was found`);
         }
+        
+        let orderLineDetail =[];
+        let total = 0;
+        //calculate the total for the purchaseOrder, check if any item has 
+        //exceeded quantity
+        for (let item of items){
+            const [res] = await connection.query(`
+            SELECT quantity
+            FROM inventory
+            WHERE productID=?`,[item.productID]);
+            if (item.productQuantity > res[0].quantity){
+                throw new Error(`Not enough inventory for item: ${item.productName}`);
+            }
+            await connection.query(`
+            UPDATE product
+            SET stockQuantity=stockQuantity-?
+            WHERE productID=?`,[item.productQuantity,item.productID]);
+            await connection.query(`
+            UPDATE inventory
+            SET quantity=quantity-?
+            WHERE productID=?`,[item.productQuantity,item.productID]);
 
-        //fetching shipping address from customer profile
-        const [[shippingAresult]] = await connection.query(`
-        SELECT streetAddress, city, state, zipcode
-        FROM customer
-        WHERE email=?`,[customerEmail])
+            total += item.productPrice*item.productQuantity;
+        }
+        // console.log("AT PURCHASE ORDER");
+        //create new order
+        const orderRes = await connection.query(`
+            INSERT INTO purchaseOrder(customerEmail,orderDate,total)
+            VALUES(?,?,?)`,[customerEmail,orderDate,total]);
+        //get the last insert id which is the newest orderID
+        const [rows] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
+        const lastId = rows[0].lastId;
+        // console.log("AT PAYMENT");
+        
+        //create payment
+        const createPayment = await connection.query(`
+        INSERT INTO payment(orderID,paymentDate,totalAmount,paymentMethod,paymentStatus)
+        VALUES(?,?,?,?,?)`,[lastId,orderDate,total,paymentMethod,"pass"])
+        //gey paymentID for return
+        const [getPayment] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
+        const IDpayment = getPayment[0].lastId;
 
+        //create shipping
+        const [isMember] = await connection.query(`
+        SELECT membershipID
+        FROM membership
+        WHERE customerEmail=? and membershipStatus=1`,[customerEmail]);
+        if (isMember.length===0){
+            const createShipping = await connection.query(`
+            INSERT INTO shipping(orderID,paymentID,cost,trackingNum,estimatedDel,shippingStatus)
+            VALUES(?,?,?,?,?,?)`,[lastId,IDpayment,10,uuidv4(),normalD,"Delivering"])
+        } else{
+            const createShipping = await connection.query(`
+            INSERT INTO shipping(membershipID,orderID,paymentID,cost,trackingNum,estimatedDel,shippingStatus)
+            VALUES(?,?,?,?,?,?,?)`,[isMember[0].membershipID,lastId,IDpayment,0,uuidv4(),fastD,"Delivering"])
+        }
+        const [getID] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
+        const trackingID = getID[0].lastId;
+        const getTrackNum = await connection.query(`
+        SELECT trackingNum
+        FROM shipping
+        WHERE shippingID=?`,[trackingID]);
+
+
+        // create detail order in orderLine
+        for (let item of items){
+            console.log(item);
+            let subTotal = item.productPrice*item.productQuantity;
+            const orderLineRes = await connection.query(`
+            INSERT INTO orderLine(orderID,productID,quantity,unitPrice,totalAmount)
+            VALUES(?,?,?,?,?)`,[lastId,item.productID,item.productQuantity,item.productPrice,subTotal]);
+            //getting the order line information to send it back
+            const [anotherRows] = await connection.query("SELECT LAST_INSERT_ID() as lastId");
+            const anotherID = anotherRows[0].lastId;
+            const res = await connection.query(`
+            SELECT p.productName, o.quantity, o.unitPrice, o.totalAmount
+            FROM orderLine o
+            JOIN product p on o.productID = p.productID
+            WHERE orderLineID = ? AND o.active = 1`,[anotherID]);
+            orderLineDetail.push(res[0]);
+        }
         await connection.commit();
-        return {orderID,customerEmail,orderDate,totalTax,totalAmount,items,shippingAresult}
+        return {orderID: lastId, detail: orderLineDetail, paymentID: IDpayment, tracking: getTrackNum[0]};
     } catch(error){
         await connection.rollback();
+        console.log(error.message);
+    } finally {
+        await connection.release();
+    }
+}
+
+async function findAllOrderbyEmail(email){
+    try{
+        const [orders] = await pool.query(`
+            SELECT po.orderID, po.customerEmail, po.orderDate, po.total,
+            CONCAT(RIGHT(SUBSTRING_INDEX(p.paymentMethod, ' ', 1), 4), ' ', 
+            CASE 
+                WHEN p.paymentMethod LIKE '%Debit%' THEN 'Debit'
+                WHEN p.paymentMethod LIKE '%Credit%' THEN 'Credit'
+                ELSE '' 
+            END) AS paymentMethod
+            FROM purchaseOrder po
+            LEFT JOIN payment p ON po.orderID = p.orderID
+            WHERE po.customerEmail = ?`, [email]);
+
+        // For each order, fetch the order details
+        for (let order of orders) {
+            const [details] = await pool.query(`
+                SELECT ol.productID, ol.quantity, ol.unitPrice, ol.totalAmount, p.productName
+                FROM orderLine ol
+                JOIN product p ON ol.productID = p.productID
+                WHERE ol.orderID = ? AND ol.active = 1
+            `, [order.orderID]);
+
+            // Add the details to the order
+            order.items = details;
+        }
+
+        return orders;
+    } catch(error){
+        console.log(error.message);
+        throw error;
+    }
+}
+
+async function findOrderByLname(lname){
+    try{
+        const [res] = await pool.query(`
+        SELECT p.orderID, p.customerEmail, p.orderDate, p.total
+        FROM customer c 
+        JOIN purchaseOrder p
+        ON c.email = p.customerEmail
+        WHERE lname=?`,[lname]);
+
+        return res;
+    } catch(error){
+        console.log(error.message);
+        throw error;
+    }
+}
+
+async function findOrderDetail(orderID){
+    try{
+        const [res] = await pool.query(`
+        SELECT o.productID, pr.productName, o.quantity, o.unitPrice, o.totalAmount, p.total, pm.paymentMethod, pi.nameOnCard
+        FROM purchaseOrder p
+        JOIN orderLine o
+        ON p.orderID = o.orderID
+        JOIN product pr
+        ON pr.productID = o.productID
+        JOIN payment pm
+        ON pm.orderID = p.orderID
+        JOIN paymentInfo pi
+        ON SUBSTRING(pm.paymentMethod, 1, 19) = pi.cardnumber
+        WHERE p.orderID=? AND o.active=1`, [orderID]);
+
+
+        return {res};
+    } catch(error){
+        console.log(error.message);
+        throw error;
+    }
+}
+
+async function refundItems(orderID,items,refundDate){
+    const connection = await pool.getConnection()
+    try{
+        await connection.beginTransaction();
+        if(items.length==0){
+            return null;
+        }
+        let amount = 0;
+        let removedItems = [];
+        
+        console.log("About to refund items")
+        //calculate total amount of refund for record, add refunded items into a list, and update orderLine
+        for(let item of items){
+            amount += Number(item.totalAmount);
+            const [res] = await connection.query(`
+            SELECT productName, orderLineID
+            FROM purchaseOrder p 
+            JOIN orderLine o 
+            ON p.orderID = o.orderID
+            JOIN product
+            ON o.productID = product.productID
+            WHERE p.orderID=? AND o.productID=?`,[orderID,item.productID]);
+
+            console.log(res[0]);
+
+            //store refunded items
+            if (res.length > 0) {
+                removedItems.push(res[0].productName);
+              } else {
+                console.log("No product found for this orderID and productID:", orderID, item.productID);
+              }
+            
+            //update order line by hiding refunded items: active = 0
+            const [updateLine] = await connection.query(`
+            UPDATE orderLine
+            SET active=0
+            WHERE orderLineID=?`,[res[0].orderLineID]);
+        }
+        console.log("Finished the refund on orderLine")
+
+        console.log("Getting payment info")
+        const [payment] = await connection.query(`
+        SELECT paymentMethod, paymentID
+        FROM payment
+        WHERE orderID=?`,[orderID]);
+        console.log(payment[0]);
+
+        console.log("Inserting refund into DB")
+        console.log(payment[0].paymentID, refundDate, amount, payment[0].paymentMethod)
+        //record the refund
+        const [createRefund] = await connection.query(`
+        INSERT INTO refund(paymentID,refundDate,amount,refundMethod,refundStatus)
+        VALUES(?,?,?,?,?)`,[payment[0].paymentID,refundDate,amount,payment[0].paymentMethod,"pass"]);
+        console.log("Finished Refund Insertion")
+
+        await connection.commit();
+        return {refund: createRefund,refundedItems: removedItems};
+    } catch(error){
+        await connection.rollback();
+        console.log(error.message);
+    } finally {
+        await connection.release();
+}
+}
+
+async function findRefund (refundID){
+    try{
+        const [result] = await pool.query(`
+        SELECT*
+        FROM refund
+        WHERE refundID=?`,[refundID]);
+
+        return result;
+    } catch(error){
+        console.log(error.message);
+        throw error;
+    }
+}
+
+
+async function findPayment (paymentID){
+    try{
+        const [result] = await pool.query(`
+        SELECT*
+        FROM payment
+        WHERE paymentID=?`,[paymentID]);
+
+        return result;
+    } catch(error){
+        console.log(error.message);
+        throw error
+    }
+}
+async function findAllRefund (paymentID){
+    try{
+        const [result] = await pool.query(`
+        SELECT*
+        FROM refund
+        WHERE paymentID=?`,[paymentID]);
+
+        return result;
+    } catch(error){
+        console.log(error.message);
+        throw error
+    }
+}
+
+async function findAllPayment (orderID){
+    try{
+        const [result] = await pool.query(`
+        SELECT*
+        FROM payment
+        WHERE orderID=?`,[orderID]);
+
+        return result;
+    } catch(error){
+        console.log(error.message);
+        throw error
+    }
+}
+
+async function addingStock (payoutDate,productName,quantity){
+    const connection = await pool.getConnection();
+    try{
+        await connection.beginTransaction();
+        const [id] = await connection.query(`
+        SELECT productID
+        FROM product
+        WHERE productName=?`,[productName]);
+
+        if(id.length==0){
+            throw new Error(`There is no such item in the inventory. Please double check your input`);
+        }
+
+        const [res] = await connection.query(`
+        UPDATE product
+        SET stockQuantity=stockQuantity+?
+        WHERE productID=?`,[quantity,id[0].productID]);
+
+        const [res1] = await connection.query(`
+        UPDATE inventory
+        SET quantity=quantity+?
+        WHERE productID=?`,[quantity,id[0].productID]);
+
+        //payout for stock
+        const [price] = await connection.query(`
+        SELECT purchasePrice
+        FROM inventory
+        WHERE productID=?`,[id[0].productID]);
+        console.log(payoutDate);
+
+        const [res2] = await connection.query(`
+        INSERT INTO payout(productID,quantity,purchasePrice,totalPayout,payoutDate)
+        VALUES(?,?,?,?,?)`,[id[0].productID,quantity,price[0].purchasePrice,quantity*price[0].purchasePrice,payoutDate]);
+
+        await connection.commit();
+        return {product: id, amount: quantity};
+    } catch (error){
+        await connection.rollback();
+        console.log(error);
         throw error;
     } finally{
-        connection.release();
+        await connection.release();
     }
-};
-
-async function getOrderInfo(orderID){ //searching a specific order with orderID
-    try{
-        const [order] = await pool.query(`
-        Select *
-        FROM purchaseOrder
-        WHERE orderID =?`, [orderID]);
-        return order;
-     } catch(error) {
-        console.log(error.message);
-        throw error;
-     }
-};
-
-async function getAllOrder(customerEmail){
-    try{
-        const [allOrder] = await pool.query(`
-        SELECT *
-        FROM purchaseOrder
-        WHERE customerEmail=?`,[customerEmail]);
-        return allOrder;
-    } catch(error){
-        console.log(error.message);
-        throw error;
-    }
-};
-
-async function addItem(orderID, items){
-    const connection = await pool.getConnection();
-    try{
-        await connection.beginTransaction();
-         //total tax and amount
-         let newTax = 0;
-         let newAmount = 0;
-         
-         for(const item of items){
-             const tax = item.quantity * item.unitPrice * 0.0825;
-             newTax += tax;
-             const amount = item.quantity * item.unitPrice + tax;
-             newAmount += amount;
-             await connection.query(`
-             INSERT INTO orderLine(orderID,productID,quantity,unitPrice,tax,totalAmount)
-             VALUE(?,?,?,?,?,?)`,[orderID,item.productID,item.quantity,item.unitPrice,tax,amount]);
-         }
-
-         //update new tax and new total
-         await connection.query(`
-         UPDATE purchaseOrder
-         SET tax=?+tax,
-         totalAmount=?+totalAmount
-         WHERE orderID=?`,[newTax,newAmount,orderID])
-
-         await connection.commit();
-         return {orderID, itemsAdded: items.length};
-    } catch(error){
-        console.log(error.message);
-        throw error;
-    } finally {
-        connection.release();
-    }
-};
-
-//remove item from existing order
-async function removeItem(orderID,items){
-    const connection = await pool.getConnection();
-    try{
-        await connection.beginTransaction();
-        let removedTax = 0;
-        let removedAmount = 0;
-        for(const item of items){
-            const [existingItem] = await connection.query(`
-            SELECT quantity, unitPrice FROM orderLine
-            WHERE orderID=?, AND productID=?`,[orderID,item.productID]);
-            if(existingItem.length){
-                const tax = existingItem[0].quantity*existingItem.unitPrice*0.0825;
-                const amount = existingItem[0].quantity*existingItem.unitPrice+tax;
-                removedTax+=tax;
-                removedAmount+=amount;
-                await connection.query(`
-                DELETE FROM orderLine
-                WHERE orderID=?, AND productID=?`,[orderID,item.productID]);
-            }
-        }
-        //update new tax and new total
-        await connection.query(`
-        UPDATE purchaseOrder
-        SET tax=tax-?,
-        totalAmount=totalAmount-?
-        WHERE orderID=?`,[removedTax,removedAmount,orderID])
-        await connection.commit();
-        return {orderID, itemsRemoved: items.length};
-    } catch(error){
-        console.log(error.message);
-        throw error;
-    } finally {
-        connection.release();
-    }
-};
+}
 
 module.exports={
+    findAllOrder,
     createOrder,
-    getOrderInfo,
-    getAllOrder,
-    addItem,
-    removeItem
+    findAllOrderbyEmail,
+    findOrderByLname,
+    findOrderDetail,
+    refundItems,
+    findRefund,
+    findPayment,
+    findAllRefund,
+    findAllPayment,
+    addingStock
 }
+
+// add orderProcessed attribute into purchaseOrder table default false

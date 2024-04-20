@@ -19,6 +19,10 @@ const insertProductInfo = async (req, res) => {
     try {
         await connection.beginTransaction();
 
+        const currTime = new Date();
+        const formatDigit = (x) => x.toString().length === 1 ? '0' + x.toString() : x.toString();
+        let stockDate = `${currTime.getFullYear()}-${formatDigit(currTime.getMonth()+1)}-${formatDigit(currTime.getDate())}`;
+
         const body = await getRequestBody(req);
         console.log(body);
         const { productInfo, nutritionFacts, shippingDetails } = body;
@@ -29,6 +33,8 @@ const insertProductInfo = async (req, res) => {
         const prodID = await productModel.insertProduct(connection, productInfo);
         const nutritionF = await productModel.insertNutritionFacts(connection, prodID, nutritionFacts);
         const shipDetails = await productModel.insertShippingDetails(connection, prodID, shippingDetails);
+        //add to inventory
+        const inventory = await productModel.insertInventory(connection,prodID,productInfo,stockDate);
 
         await connection.commit();
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -43,8 +49,27 @@ const insertProductInfo = async (req, res) => {
     }
 }
 
+const deleteProduct = async(req,res)=>{
+    try{
+        const body = await getRequestBody(req);
+        const {productName} = body;
+        const result = await productModel.removeProduct(productName);
+
+        if(!result){
+            res.writeHead(200, { 'Content-Type': 'text/plain' });
+            res.end("No product found with that name or it has been removed from the database");
+            return; //exits if empty
+        }
+          res.writeHead(200, { 'Content-Type' : 'application/json' });
+          res.end(JSON.stringify({"message": "Successfully delete product from the database"}));
+    } catch (error) {
+          res.writeHead(500, {'Content-Type': 'application/json' });
+          res.end(JSON.stringify({"status": "Could not delete product", "error" : error.message }));
+        }
+}
 
 module.exports = {
     getAllProducts,
-    insertProductInfo
+    insertProductInfo,
+    deleteProduct
 }
