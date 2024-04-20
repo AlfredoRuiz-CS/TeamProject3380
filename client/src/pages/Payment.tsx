@@ -32,14 +32,6 @@ interface paymentProps {
   type: 'cart' | 'membership';
 }
 
-const validationSchema = Yup.object({
-  cardNumber: Yup.string().required('Card number is required').max(16),
-  cardName: Yup.string().required('Name on card is required'),
-  expirationDate: Yup.string().required('Expiration date is required').max(5),
-  cvv: Yup.string().required('CVV is required').max(3),
-  cardType: Yup.string().required('Card type is required'),
-});
-
 const payment = (props: paymentProps) => {
   const store = useUserStore();
   const [collapsibleOpen, setCollapsibleOpen] = useState(false);
@@ -57,6 +49,27 @@ const payment = (props: paymentProps) => {
   );
   const shipping = !store.isMember ? 10 : 0;
 
+  const validationSchema = Yup.object({
+    cardNumber: Yup.string()
+      .required('Card number is required')
+      .max(16)
+      .default(paymentMethodSelected?.cardnumber),
+    cardName: Yup.string()
+      .required('Name on card is required')
+      .default(paymentMethodSelected?.nameOnCard),
+    expirationDate: Yup.string()
+      .required('Expiration date is required')
+      .max(5)
+      .default(paymentMethodSelected?.expiration),
+    cvv: Yup.string()
+      .required('CVV is required')
+      .max(3)
+      .default(paymentMethodSelected?.cvv),
+    cardType: Yup.string()
+      .required('Card type is required')
+      .default(paymentMethodSelected?.cardtype),
+  });
+
   const formik = useFormik({
     // Schema for form validation
     initialValues: {
@@ -64,12 +77,13 @@ const payment = (props: paymentProps) => {
       cardName: '',
       expirationDate: '',
       cvv: '',
-      cardType: '',
+      cardType: 'Debit',
     },
     validationSchema: validationSchema,
     // Formik function to handle form submission
-    onSubmit: async (values, { setSubmitting }) => {
+    onSubmit: async (values) => {
       console.log('Payment form submitted:', values);
+      console.log('HELLO???');
       let paymentMethod;
       if (usingExistingPaymentMethod && paymentMethodSelected) {
         // Use existing payment method
@@ -151,7 +165,7 @@ const payment = (props: paymentProps) => {
           console.log(error);
         }
       }
-      setSubmitting(false);
+      // setSubmitting(false);
     },
   });
 
@@ -264,6 +278,14 @@ const payment = (props: paymentProps) => {
       }
     }
   }, [paymentMethods, setPaymentMethods, isLoading]);
+
+  useEffect(() => {
+    if (formik.isSubmitting) {
+      console.log('Submitting');
+    } else {
+      console.log('Submission completed');
+    }
+  }, [formik.isSubmitting]);
 
   const paymentForms = ['Debit', 'Credit'];
 
@@ -419,7 +441,10 @@ const payment = (props: paymentProps) => {
                       value={formik.values.cardNumber}
                       maxLength={16}
                     />
-                    <Select defaultValue="Debit" name="cardType">
+                    <Select
+                      defaultValue="Debit"
+                      name="cardType"
+                      onValueChange={(e: any) => formik.setFieldValue('cardType', e)}>
                       <SelectTrigger className="mx-4 h-10 w-[10rem] max-w-md rounded-md border border-gray-300 bg-white px-4 focus:border-logoblue focus:ring-logoblue">
                         <SelectValue
                           placeholder={'Card Type'}
@@ -478,7 +503,8 @@ const payment = (props: paymentProps) => {
                   <Button
                     className="ml-4 mr-4 mt-5 self-center bg-blue-400 px-44 py-6 hover:bg-slate-600"
                     size="lg"
-                    type="submit">
+                    type="submit"
+                    onClick={() => formik.validateForm}>
                     Place Order
                   </Button>
                 </form>
@@ -586,7 +612,12 @@ const payment = (props: paymentProps) => {
                       onChange={handlePaymentInputChange}
                       value={formik.values.cardNumber}
                     />
-                    <Select defaultValue="Debit" name="cardType">
+                    <Select
+                      defaultValue="Debit"
+                      name="cardType"
+                      onValueChange={(e: any) =>
+                        formik.setFieldValue('cardType', e.target.value)
+                      }>
                       <SelectTrigger className="mx-4 h-10 w-[10rem] max-w-md rounded-md border border-gray-300 bg-white px-4 focus:border-logoblue focus:ring-logoblue">
                         <SelectValue
                           placeholder={'Card Type'}
@@ -646,7 +677,8 @@ const payment = (props: paymentProps) => {
                   <Button
                     className="ml-4 mr-4 mt-5 self-center bg-blue-400 px-44 py-6 hover:bg-slate-600"
                     size="lg"
-                    type="submit">
+                    type="submit"
+                    onClick={() => formik.validateForm}>
                     Place Order
                   </Button>
                 </form>

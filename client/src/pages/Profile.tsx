@@ -829,24 +829,34 @@ const Profile = () => {
                           className="mx-4  h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                           type="text"
                           placeholder="Name On Card"
+                          required
                           name="nameOnCard"
                         />
                         <input
                           className="mx-4  h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                           type="text"
                           placeholder="Card Number"
+                          maxLength={16}
+                          minLength={16}
+                          required
                           name="cardnumber"
                         />
                         <input
                           className="mx-4  h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                           type="text"
                           placeholder="Expiration Date"
+                          maxLength={5}
+                          minLength={5}
+                          required
                           name="expiration"
                         />
                         <input
                           className="mx-4  h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                           type="text"
                           placeholder="CVV"
+                          maxLength={3}
+                          minLength={3}
+                          required
                           name="cvv"
                         />
                         <Select defaultValue="Debit" name="cardType">
