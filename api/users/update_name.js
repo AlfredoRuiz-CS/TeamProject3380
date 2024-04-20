@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
 
     } catch (error) {
       res.writeHead(401, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ message: 'Unauthorized' }));
+      res.end(JSON.stringify({ message: 'Unauthorized', error: error.message}));
     }
   } else {
     res.writeHead(404, { 'Content-Type' : 'application/json' });

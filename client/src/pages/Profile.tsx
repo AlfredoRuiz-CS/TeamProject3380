@@ -200,7 +200,7 @@ const Profile = () => {
               break;
             case 'phone':
               store.setUserDetails({
-                phone: response.data.phone,
+                phone: response.data.phoneNumber,
               });
               break;
             case 'address':
@@ -225,18 +225,30 @@ const Profile = () => {
 
   function handleNameChange(firstName: string, lastName: string) {
     updateProfile('name', { firstName, lastName });
+    if (formRef.current) {
+      formRef.current.reset();
+    }
   }
 
   function handleEmailChange(email: string) {
     updateProfile('email', { email });
+    if (formRef.current) {
+      formRef.current.reset();
+    }
   }
 
   function handlePasswordChange( currentPassword: string, password: string) {
     updateProfile('password', { currentPassword, password });
+    if (formRef.current) {
+      formRef.current.reset();
+    }
   }
 
   function handlePhoneChange(phone: string) {
     updateProfile('phone', { phone });
+    if (formRef.current) {
+      formRef.current.reset();
+    }
   }
 
   function handleAddressChange(
@@ -246,6 +258,9 @@ const Profile = () => {
     zip: string
   ) {
     updateProfile('address', { street, city, state, zip });
+    if (formRef.current) {
+      formRef.current.reset();
+    }
   }
 
   function handleSelectPaymentMethod(p: PaymentMethod) {
@@ -456,6 +471,7 @@ const Profile = () => {
                   {/* Name Fields */}
                   <div className="flex flex-col items-start">
                     <form
+                      ref={formRef}
                       className="flex w-1/2 flex-col pt-5"
                       onSubmit={(event) => {
                         event.preventDefault();
@@ -503,6 +519,7 @@ const Profile = () => {
 
                     {/* Phone Number Field */}
                     <form
+                      ref={formRef}
                       className="flex flex-col gap-3 pt-10"
                       onSubmit={(event) => {
                         event.preventDefault();
@@ -534,6 +551,7 @@ const Profile = () => {
 
                     {/* Address Fields */}
                     <form
+                      ref={formRef}
                       className="flex flex-col gap-3 pt-10"
                       onSubmit={(event) => {
                         event.preventDefault();
@@ -622,6 +640,7 @@ const Profile = () => {
               </section>
               <section className="flex flex-col">
                 <form
+                  ref={formRef}
                   className=" flex w-1/2 flex-col pt-5"
                   onSubmit={(event) => {
                     event.preventDefault();
@@ -648,6 +667,7 @@ const Profile = () => {
                   </Button>
                 </form>
                 <form
+                  ref={formRef}
                   className="flex w-full flex-col pt-5"
                   onSubmit={(event) => {
                     event.preventDefault();
