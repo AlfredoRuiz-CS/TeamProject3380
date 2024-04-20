@@ -45,7 +45,7 @@ type ProfileSection = 'name' | 'email' | 'password' | 'phone' | 'address';
 type ProfileData =
   | { currentEmail?: string; firstName: string; lastName: string }
   | { currentEmail?: string; email: string }
-  | { currentEmail?: string; password: string }
+  | { currentEmail?: string; currentPassword: string; password: string }
   | { currentEmail?: string; phone: string }
   | {
       currentEmail?: string;
@@ -136,30 +136,30 @@ const Profile = () => {
   const formRef = useRef<HTMLFormElement>(null);
   const [reloadTrigger, setReloadTrigger] = useState(0);
 
-  const dummyPaymentMethods: PaymentMethod[] = Array(5).fill({
-    cardId: 1,
-    nameOnCard: 'John Doe',
-    cardnumber: '1234 5678 9012 3456',
-    expiration: '01/23',
-    cvv: '123',
-    cardtype: 'Debit',
-  });
-  dummyPaymentMethods[1] = {
-    cardId: 2,
-    nameOnCard: 'Jane Doe',
-    cardnumber: '9876 5432 1098 7654',
-    expiration: '12/34',
-    cvv: '321',
-    cardtype: 'Credit',
-  };
-  dummyPaymentMethods[2] = {
-    cardId: 3,
-    nameOnCard: 'Philip Doe',
-    cardnumber: '1234 5678 9012 3454',
-    expiration: '01/23',
-    cvv: '123',
-    cardtype: 'Debit',
-  };
+  // const dummyPaymentMethods: PaymentMethod[] = Array(5).fill({
+  //   cardId: 1,
+  //   nameOnCard: 'John Doe',
+  //   cardnumber: '1234 5678 9012 3456',
+  //   expiration: '01/23',
+  //   cvv: '123',
+  //   cardtype: 'Debit',
+  // });
+  // dummyPaymentMethods[1] = {
+  //   cardId: 2,
+  //   nameOnCard: 'Jane Doe',
+  //   cardnumber: '9876 5432 1098 7654',
+  //   expiration: '12/34',
+  //   cvv: '321',
+  //   cardtype: 'Credit',
+  // };
+  // dummyPaymentMethods[2] = {
+  //   cardId: 3,
+  //   nameOnCard: 'Philip Doe',
+  //   cardnumber: '1234 5678 9012 3454',
+  //   expiration: '01/23',
+  //   cvv: '123',
+  //   cardtype: 'Debit',
+  // };
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [paymentMethodSelected, setPaymentMethodSelected] =
     useState<PaymentMethod>(paymentMethods[0]);
@@ -179,11 +179,11 @@ const Profile = () => {
 
     const endpoint = endpointMap[section];
     if (endpoint) {
-      // data.currentEmail = store.email;
-      const token = localStorage.getItem('token');
+      data.currentEmail = store.email;
+      // const token = localStorage.getItem('token');
       console.log(data);
       axios
-        .post(endpoint, data, { headers: { Authorization: `Bearer ${token}` } })
+        .post(endpoint, data)
         .then((response) => {
           console.log(response.data);
           switch (section) {
@@ -231,8 +231,8 @@ const Profile = () => {
     updateProfile('email', { email });
   }
 
-  function handlePasswordChange(password: string) {
-    updateProfile('password', { password });
+  function handlePasswordChange( currentPassword: string, password: string) {
+    updateProfile('password', { currentPassword, password });
   }
 
   function handlePhoneChange(phone: string) {
@@ -347,55 +347,59 @@ const Profile = () => {
 
   useEffect(() => {
     const verifySession = async () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const response = await axios.get(
-            'https://shastamart-api-deploy.vercel.app/api/users/verifySession',
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
-          );
-          console.log(response.data);
-        } catch (error) {
-          localStorage.removeItem('token');
-          navigate('/login');
+      if (!store.isAdmin){
+        const token = localStorage.getItem('token');
+        if (token) {
+          try {
+            const response = await axios.get(
+              'https://shastamart-api-deploy.vercel.app/api/users/verifySession',
+              {
+                headers: { Authorization: `Bearer ${token}` },
+              }
+            );
+            console.log(response.data);
+          } catch (error) {
+            localStorage.removeItem('token');
+            navigate('/login');
+          }
+        } else {
+          navigate('/register');
         }
-      } else {
-        navigate('/register');
-      }
-    };
+      };
+    }
     verifySession();
   }, []);
 
   useEffect(() => {
     const fetchPayments = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get(
-          'https://shastamart-api-deploy.vercel.app/api/users/payments',
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
-        console.log(response.data);
-        const paymentData = await response.data;
-        const transformedPayments = paymentData.map(
-          (paymentMethod: PaymentMethod) => ({
-            nameOnCard: paymentMethod.nameOnCard,
-            cardnumber: paymentMethod.cardnumber,
-            expiration: paymentMethod.expiration,
-            cvv: paymentMethod.cvv,
-            cardtype: paymentMethod.cardtype,
-          })
-        );
-        console.log(transformedPayments);
-        setPaymentMethods(transformedPayments);
-        setIsLoading(false);
-      } catch (error) {
-        console.log(error);
-      }
-    };
+      if(!store.isAdmin){
+        try {
+          const token = localStorage.getItem('token');
+          const response = await axios.get(
+            'https://shastamart-api-deploy.vercel.app/api/users/payments',
+            {
+              headers: { Authorization: `Bearer ${token}` },
+            }
+          );
+          console.log(response.data);
+          const paymentData = await response.data;
+          const transformedPayments = paymentData.map(
+            (paymentMethod: PaymentMethod) => ({
+              nameOnCard: paymentMethod.nameOnCard,
+              cardnumber: paymentMethod.cardnumber,
+              expiration: paymentMethod.expiration,
+              cvv: paymentMethod.cvv,
+              cardtype: paymentMethod.cardtype,
+            })
+          );
+          console.log(transformedPayments);
+          setPaymentMethods(transformedPayments);
+          setIsLoading(false);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+    }
     fetchPayments();
   }, [setPaymentMethods, reloadTrigger]);
 
@@ -648,15 +652,27 @@ const Profile = () => {
                   onSubmit={(event) => {
                     event.preventDefault();
                     const form = event.target as HTMLFormElement;
+                    const currentPassword = form.elements.namedItem(
+                      'currentPassword'
+                    ) as HTMLInputElement;
                     const password = form.elements.namedItem(
                       'password'
                     ) as HTMLInputElement;
-                    handlePasswordChange(password.value);
+                    handlePasswordChange(currentPassword.value, password.value);
                   }}>
+                  <h3 className="mt-2 pl-4 text-lg font-semibold text-white">
+                    Current Password
+                  </h3>
+                  <input
+                    className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
+                    type={isPasswordVisible ? 'text' : 'password'}
+                    placeholder={'*'.repeat(10)}
+                    name="currentPassword"
+                  />
+
                   <h3 className="mt-2 pl-4 text-lg font-semibold text-white">
                     Password
                   </h3>
-
                   <input
                     className="mx-4 h-10 w-[15rem] max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
                     type={isPasswordVisible ? 'text' : 'password'}
