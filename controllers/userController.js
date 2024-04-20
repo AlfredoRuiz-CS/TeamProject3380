@@ -160,7 +160,7 @@ const updateUserEmail = async (req, res) => {
 const updateUserPassword = async (req, res) => {
   try{
     const body = await getRequestBody(req);
-    const { currentEmail: email, oldPassword, newPassword } = body;
+    const { currentEmail: email, currentPassword: oldPassword, password: newPassword } = body;
 
     const updatePassword = await userModel.updateUserPassword(email, oldPassword, newPassword);
     
