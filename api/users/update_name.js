@@ -11,18 +11,7 @@ module.exports = async (req, res) => {
   }
 
   if (req.method === 'POST'){
-    try {
-
-      const decoded = await verifyToken(req);
-
-      req.email = decoded.email;
-
-      await userController.updateUserName(req, res);
-
-    } catch (error) {
-      res.writeHead(401, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify({ message: 'Unauthorized', error: error.message}));
-    }
+    await userController.updateUserName(req, res);
   } else {
     res.writeHead(404, { 'Content-Type' : 'application/json' });
     res.end(JSON.stringify({ message: 'Route Not Found'}));
