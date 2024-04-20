@@ -163,7 +163,7 @@ const Reports = () => {
             setSalesReport(mappedData);
           } else if (selectedReport === 'Most Sold Products') {
             const mappedData = responseData.map((data: SalesData) => ({
-              categName: data.categName,
+              categName: capitalizeFirstLetter(data.categName),
               productName: data.productName,
               totalQuantitySold: data.totalQuantitySold,
               totalGain: data.totalGain,
@@ -171,7 +171,7 @@ const Reports = () => {
             setSalesReport(mappedData);
           } else if (selectedReport === 'Refunded Products') {
             const mappedData = responseData.map((data: SalesData) => ({
-              categName: data.categName,
+              categName: capitalizeFirstLetter(data.categName),
               productName: data.productName,
               totalQuantityReturned: data.totalQuantityReturned,
               totalLoss: data.totalLoss,
@@ -289,7 +289,7 @@ const Reports = () => {
                       salesReport.map((item, index) => (
                         <TableRow key={index}>
                           <TableCell className="max-w-6 pl-5">
-                            {capitalizeFirstLetter(item.categName)}
+                            {item.categName}
                           </TableCell>
                           <TableCell className="max-w-6">{item.productName}</TableCell>
                           <TableCell className="max-w-6">
@@ -328,7 +328,7 @@ const Reports = () => {
                       salesReport.map((item, index) => (
                         <TableRow key={index}>
                           <TableCell className="max-w-6 pl-6">
-                            {capitalizeFirstLetter(item.categName)}
+                            {item.categName}
                           </TableCell>
                           <TableCell className="max-w-6">{item.productName}</TableCell>
                           <TableCell className="max-w-6">
@@ -350,7 +350,7 @@ const Reports = () => {
                 <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="max-w-5 pl-5 text-gray-700">
+                      <TableHead className="text-center max-w-5 pl-5 text-gray-700">
                         Total Revenue
                       </TableHead>
                     </TableRow>
@@ -359,7 +359,7 @@ const Reports = () => {
                     {Array.isArray(salesReport) &&
                       salesReport.map((item, index) => (
                         <TableRow key={index}>
-                          <TableCell className="max-w-6 pl-6">
+                          <TableCell className="text-center max-w-6 pl-6">
                             {item.totalPurchases}
                           </TableCell>
                         </TableRow>
@@ -419,7 +419,7 @@ const Reports = () => {
                       </TableHead>
                       <TableHead className="max-w-5 text-gray-700">First Name</TableHead>
                       <TableHead className="max-w-5 text-gray-700">Last Name</TableHead>
-                      <TableHead className="max-w-5 text-center text-gray-700">
+                      <TableHead className="max-w-5 text-gray-700">
                         Average Purchase Value
                       </TableHead>
                     </TableRow>
@@ -558,12 +558,12 @@ const Reports = () => {
                     {/* <SelectItem value="Daily Gross Sales">Daily Gross Sales</SelectItem> */}
                     {/* <SelectItem value="Weekly Gross Sales">Weekly Gross Sales</SelectItem> */}
                     {/* <SelectItem value="Monthly Gross Sales">Monthly Gross Sales</SelectItem> */}
-                    <SelectItem value="Custom Gross Sales">Custom Gross Sales</SelectItem>
+                    <SelectItem value="Custom Gross Sales">Gross Sales</SelectItem>
                     {/* <SelectItem value="Daily Membership Sales">Daily Membership Sales</SelectItem>
                     <SelectItem value="Weekly Membership Sales">Weekly Membership Sales</SelectItem>
                     <SelectItem value="Monthly Membership Sales">Monthly Membership Sales</SelectItem> */}
                     <SelectItem value="Custom Membership Sales">
-                      Custom Membership Sales
+                      Membership Sales
                     </SelectItem>
                     {/* <SelectItem value="Daily Refunds">Daily Refunds</SelectItem> */}
                     {/* <SelectItem value="Weekly Refunds">Weekly Refunds</SelectItem> */}

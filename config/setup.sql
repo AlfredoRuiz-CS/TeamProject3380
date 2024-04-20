@@ -40,7 +40,7 @@ CREATE TABLE customer(
     streetAddress varchar(100),
     city varchar(50),
     state varchar(50),
-    zipcode varchar(20),
+    zipcode varchar(10),
     password binary(64),
     active boolean default 1
 );
