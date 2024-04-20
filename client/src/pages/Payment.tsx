@@ -23,12 +23,22 @@ import { useEffect, useState } from 'react';
 // import { Link } from 'react-router-dom';
 import useUserStore from '@/components/store';
 import { PaymentMethod } from '@/pages/Profile';
+import * as Yup from 'yup';
+import { useFormik } from 'formik'; // error message removed from imports
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 interface paymentProps {
   type: 'cart' | 'membership';
 }
+
+const validationSchema = Yup.object({
+  cardNumber: Yup.string().required('Card number is required').max(16),
+  cardName: Yup.string().required('Name on card is required'),
+  expirationDate: Yup.string().required('Expiration date is required').max(5),
+  cvv: Yup.string().required('CVV is required').max(3),
+  cardType: Yup.string().required('Card type is required'),
+});
 
 const payment = (props: paymentProps) => {
   const store = useUserStore();
@@ -37,24 +47,119 @@ const payment = (props: paymentProps) => {
   const [paymentMethodSelected, setPaymentMethodSelected] =
     useState<PaymentMethod | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [usingExistingPaymentMethod, setUsingExistingPaymentMethod] =
-    useState(false);
+  const [reloadTrigger, setReloadTrigger] = useState(0);
+  const [usingExistingPaymentMethod, setUsingExistingPaymentMethod] = useState(false);
   const navigate = useNavigate();
 
   const subtotal = store.cartItems.reduce(
     (acc, product, index) => acc + product.price * store.quantity[index],
     0
   );
-  let shipping = !store.isMember ? 10 : 0;
+  const shipping = !store.isMember ? 10 : 0;
+
+  const formik = useFormik({
+    // Schema for form validation
+    initialValues: {
+      cardNumber: '',
+      cardName: '',
+      expirationDate: '',
+      cvv: '',
+      cardType: '',
+    },
+    validationSchema: validationSchema,
+    // Formik function to handle form submission
+    onSubmit: async (values, { setSubmitting }) => {
+      console.log('Payment form submitted:', values);
+      let paymentMethod;
+      if (usingExistingPaymentMethod && paymentMethodSelected) {
+        // Use existing payment method
+        paymentMethod = `${paymentMethodSelected?.cardnumber} ${paymentMethodSelected?.cardtype}`;
+        console.log(paymentMethod);
+      } else {
+        // Extract new payment method details from formik
+        // const formData = new FormData();
+        const nameOnCard = values.cardName as string;
+        const cardNumber = values.cardNumber as string;
+        const expirationDate = values.expirationDate as string;
+        const cvv = values.cvv as string;
+        const cardType = values.cardType as string;
+
+        await handleNewPayment(nameOnCard, cardNumber, expirationDate, cvv, cardType);
+        paymentMethod = `${cardNumber} ${cardType}`;
+      }
+
+      if (props.type === 'cart') {
+        const cartOrderDetails = {
+          items: store.cartItems.map((item, index) => ({
+            productID: item.productId,
+            productName: item.name,
+            productQuantity: store.quantity[index],
+            productPrice: item.price,
+          })),
+          paymentMethod: paymentMethod,
+        };
+        console.log(cartOrderDetails);
+
+        try {
+          const token = localStorage.getItem('token');
+          const response = await axios.post(
+            'https://shastamart-api-deploy.vercel.app/api/orders/processOrder',
+            cartOrderDetails,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          console.log(response.data);
+          const orderData = response.data;
+          const orderID = orderData.data.orderID;
+          console.log(orderID);
+          navigate(`/orders/summary/${orderID}`);
+        } catch (error) {
+          if (axios.isAxiosError(error)) {
+            // Type guard
+            if (error.response) {
+              console.log(error.response.data);
+              console.log(error.response.status);
+              console.log(error.response.headers);
+              // loginFail(error.response.data.error);
+            } else if (error.request) {
+              console.log(error.request);
+            } else {
+              console.log('Error', error.message);
+            }
+          } else {
+            console.log('Error', error);
+          }
+        }
+      } else if (props.type === 'membership') {
+        const data = {
+          customerEmail: store.email,
+          items: 'membership',
+          paymentMethod: paymentMethod,
+        };
+
+        console.log(data);
+
+        try {
+          const response = await axios.post(
+            'https://shastamart-api-deploy.vercel.app/api/membership/member',
+            data
+          );
+          console.log('Response:', response.data);
+          const isMember = await response.data;
+          store.setUserDetails({ isMember: isMember });
+          navigate('/orders/summary/membership');
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      setSubmitting(false);
+    },
+  });
 
   function paymentMethodSelectedToast(p: PaymentMethod) {
-    toast.success(
-      'Payment method ending in ' + p.cardnumber.slice(-4) + ' selected.',
-      {
-        position: 'bottom-right',
-        className: 'font-bold text-black',
-      }
-    );
+    toast.success('Payment method ending in ' + p.cardnumber.slice(-4) + ' selected.', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+    });
   }
 
   function handleSelectPaymentMethod(p: PaymentMethod) {
@@ -66,93 +171,32 @@ const payment = (props: paymentProps) => {
     console.log('Selected Payment Method');
   }
 
-  function handleDeletePaymentMethod() {
-    console.log('Deleted Payment Method');
+  async function handleDeletePaymentMethod() {
+    let cardnumber = paymentMethodSelected?.cardnumber;
+    const data = {
+      cardnumber: cardnumber,
+    };
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        'https://shastamart-api-deploy.vercel.app/api/users/delete_payment',
+        data,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      console.log(response.data);
+      setReloadTrigger((prev) => prev + 1);
+    } catch (error) {
+      console.log(error);
+    }
+    return;
   }
   console.log('Rendered Payment Page', props.type);
 
-  const handlePaymentInputChange = () => {
+  const handlePaymentInputChange = (e: any) => {
+    formik.handleChange(e);
     setUsingExistingPaymentMethod(false);
-  };
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    let paymentMethod;
-
-    if (usingExistingPaymentMethod && paymentMethodSelected) {
-      // Use existing payment method
-      paymentMethod = `${paymentMethodSelected?.cardnumber} ${paymentMethodSelected?.cardtype}`;
-      console.log(paymentMethod);
-    } else {
-      // Extract new payment method details from form
-      const formData = new FormData(event.currentTarget);
-      const nameOnCard = formData.get('cardName') as string;
-      const cardNumber = formData.get('cardNumber') as string;
-      const expirationDate = formData.get('expirationDate') as string;
-      const cvv = formData.get('cvv') as string;
-      const cardType = formData.get('cardType') as string;
-
-      await handleNewPayment(
-        nameOnCard,
-        cardNumber,
-        expirationDate,
-        cvv,
-        cardType
-      );
-      paymentMethod = `${cardNumber} ${cardType}`;
-    }
-
-    if (props.type === 'cart') {
-      const cartOrderDetails = {
-        items: store.cartItems.map((item, index) => ({
-          productID: item.productId,
-          productName: item.name,
-          productQuantity: store.quantity[index],
-          productPrice: item.price,
-        })),
-        paymentMethod: paymentMethod,
-      };
-
-      console.log(cartOrderDetails);
-
-      try {
-        const token = localStorage.getItem('token');
-        const response = await axios.post(
-          'https://shastamart-api-deploy.vercel.app/api/orders/processOrder',
-          cartOrderDetails,
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-        console.log(response.data);
-        const orderData = response.data;
-        const orderID = orderData.data.orderID;
-        console.log(orderID);
-        navigate(`/orders/summary/${orderID}`);
-      } catch (error) {
-        console.log(error);
-      }
-    } else if (props.type === 'membership') {
-      const data = {
-        customerEmail: store.email,
-        items: "membership",
-        paymentMethod: paymentMethod,
-      };
-
-      console.log(data);
-
-      try {
-        const response = await axios.post(
-          'https://shastamart-api-deploy.vercel.app/api/membership/member',
-          data
-        );
-        console.log('Response:', response.data);
-        const isMember = await response.data;
-        store.setUserDetails({ isMember: isMember });
-        navigate('/orders/summary/membership');
-      } catch (error) {
-        console.log(error);
-      }
-    }
   };
 
   async function handleNewPayment(
@@ -165,7 +209,7 @@ const payment = (props: paymentProps) => {
     const data = {
       cardNumber,
       expirationDate,
-      cvv: parseInt(cvv, 10),
+      cvv: parseInt(cvv, 0),
       cardType,
       nameOnCard,
     };
@@ -195,15 +239,13 @@ const payment = (props: paymentProps) => {
         );
         console.log(response.data);
         const paymentData = await response.data;
-        const transformedPayments = paymentData.map(
-          (paymentMethod: PaymentMethod) => ({
-            nameOnCard: paymentMethod.nameOnCard,
-            cardnumber: paymentMethod.cardnumber,
-            expiration: paymentMethod.expiration,
-            cvv: paymentMethod.cvv,
-            cardtype: paymentMethod.cardtype,
-          })
-        );
+        const transformedPayments = paymentData.map((paymentMethod: PaymentMethod) => ({
+          nameOnCard: paymentMethod.nameOnCard,
+          cardnumber: paymentMethod.cardnumber,
+          expiration: paymentMethod.expiration,
+          cvv: paymentMethod.cvv,
+          cardtype: paymentMethod.cardtype,
+        }));
         console.log(transformedPayments);
         setPaymentMethods(transformedPayments);
         setIsLoading(false);
@@ -212,7 +254,7 @@ const payment = (props: paymentProps) => {
       }
     };
     fetchPayments();
-  }, [setPaymentMethods]);
+  }, [setPaymentMethods, reloadTrigger]);
 
   useEffect(() => {
     if (store.accountType === 'customer' && !store.isAdmin) {
@@ -237,9 +279,7 @@ const payment = (props: paymentProps) => {
             </h1>
             <section className="mt-6 flex h-auto w-[40rem] flex-col justify-between place-self-center rounded-2xl bg-cardwhite">
               <div className="">
-                <h3 className="ml-5 mt-3 text-2xl font-medium">
-                  Order Summary
-                </h3>
+                <h3 className="ml-5 mt-3 text-2xl font-medium">Order Summary</h3>
                 {/* Item Table */}
                 <table className="mb-5 mt-2 w-full">
                   <thead>
@@ -255,12 +295,13 @@ const payment = (props: paymentProps) => {
                           {product.name + ' x ' + store.quantity[index]}
                         </td>
                         <td className="pr-5 text-right">
-                          {(
-                            product.price * store.quantity[index]
-                          ).toLocaleString('en-US', {
-                            style: 'currency',
-                            currency: 'USD',
-                          })}
+                          {(product.price * store.quantity[index]).toLocaleString(
+                            'en-US',
+                            {
+                              style: 'currency',
+                              currency: 'USD',
+                            }
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -324,10 +365,7 @@ const payment = (props: paymentProps) => {
                             paymentMethodSelected?.cardnumber.slice(-4)}
                         </h4>
                         <CollapsibleTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="hover:bg-white/50">
+                          <Button variant="ghost" size="sm" className="hover:bg-white/50">
                             <CaretSortIcon className="h-6 w-6" />
                             <span className="sr-only">Toggle</span>
                           </Button>
@@ -367,7 +405,7 @@ const payment = (props: paymentProps) => {
               <div className="flex flex-col items-center ">
                 <form
                   className="flex w-full flex-col gap-0 pt-5"
-                  onSubmit={handleSubmit}>
+                  onSubmit={formik.handleSubmit}>
                   <div className="self-center">
                     <h3 className=" pl-5 text-lg font-semibold text-darkblue">
                       Card Number
@@ -378,6 +416,8 @@ const payment = (props: paymentProps) => {
                       placeholder="e.g. 1234 5678 9012 3456"
                       name="cardNumber"
                       onChange={handlePaymentInputChange}
+                      value={formik.values.cardNumber}
+                      maxLength={16}
                     />
                     <Select defaultValue="Debit" name="cardType">
                       <SelectTrigger className="mx-4 h-10 w-[10rem] max-w-md rounded-md border border-gray-300 bg-white px-4 focus:border-logoblue focus:ring-logoblue">
@@ -403,6 +443,7 @@ const payment = (props: paymentProps) => {
                       placeholder="e.g. John Doe"
                       name="cardName"
                       onChange={handlePaymentInputChange}
+                      value={formik.values.cardName}
                     />
                   </div>
                   <div className="flex w-[30rem] flex-row gap-0 self-center">
@@ -416,6 +457,7 @@ const payment = (props: paymentProps) => {
                         placeholder="MM/YY"
                         name="expirationDate"
                         onChange={handlePaymentInputChange}
+                        value={formik.values.expirationDate}
                       />
                     </div>
                     <div className="">
@@ -428,6 +470,8 @@ const payment = (props: paymentProps) => {
                         placeholder="CVV"
                         name="cvv"
                         onChange={handlePaymentInputChange}
+                        value={formik.values.cvv}
+                        maxLength={3}
                       />
                     </div>
                   </div>
@@ -449,9 +493,7 @@ const payment = (props: paymentProps) => {
             </h1>
             <section className="mt-6 flex h-auto w-[40rem] flex-col justify-between place-self-center rounded-2xl bg-cardwhite">
               <div className="">
-                <h3 className="ml-5 mt-3 text-2xl font-medium">
-                  Order Summary
-                </h3>
+                <h3 className="ml-5 mt-3 text-2xl font-medium">Order Summary</h3>
                 {/* Item Table */}
                 <div className="mb-5 mt-2 flex w-full flex-row justify-between">
                   <p className="pl-5">Membership Subscription</p>
@@ -466,9 +508,7 @@ const payment = (props: paymentProps) => {
                         Total
                       </h3>
                     </td>
-                    <td className="pr-5 text-right text-xl font-bold">
-                      {'$10.00'}
-                    </td>
+                    <td className="pr-5 text-right text-xl font-bold">{'$10.00'}</td>
                   </tr>
                 </tbody>
               </table>
@@ -493,10 +533,7 @@ const payment = (props: paymentProps) => {
                             paymentMethodSelected?.cardnumber.slice(-4)}
                         </h4>
                         <CollapsibleTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="hover:bg-white/50">
+                          <Button variant="ghost" size="sm" className="hover:bg-white/50">
                             <CaretSortIcon className="h-6 w-6" />
                             <span className="sr-only">Toggle</span>
                           </Button>
@@ -536,7 +573,7 @@ const payment = (props: paymentProps) => {
               <div className="flex flex-col items-center ">
                 <form
                   className="flex w-full flex-col gap-0 pt-5"
-                  onSubmit={handleSubmit}>
+                  onSubmit={formik.handleSubmit}>
                   <div className="self-center">
                     <h3 className=" pl-5 text-lg font-semibold text-darkblue">
                       Card Number
@@ -547,6 +584,7 @@ const payment = (props: paymentProps) => {
                       placeholder="e.g. 1234 5678 9012 3456"
                       name="cardNumber"
                       onChange={handlePaymentInputChange}
+                      value={formik.values.cardNumber}
                     />
                     <Select defaultValue="Debit" name="cardType">
                       <SelectTrigger className="mx-4 h-10 w-[10rem] max-w-md rounded-md border border-gray-300 bg-white px-4 focus:border-logoblue focus:ring-logoblue">
@@ -572,6 +610,7 @@ const payment = (props: paymentProps) => {
                       placeholder="e.g. John Doe"
                       name="cardName"
                       onChange={handlePaymentInputChange}
+                      value={formik.values.cardName}
                     />
                   </div>
                   <div className="flex w-[30rem] flex-row gap-0 self-center">
@@ -584,7 +623,9 @@ const payment = (props: paymentProps) => {
                         type="text"
                         placeholder="MM/YY"
                         name="expirationDate"
+                        pattern="(0[1-9]|1[0-2])\/\d{2}"
                         onChange={handlePaymentInputChange}
+                        value={formik.values.expirationDate}
                       />
                     </div>
                     <div className="">
@@ -597,6 +638,8 @@ const payment = (props: paymentProps) => {
                         placeholder="CVV"
                         name="cvv"
                         onChange={handlePaymentInputChange}
+                        value={formik.values.cvv}
+                        maxLength={3}
                       />
                     </div>
                   </div>

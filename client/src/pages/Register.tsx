@@ -22,9 +22,7 @@ import { Link } from 'react-router-dom';
 const validationSchema = Yup.object({
   fName: Yup.string().required('First name is required'),
   lName: Yup.string().required('Last name is required'),
-  email: Yup.string()
-    .email('Invalid email address')
-    .required('Email is required'),
+  email: Yup.string().email('Invalid email address').required('Email is required'),
   streetAddress: Yup.string().required('Street is required'),
   city: Yup.string().required('City is required'),
   state: Yup.string().required('State is required'),
@@ -38,6 +36,7 @@ const validationSchema = Yup.object({
 
 const Register = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [displayedPhoneNumber, setDisplayedPhoneNumber] = useState('');
   const store = useUserStore();
   const setUserDetails = useUserStore((state) => state.setUserDetails);
   const navigate = useNavigate();
@@ -140,7 +139,6 @@ const Register = () => {
           },
           accountType: userData.accountType,
         });
-        // navigate('/profile');
       } catch (error) {
         console.log(error);
         registerFail();
@@ -188,16 +186,8 @@ const Register = () => {
 
   const handlePhoneChange = (event: any) => {
     const valueToSend = event.target.value.replace(/\D/g, '');
-    let { value } = event.target;
-    value = value.replace(/\D/g, "");
-    value = value.slice(0, 10); // limit the length
-    if (value.length > 6) {
-      value = `(${value.slice(0, 3)}) ${value.slice(3, 6)}-${value.slice(6)}`;
-    } else if (value.length > 3) {
-      value = `(${value.slice(0, 3)}) ${value.slice(3)}`;
-    } else if (value.length > 0) {
-      value = `(${value}`;
-    }
+    const formattedValue = valueToSend.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+    setDisplayedPhoneNumber(formattedValue);
     console.log(valueToSend);
     formik.setFieldValue('phoneNumber', valueToSend);
   };
@@ -227,10 +217,8 @@ const Register = () => {
             onChange={formik.handleChange}
             value={formik.values.fName}
             onKeyDown={(event) => {
-              if (!/[a-z]/i.test(event.key)) 
-                event.preventDefault();
-              }}
-              
+              if (!/[a-z]/i.test(event.key)) event.preventDefault();
+            }}
           />
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
@@ -241,9 +229,8 @@ const Register = () => {
             onChange={formik.handleChange}
             value={formik.values.lName}
             onKeyDown={(event) => {
-              if (!/[a-z]/i.test(event.key)) 
-                event.preventDefault();
-              }}
+              if (!/[a-z]/i.test(event.key)) event.preventDefault();
+            }}
           />
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
@@ -271,14 +258,12 @@ const Register = () => {
             required
             onChange={(e) => handleCityChange(e)}
             value={formik.values.city}
-            />
+          />
           <Select
             onValueChange={(value) => formik.setFieldValue('state', value)}
             name="state">
-            <SelectTrigger className="h-10 w-full max-w-md border border-gray-300 bg-white px-4 text-slate-400 text-md focus:border-logoblue focus:ring-logoblue">
-              <SelectValue
-                placeholder="State"
-              ></SelectValue>
+            <SelectTrigger className="text-md h-10 w-full max-w-md border border-gray-300 bg-white px-4 text-slate-400 focus:border-logoblue focus:ring-logoblue">
+              <SelectValue placeholder="State"></SelectValue>
             </SelectTrigger>
             <SelectContent side="bottom">
               {states.map((state, index) => (
@@ -305,7 +290,8 @@ const Register = () => {
             name="phoneNumber"
             required
             onChange={(e) => handlePhoneChange(e)}
-            value={formik.values.phoneNumber}
+            value={displayedPhoneNumber}
+            maxLength={10}
           />
           {/* <ErrorMessage name="phone" component={ErrorText} /> */}
           <input
@@ -321,7 +307,6 @@ const Register = () => {
             <input
               id="show-password"
               type="checkbox"
-              required
               className="mr-2"
               onChange={(e) => setIsPasswordVisible(e.target.checked)}
               checked={isPasswordVisible}
