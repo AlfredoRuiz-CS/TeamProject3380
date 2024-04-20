@@ -28,7 +28,7 @@ type shippingData = {
     paymentID?: number;
     cost?: number;
     trackingNum?: string;
-    estimatedDel?: string;
+    estimatedDel: string;
     shippingStatus?: string;
     streetAddress?: string;
     city?: string;
@@ -70,7 +70,22 @@ export const ShippingInformation = () => {
         const fetchShippingData = async () => {
             try {
                 const response = await axios.get("https://shastamart-api-deploy.vercel.app/api/shipping/getShippingInfo");
-                setShippingInfo(response.data);
+                console.log(response.data);
+                const shippingData = response.data.map((shipping: shippingData) => ({
+                    shippingID: shipping.shippingID,
+                    customerEmail: shipping.customerEmail,
+                    orderID: shipping.orderID,
+                    cost: shipping.cost,
+                    trackingNum: shipping.trackingNum,
+                    estimatedDel: new Date(shipping.estimatedDel).toLocaleDateString(),
+                    shippingStatus: shipping.shippingStatus,
+                    streetAddress: shipping.streetAddress,
+                    city: shipping.city,
+                    state: shipping.state,
+                    zipcode: shipping.zipcode,
+                }))
+                // response.data[0].estimatedDel = new Date(response.data[0].estimatedDel).toLocaleDateString()
+                setShippingInfo(shippingData);
             } catch(error) {
                 console.log(error);
             }
@@ -109,18 +124,18 @@ export const ShippingInformation = () => {
                     <Table className="max-w-screen ml-0 rounded-lg bg-gray-50">
                         <TableHeader>
                             <TableRow>
-                                <TableHead className="ml-8 max-w-5 pl-3 text-gray-700">
-                                    Shipping ID
+                                <TableHead className="ml-5 max-w-5  text-gray-700">
+                                    ID
                                 </TableHead>
-                                <TableHead className="max-w-5 text-gray-700">Order ID</TableHead>
+                                <TableHead className="text-gray-700">Order ID</TableHead>
                                 <TableHead className="max-w-5 text-gray-700">Tracking Number</TableHead>
                                 <TableHead className="max-w-5 text-gray-700">Email</TableHead>
                                 <TableHead className="max-w-5 text-gray-700">Cost</TableHead>
                                 <TableHead className="max-w-5 text-gray-700">Est. Date</TableHead>
                                 <TableHead className="max-w-5 text-gray-700">Address</TableHead>
                                 <TableHead className="max-w-5 text-gray-700">City</TableHead>
-                                <TableHead className="max-w-5 text-gray-700">State</TableHead>
-                                <TableHead className="max-w-5 text-gray-700">Zipcode</TableHead>
+                                <TableHead className="text-left pr-10 text-gray-700">State</TableHead>
+                                <TableHead className="text-center max-w-5 text-gray-700">Zipcode</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>

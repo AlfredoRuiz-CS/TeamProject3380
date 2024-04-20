@@ -87,8 +87,8 @@ async function createOrder(customerEmail,orderDate,items,paymentMethod,normalD,f
         const [isMember] = await connection.query(`
         SELECT membershipID
         FROM membership
-        WHERE customerEmail=?`,[customerEmail]);
-        if (isMember.length==0){
+        WHERE customerEmail=? and membershipStatus=1`,[customerEmail]);
+        if (isMember.length===0){
             const createShipping = await connection.query(`
             INSERT INTO shipping(orderID,paymentID,cost,trackingNum,estimatedDel,shippingStatus)
             VALUES(?,?,?,?,?,?)`,[lastId,IDpayment,10,uuidv4(),normalD,"Delivering"])
