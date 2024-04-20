@@ -83,7 +83,6 @@ const payment = (props: paymentProps) => {
     // Formik function to handle form submission
     onSubmit: async (values) => {
       console.log('Payment form submitted:', values);
-      console.log('HELLO???');
       let paymentMethod;
       if (usingExistingPaymentMethod && paymentMethodSelected) {
         // Use existing payment method
@@ -286,6 +285,18 @@ const payment = (props: paymentProps) => {
       console.log('Submission completed');
     }
   }, [formik.isSubmitting]);
+
+  useEffect(() => {
+    if (usingExistingPaymentMethod) {
+      formik.setValues({
+        cardNumber: paymentMethodSelected?.cardnumber as string,
+        cardName: paymentMethodSelected?.nameOnCard as string,
+        expirationDate: paymentMethodSelected?.expiration as string,
+        cvv: paymentMethodSelected?.cvv as string,
+        cardType: paymentMethodSelected?.cardtype as string,
+      });
+    }
+  }, [usingExistingPaymentMethod, paymentMethodSelected]);
 
   const paymentForms = ['Debit', 'Credit'];
 
