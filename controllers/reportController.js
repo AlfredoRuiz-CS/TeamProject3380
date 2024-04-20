@@ -543,7 +543,7 @@ const getMostPurchaseD = async(req,res)=>{
     startDate.setHours(0, 0, 0, 0); // Set time to 00:00:00.000 to start the day
     let sDate = `${startDate.getFullYear()}-${formatDigit(startDate.getMonth() + 1)}-${formatDigit(startDate.getDate())}`; 
     let eDate = `${endDate.getFullYear()}-${formatDigit(endDate.getMonth() + 1)}-${formatDigit(endDate.getDate())}`;  
-    const result = await reportModel.mostPurchase(startDate,endDate);
+    const result = await reportModel.mostPurchaseDated(startDate,endDate);
 
     if(!result) {
       res.writeHead(500,{'Content-Type':"application/json"});
@@ -568,7 +568,7 @@ const getMostPurchaseW = async(req,res)=>{
     startDate.setDate(endDate.getDate() - 6); // Subtract 6 to ensure a total of 7 days including the endDate
     let sDate = `${startDate.getFullYear()}-${formatDigit(startDate.getMonth() + 1)}-${formatDigit(startDate.getDate())}`; 
     let eDate = `${endDate.getFullYear()}-${formatDigit(endDate.getMonth() + 1)}-${formatDigit(endDate.getDate())}`;  
-    const result = await reportModel.mostPurchase(startDate,endDate);
+    const result = await reportModel.mostPurchaseDated(startDate,endDate);
 
     if(!result) {
       res.writeHead(500,{'Content-Type':"application/json"});
@@ -593,7 +593,7 @@ const getMostPurchaseM = async(req,res)=>{
     startDate.setMonth(endDate.getMonth() - 1); // Subtract 6 to ensure a total of 7 days including the endDate
     let sDate = `${startDate.getFullYear()}-${formatDigit(startDate.getMonth() + 1)}-${formatDigit(startDate.getDate())}`; 
     let eDate = `${endDate.getFullYear()}-${formatDigit(endDate.getMonth() + 1)}-${formatDigit(endDate.getDate())}`;  
-    const result = await reportModel.mostPurchase(startDate,endDate);
+    const result = await reportModel.mostPurchaseDated(startDate,endDate);
 
     if(!result) {
       res.writeHead(500,{'Content-Type':"application/json"});
@@ -639,7 +639,7 @@ const getLeastPurchaseD = async(req,res)=>{
     startDate.setHours(0, 0, 0, 0); // Set time to 00:00:00.000 to start the day
     let sDate = `${startDate.getFullYear()}-${formatDigit(startDate.getMonth() + 1)}-${formatDigit(startDate.getDate())}`; 
     let eDate = `${endDate.getFullYear()}-${formatDigit(endDate.getMonth() + 1)}-${formatDigit(endDate.getDate())}`;  
-    const result = await reportModel.leastPurchase(startDate,endDate);
+    const result = await reportModel.leastPurchaseDated(startDate,endDate);
 
     if(!result) {
       res.writeHead(500,{'Content-Type':"application/json"});
@@ -664,7 +664,7 @@ const getLeastPurchaseW = async(req,res)=>{
     startDate.setDate(endDate.getDate() - 6); // Subtract 6 to ensure a total of 7 days including the endDate
     let sDate = `${startDate.getFullYear()}-${formatDigit(startDate.getMonth() + 1)}-${formatDigit(startDate.getDate())}`; 
     let eDate = `${endDate.getFullYear()}-${formatDigit(endDate.getMonth() + 1)}-${formatDigit(endDate.getDate())}`;  
-    const result = await reportModel.leastPurchase(startDate,endDate);
+    const result = await reportModel.leastPurchaseDated(startDate,endDate);
 
     if(!result) {
       res.writeHead(500,{'Content-Type':"application/json"});
@@ -689,7 +689,7 @@ const getLeastPurchaseM = async(req,res)=>{
     startDate.setMonth(endDate.getMonth() - 1); // Subtract 6 to ensure a total of 7 days including the endDate
     let sDate = `${startDate.getFullYear()}-${formatDigit(startDate.getMonth() + 1)}-${formatDigit(startDate.getDate())}`; 
     let eDate = `${endDate.getFullYear()}-${formatDigit(endDate.getMonth() + 1)}-${formatDigit(endDate.getDate())}`;  
-    const result = await reportModel.leastPurchase(startDate,endDate);
+    const result = await reportModel.leastPurchaseDated(startDate,endDate);
 
     if(!result) {
       res.writeHead(500,{'Content-Type':"application/json"});

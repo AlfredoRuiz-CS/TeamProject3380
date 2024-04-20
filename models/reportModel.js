@@ -141,7 +141,7 @@ async function netSales(startDate, endDate) {
             netAmount = total.toFixed(2),
         ];
 
-        return {result};
+        return result;
     } catch (error) {
         console.log(error.message);
         throw error;
@@ -224,6 +224,26 @@ async function mostPurchase(startDate, endDate) {
     }
 }
 
+async function mostPurchaseDated(startDate, endDate) {
+    try {
+        const [result] = await pool.query(`
+        SELECT  
+            c.email, c.fName, c.lName, 
+            COUNT(p.orderID) AS NumberOfOrder, 
+            ROUND(SUM(p.total),2) AS TotalPurchaseValue
+        FROM customer c
+        LEFT JOIN purchaseOrder p ON p.customerEmail=c.email
+        WHERE p.orderDate BETWEEN ? and ?
+        GROUP BY c.email
+        ORDER BY TotalPurchaseValue DESC`, [startDate, endDate]);
+
+        return result;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
 async function leastPurchase(startDate, endDate) {
     try {
         const [result] = await pool.query(`
@@ -235,6 +255,26 @@ async function leastPurchase(startDate, endDate) {
         LEFT JOIN purchaseOrder p ON p.customerEmail=c.email
         GROUP BY c.email
         ORDER BY TotalPurchaseValue ASC`);
+
+        return result;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
+async function leastPurchaseDated(startDate, endDate) {
+    try {
+        const [result] = await pool.query(`
+        SELECT  
+            c.email, c.fName, c.lName, 
+            COUNT(p.orderID) AS NumberOfOrder, 
+            ROUND(SUM(p.total),2) AS TotalPurchaseValue
+        FROM customer c
+        LEFT JOIN purchaseOrder p ON p.customerEmail=c.email
+        WHERE p.orderDate BETWEEN ? and ?
+        GROUP BY c.email
+        ORDER BY TotalPurchaseValue ASC`, [startDate, endDate]);
 
         return result;
     } catch (error) {
@@ -369,7 +409,8 @@ module.exports = {
     membershipSales,
     refundReport,
     averagePurchaseValue,
-    mostPurchase, leastPurchase,
+    mostPurchase, mostPurchaseDated,
+    leastPurchase, leastPurchaseDated,
     getTotalInventory,
     getInventoryByWeek,
     getInventoryByDay,
