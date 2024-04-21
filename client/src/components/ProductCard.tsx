@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import {
   Select,
   SelectContent,
@@ -10,13 +11,16 @@ import {
 
 import { productItem } from '@/components/store';
 import { Link } from 'react-router-dom';
-
+import useUserStore from '@/components/store';
 interface ProductCardProps {
   product: productItem;
+  list?: boolean;
+  removeList?: boolean;
 }
 
 const ProductCard = (props: ProductCardProps) => {
   // Impoting the product from dynamic URL
+  const user = useUserStore();
 
   // Funcitonality to toggle the quantity dropdown
   const [QuantityEnabled, setQuantityEnabled] = useState(false);
@@ -27,11 +31,52 @@ const ProductCard = (props: ProductCardProps) => {
   }
 
   function handleAddToList() {
-    console.log('Added ', quantity, ' ', props.product.name, 'to List');
+    if (user.loggedIn && !user.isAdmin) {
+      listConfirmToast();
+      console.log('Added ', props.product.name, ' to List');
+      user.addToList(props.product);
+    }
+  }
+
+  function handleRemoveFromList() {
+    console.log('Removed ', quantity, ' ', props.product.name, 'from List');
+    if (user.loggedIn) {
+      user.removeFromList(props.product);
+      listRemoveToast();
+    }
   }
 
   function handleAddToCart() {
-    console.log('Added ', quantity, ' ', props.product.name, 'to Cart');
+    if (user.loggedIn && !user.isAdmin) {
+      cartConfirmToast();
+      console.log('Added ', quantity, ' ', props.product.name, 'to Cart');
+      user.addToCart(props.product, quantity);
+    }
+  }
+
+  const cartConfirmToast = () =>
+    toast.success(
+      'Added ' + quantity + ' ' + props.product.name + ' to Cart!',
+      {
+        position: 'bottom-right',
+        className: 'font-bold text-black',
+        duration: 2000,
+      }
+    );
+
+  const listConfirmToast = () =>
+    toast.success('Added ' + props.product.name + ' to List!', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      duration: 2000,
+    });
+
+  function listRemoveToast() {
+    toast.success('Removed ' + props.product.name + ' from List!', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      duration: 2000,
+    });
   }
 
   return (
@@ -42,11 +87,13 @@ const ProductCard = (props: ProductCardProps) => {
           <img
             src={props.product.image}
             className="mx-auto mt-8 h-[15rem] w-[20rem] rounded-xl object-cover"
-          ></img>
+          />
         </Link>
         {/* Product Name */}
         <h2 className="ml-6 mr-auto pt-4 text-left font-jua text-xl hover:underline hover:underline-offset-4">
-          <Link to={`/product/${props.product.name}`}>{props.product.name}</Link>
+          <Link to={`/product/${props.product.name}`}>
+            {props.product.name}
+          </Link>
         </h2>
         {/* Short Product Info */}
         <ul className="ml-10 list-disc text-left text-sm">
@@ -65,20 +112,19 @@ const ProductCard = (props: ProductCardProps) => {
             ' per ' +
             props.product.portion}
         </h1>
-        {/* Quantity Button */}
-        <div className="mt-10 flex flex-row justify-center gap-3 px-3">
+        {/* Buttons section */}
+        <section className="mb-3 mt-auto flex flex-row justify-center gap-3 px-3">
+          {/* Quantity Button */}
           {QuantityEnabled ? (
             <div className="flex flex-row gap-2">
               <Button
                 className="text-md w-14 rounded-lg bg-[#48C9E5] py-5 font-jua text-black hover:bg-[#48C9E5]/85"
-                onClick={quantityDropdownToggle}
-              >
+                onClick={quantityDropdownToggle}>
                 Qty.
               </Button>
               <Select
                 defaultValue="1"
-                onValueChange={(e) => setQuantity(parseInt(e))}
-              >
+                onValueChange={(e) => setQuantity(parseInt(e))}>
                 <SelectTrigger className="h-10 w-[3rem] flex-grow border border-black bg-gray-200">
                   <SelectValue placeholder="1" />
                 </SelectTrigger>
@@ -94,27 +140,37 @@ const ProductCard = (props: ProductCardProps) => {
           ) : (
             <Button
               className="text-md w-14 rounded-lg bg-quantityblue py-5 font-jua text-black hover:bg-quantityblue/85"
-              onClick={quantityDropdownToggle}
-            >
+              onClick={quantityDropdownToggle}>
               Qty.
             </Button>
           )}
-
-          {/* Add To List Button */}
-          <Button
-            className="text-md flex-grow rounded-lg bg-blue-500 py-5 font-jua text-black hover:bg-blue-500/90"
-            onClick={handleAddToList}
-          >
-            Add to List
-          </Button>
           {/* Add to Cart Button */}
           <Button
             className="text-md flex-grow rounded-lg bg-red-500 py-5 font-jua text-black hover:bg-red-500/85"
-            onClick={handleAddToCart}
-          >
+            onClick={handleAddToCart}>
             Add to Cart
           </Button>
-        </div>
+          {/* Add To List Button */}
+          {props.list ? (
+            <Button
+              className="text-md flex-grow rounded-lg bg-blue-500 py-5 font-jua text-black hover:bg-blue-500/90"
+              onClick={handleAddToList}>
+              Add to List
+            </Button>
+          ) : (
+            <></>
+          )}
+          {/* Remove From List Button */}
+          {props.removeList ? (
+            <Button
+              className="text-md hover:bg-blueß-500/90 flex-grow rounded-lg bg-blue-500 py-5 font-jua text-black"
+              onClick={handleRemoveFromList}>
+              Remove from List
+            </Button>
+          ) : (
+            <></>
+          )}
+        </section>
       </div>
     </>
   );

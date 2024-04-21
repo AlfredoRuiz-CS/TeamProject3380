@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
 import { Button } from './ui/button.tsx';
+import toast from 'react-hot-toast';
 import { IoMdCart } from 'react-icons/io';
+import { IoNotifications } from 'react-icons/io5';
 import { IoIosArrowDown } from 'react-icons/io';
 import {
   DropdownMenu,
@@ -13,21 +14,24 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu.tsx';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
-// Imports for state management
 import useUserStore from '@/components/store';
-// import { devtools, persist } from "zustand/middleware";
-import type {} from '@redux-devtools/extension'; // required for devtools typing
-// import { useNavigate } from 'react-router-dom';
+import { useEffect } from 'react';
 
 interface HeaderProps {
   color?: 'blue' | 'white';
 }
 
 const Header = (props: HeaderProps) => {
-  const store = useUserStore();
-  // const navigate = useNavigate();
-  useEffect(() => {}, [store.loggedIn]);
+  const user = useUserStore();
+  const navigate = useNavigate();
+  // const [notifNumber, setNotifNumber] = useState(0);
+
+  // ! ADD BACKEND CALL TO DISPLAY THE NUMBER OF NOTIFICATIONS
+  useEffect(() => {}, [user.loggedIn]);
+  useEffect(() => {}, [user.cartItemsNumber]);
 
   let textColor = 'text-white';
   let borderColor = 'border-white';
@@ -38,9 +42,46 @@ const Header = (props: HeaderProps) => {
   }
 
   function logoutHandler() {
-    store.logout();
-    // navigate('/home');
+    user.logout();
+    localStorage.removeItem('token');
+    logoutToast();
   }
+
+  function logoutToast() {
+    toast.success('You have been logged out successfully...', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      duration: 2000,
+    });
+    navigate('/home');
+  }
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get(
+          'https://shastamart-api-deploy.vercel.app/api/notifications/get_notifications'
+        );
+        const notifData = await response.data;
+
+        const uniqueMessages: any = {};
+        const filteredData: any = [];
+        notifData.forEach((item: any) => {
+          if (!uniqueMessages[item.message]) {
+            uniqueMessages[item.message] = true;
+            filteredData.push(item);
+          }
+        });
+        console.log(filteredData);
+        user.setUserDetails({
+          notificationsCount: filteredData.length
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchNotifications();
+  }, []);
 
   return (
     <>
@@ -48,11 +89,10 @@ const Header = (props: HeaderProps) => {
         className={
           'flex h-16 w-full justify-between overflow-x-hidden bg-transparent font-inter ' +
           textColor
-        }
-      >
+        }>
         {/* Logo */}
         <div className="pl-10 pt-5">
-          <Link to="/home">
+          <Link to="/">
             {props.color === 'blue' ? (
               <img src="/logos/logo_full_blue.svg" alt="ShastaMart Logo" />
             ) : (
@@ -68,14 +108,23 @@ const Header = (props: HeaderProps) => {
               <Link to="/">Home</Link>
             </li>
             {/* If NOT a member display Membership link */}
-            {!store.loggedIn ? (
+            {!user.loggedIn ? (
               <li className="flex items-center justify-center">
                 <Link to="/membership">Membership</Link>
               </li>
-            ) : !store.isMember ? (
+            ) : !user.isMember ? (
               <li className="flex items-center justify-center">
                 <Link to="/membership">Membership</Link>
               </li>
+            ) : user.loggedIn && user.accountType === 'employee' ? (
+              <>
+                <li className="flex items-center justify-center">
+                  <Link to="/admin">Dashboard</Link>
+                </li>
+                <li className="flex items-center justify-center">
+                  <Link to="/reports">Reports</Link>
+                </li>
+              </>
             ) : (
               <></>
             )}
@@ -85,16 +134,31 @@ const Header = (props: HeaderProps) => {
             </li>
 
             {/* If logged in display name and cart along with dropdown for dashboard*/}
-            {store.loggedIn ? (
+            {user.loggedIn ? (
               <li className="flex items-center justify-center">
                 {textColor === 'text-white' ? (
-                  <Link to="/cart">
-                    <IoMdCart size={20} color="white" />
+                  user.accountType === 'employee' ? (
+                    // TODO: Add notification dropdown that links to the low supply sheet
+
+                    <Link to="/notifications" className="flex flex-row gap-1">
+                      <p className="">{user.notificationsCount}</p>
+                      <IoNotifications size={20} color="white" />
+                    </Link>
+                  ) : (
+                    <Link to="/cart" className="flex flex-row gap-1">
+                      <p className="">{user.cartItemsNumber}</p>
+                      <IoMdCart size={20} color="white" />
+                    </Link>
+                  )
+                ) : user.accountType === 'employee' ? (
+                  <Link to="/admin" className="flex flex-row gap-1">
+                    <p className="">{user.notificationsCount}</p>
+                    <IoNotifications size={20} color="primary" />
                   </Link>
                 ) : (
-                  <Link to="/cart">
+                  <Link to="/cart" className="flex flex-row gap-1">
+                    <p className="">{user.cartItemsNumber}</p>
                     <IoMdCart size={20} color="primary" />
-                    <p className="">{10}</p>
                   </Link>
                 )}
               </li>
@@ -103,14 +167,13 @@ const Header = (props: HeaderProps) => {
                 <Button
                   asChild
                   variant="outline"
-                  className={'bg-transparent ' + textColor + ' ' + borderColor}
-                >
+                  className={'bg-transparent ' + textColor + ' ' + borderColor}>
                   <Link to="/login">Login</Link>
                 </Button>
               </li>
             )}
             {/* If User is logged in, display dropdown menu */}
-            {store.loggedIn ? (
+            {user.loggedIn && !user.isAdmin ? (
               <li className="flex items-center justify-center">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild className="focus-visible:ring-0">
@@ -120,9 +183,8 @@ const Header = (props: HeaderProps) => {
                       className={
                         'p-0 text-[16px] font-normal focus-visible:ring-0 ' +
                         textColor
-                      }
-                    >
-                      {store.fname}
+                      }>
+                      {user.fname}
                       <IoIosArrowDown />
                     </Button>
                   </DropdownMenuTrigger>
@@ -137,6 +199,46 @@ const Header = (props: HeaderProps) => {
                         <Link to="/list">My List</Link>
                       </DropdownMenuItem>
 
+                      <DropdownMenuItem>
+                        <Link to="/profile">Profile</Link>
+                      </DropdownMenuItem>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={logoutHandler}>
+                      <Link to="/home">Logout</Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </li>
+            ) : // If user is logged in and is an admin, display admin dropdown
+            user.loggedIn && user.isAdmin ? (
+              <li className="flex items-center justify-center">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild className="focus-visible:ring-0">
+                    <Button
+                      variant="link"
+                      size="sm"
+                      className={
+                        'p-0 text-[16px] font-normal focus-visible:ring-0 ' +
+                        textColor
+                      }>
+                      {user.fname}
+                      <IoIosArrowDown />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <DropdownMenuItem>
+                        <Link to="/orders">Orders</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link to="/suppliers">Suppliers</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem>
+                        <Link to="/shipping">Shipping</Link>
+                      </DropdownMenuItem>
                       <DropdownMenuItem>
                         <Link to="/profile">Profile</Link>
                       </DropdownMenuItem>

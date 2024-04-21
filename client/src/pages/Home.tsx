@@ -18,27 +18,26 @@ const Home = () => {
           {/* Buttons */}
           {user.loggedIn ? (
             <Button asChild className="" size="lg">
-            <Link to="/products">Start Shopping</Link>
-          </Button>
+              <Link to="/products">Start Shopping</Link>
+            </Button>
           ) : (
             <div className="mb-2 mt-6 flex flex-row gap-6 lg:mb-12">
-            <Button
-              asChild
-              variant="outline"
-              className="border-primary bg-transparent"
-              size="lg"
-            >
-              <Link to="/login">Login</Link>
-            </Button>
-            <Button asChild className="" size="lg">
-              <Link to="/register">Register</Link>
-            </Button>
-          </div>
+              <Button
+                asChild
+                variant="outline"
+                className="border-primary bg-transparent"
+                size="lg">
+                <Link to="/login">Login</Link>
+              </Button>
+              <Button asChild className="" size="lg">
+                <Link to="/register">Register</Link>
+              </Button>
+            </div>
           )}
         </div>
-        <div className="mx-[15rem] flex flex-row justify-around gap-10 pb-10">
+        <div className="mx-auto flex flex-row justify-around gap-10 pb-10">
           {/* Bus Card */}
-          <div className="flex h-[23rem] min-w-[45rem] flex-col rounded-2xl bg-[#d9d9d9]">
+          <div className="flex h-[23rem] min-w-64 flex-col rounded-2xl bg-[#d9d9d9] lg:min-w-[45rem]">
             <img src="./assets/bus.svg" className="h-10 lg:h-[15rem]" />
             <ul className="list-disc pl-10 text-lg lg:pl-32 lg:text-2xl">
               <li>Fast free delivery to your address, on us.</li>

@@ -2,7 +2,8 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 // import ErrorText from '../components/ErrorText';
 import { useTypewriter, Cursor } from 'react-simple-typewriter';
-import React, { useState, useEffect } from 'react'; // reacteventhandler removed from imports
+import { useState, useEffect } from 'react'; // reacteventhandler removed from imports
+import toast from 'react-hot-toast'; // react toasts for notifications
 // import { Button } from '../components/ui/button.tsx';
 import { useFormik } from 'formik'; // error message removed from imports
 import * as Yup from 'yup';
@@ -26,19 +27,22 @@ const validationSchema = Yup.object({
   city: Yup.string().required('City is required'),
   state: Yup.string().required('State is required'),
   zipcode: Yup.string().required('Zipcode is required'),
-  phoneNumber: Yup.string().matches(/^\d*$/, 'Phone number is not valid').required('Phone number is required').max(10),
-  password: Yup.string().required('Password is required')
+  phoneNumber: Yup.string()
+    .matches(/^\d*$/, 'Phone number is not valid')
+    .required('Phone number is required')
+    .max(10),
+  password: Yup.string().required('Password is required'),
 });
 
 const Register = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [displayedPhoneNumber, setDisplayedPhoneNumber] = useState('');
   const store = useUserStore();
   const setUserDetails = useUserStore((state) => state.setUserDetails);
   const navigate = useNavigate();
 
-
   const states = [
-    "AL",
+    'AL',
     'AK',
     'AS',
     'AZ',
@@ -115,42 +119,77 @@ const Register = () => {
     onSubmit: async (values, { setSubmitting }) => {
       console.log('Form submitted:', values);
       try {
-        const response = await axios.post('http://localhost:4000/register', values);
-        const userData = await response.data;
+        const response = await axios.post(
+          'https://shastamart-api-deploy.vercel.app/api/users/register',
+          values
+        );
+        const { token, ...userData } = await response.data;
+        localStorage.setItem('token', token);
+        store.login(userData.accountType === 'employee');
         setUserDetails({
-          loggedIn: true,
           fname: userData.fName,
           lname: userData.lName,
           email: userData.email,
           phone: userData.phoneNumber,
-          address: { 
+          address: {
             street: userData.streetAddress,
             city: userData.city,
             state: userData.state,
             zip: userData.zipcode,
-          }
+          },
+          accountType: userData.accountType,
         });
-        // navigate('/profile');
       } catch (error) {
         console.log(error);
+        registerFail();
       }
       setSubmitting(false);
     },
-    // },
   });
+
+  function registerSuccess() {
+    toast.success('Registration successful.', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      duration: 2000,
+    });
+  }
+
+  const registerFail = () =>
+    toast.error('Error registering account.', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      duration: 2000,
+    });
 
   useEffect(() => {
     if (store.loggedIn) {
-        console.log('User is loggin in...redirecting')
-        navigate('/products');
+      console.log('User is loggin in... redirecting');
+      registerSuccess();
+      navigate('/products');
     }
-}, [store.loggedIn, navigate]);
+  }, [store.loggedIn, navigate]);
 
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    if (value.match(/^\d*$/)) {
-      formik.setFieldValue('phoneNumber', value);
+  const handleCityChange = (event: any) => {
+    const { value } = event.target;
+    if (/^[a-zA-Z\s]*$/.test(value)) {
+      formik.setFieldValue('city', value);
     }
+  };
+
+  const handleZipChange = (event: any) => {
+    const { value } = event.target;
+    if (/^\d{0,5}$/.test(value)) {
+      formik.setFieldValue('zipcode', value);
+    }
+  };
+
+  const handlePhoneChange = (event: any) => {
+    const valueToSend = event.target.value.replace(/\D/g, '');
+    const formattedValue = valueToSend.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+    setDisplayedPhoneNumber(formattedValue);
+    console.log(valueToSend);
+    formik.setFieldValue('phoneNumber', valueToSend);
   };
 
   const [message] = useTypewriter({
@@ -162,7 +201,9 @@ const Register = () => {
     <>
       <div className="flex min-h-screen flex-col overflow-x-hidden bg-bgwhite bg-gradient-to-b from-logoblue via-bgwhite to-bgwhite font-inter text-black">
         <Header />
-        <form className="flex w-full flex-col items-center gap-5 py-5" onSubmit={formik.handleSubmit}>
+        <form
+          className="flex w-full flex-col items-center gap-5 py-5"
+          onSubmit={formik.handleSubmit}>
           <h1 className="mb-5 font-jua text-8xl">Register</h1>
           <Link to="/login" className="mb-5 font-jua text-5xl text-darkblue">
             Already have an account?
@@ -172,22 +213,31 @@ const Register = () => {
             type="text"
             placeholder="First name"
             name="fName"
+            required
             onChange={formik.handleChange}
             value={formik.values.fName}
+            onKeyDown={(event) => {
+              if (!/[a-z]/i.test(event.key)) event.preventDefault();
+            }}
           />
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="text"
+            required
             placeholder="Last name"
             name="lName"
             onChange={formik.handleChange}
             value={formik.values.lName}
+            onKeyDown={(event) => {
+              if (!/[a-z]/i.test(event.key)) event.preventDefault();
+            }}
           />
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
-            type="text"
+            type="email"
             placeholder="Email"
             name="email"
+            required
             onChange={formik.handleChange}
             value={formik.values.email}
           />
@@ -196,6 +246,7 @@ const Register = () => {
             type="text"
             placeholder="Street address"
             name="streetAddress"
+            required
             onChange={formik.handleChange}
             value={formik.values.streetAddress}
           />
@@ -204,19 +255,15 @@ const Register = () => {
             type="text"
             placeholder="City"
             name="city"
-            onChange={formik.handleChange}
+            required
+            onChange={(e) => handleCityChange(e)}
             value={formik.values.city}
           />
           <Select
             onValueChange={(value) => formik.setFieldValue('state', value)}
-            defaultValue={store.address.state}
-            name="state"
-          >
-            <SelectTrigger className="h-10 w-full max-w-md border bg-white border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue">
-              <SelectValue
-                // placeholder={store.address.state}
-                className="text-gray-200"
-              />
+            name="state">
+            <SelectTrigger className="text-md h-10 w-full max-w-md border border-gray-300 bg-white px-4 text-slate-400 focus:border-logoblue focus:ring-logoblue">
+              <SelectValue placeholder="State"></SelectValue>
             </SelectTrigger>
             <SelectContent side="bottom">
               {states.map((state, index) => (
@@ -231,16 +278,20 @@ const Register = () => {
             type="text"
             placeholder="Zipcode"
             name="zipcode"
-            onChange={formik.handleChange}
+            required
+            onChange={(e) => handleZipChange(e)}
             value={formik.values.zipcode}
+            maxLength={5}
           />
           <input
             className="mx-4 h-10 w-full max-w-md rounded-md border border-gray-300 px-4 focus:border-logoblue focus:ring-logoblue"
             type="tel"
             placeholder="Phone number"
             name="phoneNumber"
-            onChange={handlePhoneChange}
-            value={formik.values.phoneNumber}
+            required
+            onChange={(e) => handlePhoneChange(e)}
+            value={displayedPhoneNumber}
+            maxLength={10}
           />
           {/* <ErrorMessage name="phone" component={ErrorText} /> */}
           <input
@@ -248,6 +299,7 @@ const Register = () => {
             type={isPasswordVisible ? 'text' : 'password'}
             placeholder="Password"
             name="password"
+            required
             onChange={formik.handleChange}
             value={formik.values.password}
           />
@@ -263,7 +315,9 @@ const Register = () => {
               Show Password
             </label>
           </div>
-          <button className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground shadow hover:bg-primary/90 h-10 rounded-md px-8 select-none" type="submit">
+          <button
+            className="inline-flex h-10 select-none items-center justify-center whitespace-nowrap rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50"
+            type="submit">
             <p>Register</p>
           </button>
         </form>
