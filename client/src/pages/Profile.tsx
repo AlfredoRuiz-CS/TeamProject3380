@@ -423,8 +423,11 @@ const Profile = () => {
           <div className=" pt-2 font-jua text-6xl">{store.fname + ' ' + store.lname}</div>
 
           {/* Member Since: AccountCreatedDate */}
+          <span className=" pt-4 font-inter text-3xl text-yellow-600">
+            {store.isMember ? 'Gold Member ' : ''}
+          </span>
           <div className="pb-6 pt-4 font-inter text-3xl">
-            Member Since:{' '}
+            Account Created:{' '}
             {store.isAdmin
               ? 'April 10, 2024'
               : new Date().toLocaleDateString('en-US', {
