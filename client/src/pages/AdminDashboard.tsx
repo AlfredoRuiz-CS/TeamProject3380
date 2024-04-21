@@ -68,48 +68,46 @@ const AdminDashboard = () => {
           'https://shastamart-api-deploy.vercel.app/api/products/getAllProducts'
         );
         const productsData = await response.data;
-        const transformedProducts = productsData.map(
-          (product: ProductApiResponse) => ({
-            productId: product.productID,
-            name: product.productName,
-            description: product.productDesc.split('. '),
-            price: parseFloat(product.productPrice),
-            stock: product.stockQuantity,
-            category: product.categName,
-            image: product.image,
-            supplier: product.supplier,
-            supplierStock: product.supplierStock,
-            portion: product.portion,
-            supplierPrice: product.supplierPrice,
-            nutritionFacts: {
-              servingSize: product.servingSize,
-              servingsPerContainer: product.servingsPerContainer,
-              calories: product.calories,
-              totalFat: product.totalFat,
-              cholesterol: product.cholesterol,
-              sodium: product.sodium,
-              totalCarbohydrates: product.totalCarbohydrates,
-              dietaryFiber: product.dietaryFiber,
-              sugars: product.sugars,
-              protein: product.protein,
-              potassium: product.potassium,
-              vitaminA: product.vitaminA,
-              vitaminC: product.vitaminC,
-              vitaminD: product.vitaminD,
-              vitaminE: product.vitaminE,
-              calcium: product.calcium,
-              iron: product.iron,
+        const transformedProducts = productsData.map((product: ProductApiResponse) => ({
+          productId: product.productID,
+          name: product.productName,
+          description: product.productDesc.split('. '),
+          price: parseFloat(product.productPrice),
+          stock: product.stockQuantity,
+          category: product.categName,
+          image: product.image,
+          supplier: product.supplier,
+          supplierStock: product.supplierStock,
+          portion: product.portion,
+          supplierPrice: product.supplierPrice,
+          nutritionFacts: {
+            servingSize: product.servingSize,
+            servingsPerContainer: product.servingsPerContainer,
+            calories: product.calories,
+            totalFat: product.totalFat,
+            cholesterol: product.cholesterol,
+            sodium: product.sodium,
+            totalCarbohydrates: product.totalCarbohydrates,
+            dietaryFiber: product.dietaryFiber,
+            sugars: product.sugars,
+            protein: product.protein,
+            potassium: product.potassium,
+            vitaminA: product.vitaminA,
+            vitaminC: product.vitaminC,
+            vitaminD: product.vitaminD,
+            vitaminE: product.vitaminE,
+            calcium: product.calcium,
+            iron: product.iron,
+          },
+          shippingDetails: {
+            dimensions: {
+              length: product.dimensionsLength,
+              width: product.dimensionsWidth,
+              height: product.dimensionsHeight,
             },
-            shippingDetails: {
-              dimensions: {
-                length: product.dimensionsLength,
-                width: product.dimensionsWidth,
-                height: product.dimensionsHeight,
-              },
-              weight: product.weight,
-            },
-          })
-        );
+            weight: product.weight,
+          },
+        }));
         setProducts(transformedProducts);
       } catch (error) {
         console.log(error);
@@ -124,9 +122,7 @@ const AdminDashboard = () => {
   const popularItem1 = products.reduce((lowest, product) => {
     return lowest.supplierStock < product.supplierStock ? lowest : product;
   }, products[0]);
-  const updatedProducts = products.filter(
-    (product) => product !== popularItem1
-  );
+  const updatedProducts = products.filter((product) => product !== popularItem1);
   const popularItem2 = updatedProducts.reduce((lowest, product) => {
     return lowest.supplierStock < product.supplierStock ? lowest : product;
   }, products[0]);
@@ -140,14 +136,11 @@ const AdminDashboard = () => {
   }
 
   function orderSuccessToast(productName: string, quantity: string) {
-    toast.success(
-      'Order for ' + quantity + ' ' + productName + ' ' + 'Submitted!',
-      {
-        position: 'bottom-right',
-        className: 'font-bold text-black',
-        duration: 2000,
-      }
-    );
+    toast.success('Order for ' + quantity + ' ' + productName + ' ' + 'Submitted!', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      duration: 2000,
+    });
   }
 
   function supplierSuccessToast(supplierName: string) {
@@ -159,33 +152,24 @@ const AdminDashboard = () => {
   }
 
   function addProductToast(productName: string, quantity: string) {
-    toast.success(
-      'Added ' + quantity + ' ' + productName + ' ' + 'to Inventory!',
-      {
-        position: 'bottom-right',
-        className: 'font-bold text-black',
-        duration: 2000,
-      }
-    );
+    toast.success('Added ' + quantity + ' ' + productName + ' ' + 'to Inventory!', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      duration: 2000,
+    });
   }
 
-  async function handleSubmitNewSupplier(
-    event: React.FormEvent<HTMLFormElement>
-  ) {
+  async function handleSubmitNewSupplier(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    let supplierName = (
-      document.getElementById('suppliername') as HTMLInputElement
-    ).value;
-    let phoneNumber = (
-      document.getElementById('supplierphone') as HTMLInputElement
-    ).value;
-    let streetAddress = (
-      document.getElementById('streetaddress') as HTMLInputElement
-    ).value;
+    let supplierName = (document.getElementById('suppliername') as HTMLInputElement)
+      .value;
+    let phoneNumber = (document.getElementById('supplierphone') as HTMLInputElement)
+      .value;
+    let streetAddress = (document.getElementById('streetaddress') as HTMLInputElement)
+      .value;
     let city = (document.getElementById('city') as HTMLInputElement).value;
     let state = selectedState;
-    let zipcode = (document.getElementById('zipcode') as HTMLInputElement)
-      .value;
+    let zipcode = (document.getElementById('zipcode') as HTMLInputElement).value;
 
     const data = {
       name: supplierName,
@@ -212,9 +196,7 @@ const AdminDashboard = () => {
 
   async function handleRemoveProduct(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    let productName = (
-      document.getElementById('productname') as HTMLInputElement
-    ).value;
+    let productName = (document.getElementById('productname') as HTMLInputElement).value;
 
     const data = {
       productName: productName,
@@ -240,11 +222,44 @@ const AdminDashboard = () => {
     }
   }
 
+  async function handleRemoveStock(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    let productName = (document.getElementById('productname') as HTMLInputElement).value;
+    let quantity = (document.getElementById('productquantity') as HTMLInputElement).value;
+
+    const data = {
+      productName: productName,
+      quantity: quantity,
+    };
+
+    try {
+      const response = await axios.post(
+        'https://shastamart-api-deploy.vercel.app/api/products/deleteStock',
+        data
+      );
+
+      if (response.status === 200) {
+        toast.success('Stock Removed!', {
+          position: 'bottom-right',
+          className: 'font-bold text-black',
+          duration: 2000,
+        });
+      }
+      toast.success(quantity + ' ' + productName + '(s) removed from stock', {
+        position: 'bottom-right',
+        className: 'font-bold text-black',
+        duration: 2000,
+      });
+      console.log(quantity + ' ' + productName + '(s) removed from stock');
+      setReloadTrigger((prev) => prev + 1);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   function handleRemoveSupplier(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    let supplierName = (
-      document.getElementById('suppliername') as HTMLInputElement
-    ).value;
+    let supplierName = (document.getElementById('suppliername') as HTMLInputElement)
+      .value;
 
     const data = {
       supplierName: supplierName,
@@ -257,19 +272,21 @@ const AdminDashboard = () => {
       );
       console.log(response);
       console.log('Supplier Removed for ', supplierName);
+      toast.success('Supplier ' + supplierName + ' Removed!', {
+        position: 'bottom-right',
+        className: 'font-bold text-black',
+        duration: 2000,
+      });
       setReloadTrigger((prev) => prev + 1);
     } catch (error) {
       console.log(error);
     }
   }
 
-   async function handleSubmitOrder(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmitOrder(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    let productName = (
-      document.getElementById('productName') as HTMLInputElement
-    ).value;
-    let quantity = (document.getElementById('quantity') as HTMLInputElement)
-      .value;
+    let productName = (document.getElementById('productName') as HTMLInputElement).value;
+    let quantity = (document.getElementById('quantity') as HTMLInputElement).value;
 
     const data = {
       productName: productName,
@@ -292,25 +309,17 @@ const AdminDashboard = () => {
 
   async function handleSubmitNewItem(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    let description = (
-      document.getElementById('productdescription') as HTMLInputElement
-    ).value;
+    let description = (document.getElementById('productdescription') as HTMLInputElement)
+      .value;
     // For Toast Confirmation
-    let productName = (
-      document.getElementById('productName') as HTMLInputElement
-    ).value;
-    let quantity = (
-      document.getElementById('stockquantity') as HTMLInputElement
-    ).value;
+    let productName = (document.getElementById('productName') as HTMLInputElement).value;
+    let quantity = (document.getElementById('stockquantity') as HTMLInputElement).value;
 
     const data = {
       productInfo: {
-        productName: (
-          document.getElementById('productName') as HTMLInputElement
-        ).value,
+        productName: (document.getElementById('productName') as HTMLInputElement).value,
         productDesc: description,
-        productPrice: (document.getElementById('price') as HTMLInputElement)
-          .value,
+        productPrice: (document.getElementById('price') as HTMLInputElement).value,
         stockQuantity: parseInt(
           (document.getElementById('stockquantity') as HTMLInputElement).value
         ),
@@ -326,20 +335,16 @@ const AdminDashboard = () => {
                   : 5,
 
         image: '/assets/default.jpg',
-        supplier: (document.getElementById('suppliername') as HTMLInputElement)
-          .value,
+        supplier: (document.getElementById('suppliername') as HTMLInputElement).value,
         supplierStock: parseInt(
           (document.getElementById('supplierstock') as HTMLInputElement).value
         ),
-        supplierPrice: (
-          document.getElementById('supplierprice') as HTMLInputElement
-        ).value,
+        supplierPrice: (document.getElementById('supplierprice') as HTMLInputElement)
+          .value,
         portion: portion as 'lb.' | 'oz.' | 'item' | 'gal.',
       },
       nutritionFacts: {
-        servingSize: (
-          document.getElementById('servingsize') as HTMLInputElement
-        ).value,
+        servingSize: (document.getElementById('servingsize') as HTMLInputElement).value,
         servingsPerContainer: (
           document.getElementById('servingspercontainer') as HTMLInputElement
         ).value,
@@ -409,9 +414,7 @@ const AdminDashboard = () => {
                   <TableHead className="max-w-6">Value In Inventory</TableHead>
                   <TableHead className="max-w-6">Supplier Name</TableHead>
                   <TableHead className="max-w-6">Supplier Price</TableHead>
-                  <TableHead className="max-w-7">
-                    Supplier Stock Status
-                  </TableHead>
+                  <TableHead className="max-w-7">Supplier Stock Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -436,9 +439,7 @@ const AdminDashboard = () => {
                         currency: 'USD',
                       })}
                     </TableCell>
-                    <TableCell className="max-w-6">
-                      {product.supplier}
-                    </TableCell>
+                    <TableCell className="max-w-6">{product.supplier}</TableCell>
 
                     <TableCell className="max-w-6">
                       {product.supplierPrice.toLocaleString('en-US', {
@@ -467,9 +468,7 @@ const AdminDashboard = () => {
               <div className="flex flex-row">
                 <div className="ml-10 mt-10 flex flex-col gap-10">
                   <div className="flex w-full flex-row justify-between gap-[10rem]">
-                    <h1 className="flex text-4xl text-darkblue">
-                      Total Supply
-                    </h1>
+                    <h1 className="flex text-4xl text-darkblue">Total Supply</h1>
                     <h1 className="text-right text-4xl text-darkblue">
                       {Object.values(products).reduce(
                         (total, product) => total + product.stock,
@@ -483,8 +482,7 @@ const AdminDashboard = () => {
                     <h1 className="text-right text-4xl text-darkblue">
                       {Object.values(products)
                         .reduce(
-                          (total, product) =>
-                            total + product.price * product.stock,
+                          (total, product) => total + product.price * product.stock,
                           0
                         )
                         .toLocaleString('en-US', {
@@ -494,9 +492,7 @@ const AdminDashboard = () => {
                     </h1>
                   </div>
                   <div className="flex w-full flex-row justify-between gap-[10rem]">
-                    <h1 className="pb-14 text-4xl text-darkblue">
-                      Total Costs
-                    </h1>
+                    <h1 className="pb-14 text-4xl text-darkblue">Total Costs</h1>
                     <h1 className="text-right text-4xl text-darkblue">
                       {Object.values(products)
                         .reduce(
@@ -522,9 +518,7 @@ const AdminDashboard = () => {
                 <DialogContent>
                   <form onSubmit={handleSubmitOrder}>
                     <DialogHeader>
-                      <DialogTitle className="text-3xl">
-                        Order Stock
-                      </DialogTitle>
+                      <DialogTitle className="text-3xl">Order Stock</DialogTitle>
                       <DialogDescription className="text-lg">
                         Enter Product Name and Quantity below to submit order.
                       </DialogDescription>
@@ -572,12 +566,10 @@ const AdminDashboard = () => {
                 <DialogContent>
                   <form onSubmit={handleSubmitNewItem}>
                     <DialogHeader>
-                      <DialogTitle className="text-3xl">
-                        Insert New Product
-                      </DialogTitle>
+                      <DialogTitle className="text-3xl">Insert New Product</DialogTitle>
                       <DialogDescription className="text-lg">
-                        Enter Product Name, Price, Portions, and Quantity of
-                        Product, etc...
+                        Enter Product Name, Price, Portions, and Quantity of Product,
+                        etc...
                       </DialogDescription>
                     </DialogHeader>
                     <div className="grid gap-4 py-4">
@@ -700,9 +692,7 @@ const AdminDashboard = () => {
                         />
                       </div>
                       <div className="grid grid-cols-4 items-center gap-4">
-                        <Label
-                          htmlFor="servingspercontainer"
-                          className="text-right">
+                        <Label htmlFor="servingspercontainer" className="text-right">
                           Servings Per Container
                         </Label>
                         <Input
@@ -724,9 +714,7 @@ const AdminDashboard = () => {
                         />
                       </div>
                       <div className="grid grid-cols-4 items-center gap-4">
-                        <Label
-                          htmlFor="productdescription"
-                          className="text-right">
+                        <Label htmlFor="productdescription" className="text-right">
                           Product Description
                         </Label>
                         <Input
@@ -756,9 +744,7 @@ const AdminDashboard = () => {
                 <DialogContent>
                   <form onSubmit={handleSubmitNewSupplier}>
                     <DialogHeader>
-                      <DialogTitle className="text-3xl">
-                        Add New Supplier
-                      </DialogTitle>
+                      <DialogTitle className="text-3xl">Add New Supplier</DialogTitle>
                       <DialogDescription className="text-lg">
                         Enter supplier name and contact information below.
                       </DialogDescription>
@@ -850,15 +836,82 @@ const AdminDashboard = () => {
               <Dialog>
                 <DialogTrigger asChild>
                   <Button className=" mt-6 flex h-[4rem] w-[30rem] flex-row self-center bg-red-500 text-lg hover:bg-red-500/90">
+                    Remove Stock?
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <form onSubmit={handleRemoveStock}>
+                    <DialogHeader>
+                      <DialogTitle className="text-3xl">Remove Stock</DialogTitle>
+                      <DialogDescription className="text-lg">
+                        Enter Product Name and Quantity Below.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="productname" className="text-right">
+                          Product Name
+                        </Label>
+                        <Input
+                          id="productname"
+                          name="productname"
+                          placeholder="e.g. Fresh Strawberries"
+                          className="col-span-3"
+                        />
+                      </div>
+                      <div className="grid grid-cols-4 items-center gap-4">
+                        <Label htmlFor="productname" className="text-right">
+                          Quantity
+                        </Label>
+                        <Input
+                          id="productquantity"
+                          name="productquantity"
+                          placeholder="e.g. 10"
+                          className="col-span-3"
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button className="bg-red-500 hover:bg-red-500/90">
+                            Remove Stock
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action will remove the selected product's stock from
+                              the databse.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <DialogClose asChild>
+                              <AlertDialogAction
+                                className="bg-red-500 hover:bg-red-500/90"
+                                type="submit">
+                                Confirm
+                              </AlertDialogAction>
+                            </DialogClose>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button className=" mt-6 flex h-[4rem] w-[30rem] flex-row self-center bg-red-500 text-lg hover:bg-red-500/90">
                     Remove Product Item?
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <form onSubmit={handleRemoveProduct}>
                     <DialogHeader>
-                      <DialogTitle className="text-3xl">
-                        Remove Product Item
-                      </DialogTitle>
+                      <DialogTitle className="text-3xl">Remove Product Item</DialogTitle>
                       <DialogDescription className="text-lg">
                         Enter Product Name Below.
                       </DialogDescription>
@@ -885,12 +938,10 @@ const AdminDashboard = () => {
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              Are you absolutely sure?
-                            </AlertDialogTitle>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              This action will remove the selected product from
-                              the databse.
+                              This action will remove the selected product from the
+                              databse.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
@@ -919,9 +970,7 @@ const AdminDashboard = () => {
                 <DialogContent>
                   <form onSubmit={handleRemoveSupplier}>
                     <DialogHeader>
-                      <DialogTitle className="text-3xl">
-                        Remove Supplier
-                      </DialogTitle>
+                      <DialogTitle className="text-3xl">Remove Supplier</DialogTitle>
                       <DialogDescription className="text-lg">
                         Enter Supplier Name Below.
                       </DialogDescription>
@@ -948,12 +997,10 @@ const AdminDashboard = () => {
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              Are you absolutely sure?
-                            </AlertDialogTitle>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              This action will remove the selected supplier from
-                              the databse.
+                              This action will remove the selected supplier from the
+                              databse.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
@@ -977,9 +1024,7 @@ const AdminDashboard = () => {
             {/* Popular Items */}
             <div className="">
               <div className="mr-10 mt-10 flex min-h-[20rem] min-w-14 flex-col gap-5 rounded-lg bg-cardwhite pt-5">
-                <h1 className="text-center text-3xl font-medium">
-                  Popular Items
-                </h1>
+                <h1 className="text-center text-3xl font-medium">Popular Items</h1>
                 <div className="flex flex-row gap-5 self-start pl-10">
                   <Link to={'/product/' + popularItem1.productId}>
                     <img
@@ -987,9 +1032,7 @@ const AdminDashboard = () => {
                       src={popularItem1.image}></img>
                   </Link>
                   <div className="flex flex-col self-center">
-                    <h1 className="flex flex-row text-3xl">
-                      {popularItem1.name}
-                    </h1>
+                    <h1 className="flex flex-row text-3xl">{popularItem1.name}</h1>
                     {popularItem1.price.toLocaleString('en-US', {
                       style: 'currency',
                       currency: 'USD',
@@ -1006,9 +1049,7 @@ const AdminDashboard = () => {
                     />
                   </Link>
                   <div className="flex flex-col self-center">
-                    <h1 className="flex flex-row text-3xl">
-                      {popularItem2.name}
-                    </h1>
+                    <h1 className="flex flex-row text-3xl">{popularItem2.name}</h1>
                     {popularItem2.price.toLocaleString('en-US', {
                       style: 'currency',
                       currency: 'USD',
