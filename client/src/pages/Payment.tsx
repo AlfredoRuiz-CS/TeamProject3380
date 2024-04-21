@@ -70,6 +70,13 @@ const payment = (props: paymentProps) => {
   //     .default(paymentMethodSelected?.cardtype),
   // });
 
+  const orderFail = (error?: string) =>
+    toast.error(error || 'Unable to process order at this time.', {
+      position: 'bottom-right',
+      className: 'font-bold text-black',
+      duration: 2000,
+    });
+
   const formik = useFormik({
     // Schema for form validation
     initialValues: {
@@ -133,7 +140,7 @@ const payment = (props: paymentProps) => {
               console.log(error.response.data);
               console.log(error.response.status);
               console.log(error.response.headers);
-              // loginFail(error.response.data.error);
+              orderFail(error.response.data.error);
             } else if (error.request) {
               console.log(error.request);
             } else {
