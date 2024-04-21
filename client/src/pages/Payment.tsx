@@ -91,6 +91,7 @@ const payment = (props: paymentProps) => {
       } else {
         // Extract new payment method details from formik
         // const formData = new FormData();
+        console.log('Setting new payment Method');
         const nameOnCard = values.cardName as string;
         const cardNumber = values.cardNumber as string;
         const expirationDate = values.expirationDate as string;
@@ -111,7 +112,7 @@ const payment = (props: paymentProps) => {
           })),
           paymentMethod: paymentMethod,
         };
-        console.log(cartOrderDetails);
+        console.log('cart order details: ', cartOrderDetails);
 
         try {
           const token = localStorage.getItem('token');
@@ -286,17 +287,18 @@ const payment = (props: paymentProps) => {
     }
   }, [formik.isSubmitting]);
 
-  useEffect(() => {
-    if (usingExistingPaymentMethod) {
-      formik.setValues({
-        cardNumber: paymentMethodSelected?.cardnumber as string,
-        cardName: paymentMethodSelected?.nameOnCard as string,
-        expirationDate: paymentMethodSelected?.expiration as string,
-        cvv: paymentMethodSelected?.cvv as string,
-        cardType: paymentMethodSelected?.cardtype as string,
-      });
-    }
-  }, [usingExistingPaymentMethod, paymentMethodSelected]);
+  // useEffect(() => {
+  //   if (usingExistingPaymentMethod) {
+  //     formik.handleSubmit({
+  //       cardNumber: paymentMethodSelected?.cardnumber as string,
+  //       cardName: paymentMethodSelected?.nameOnCard as string,
+  //       expirationDate: paymentMethodSelected?.expiration as string,
+  //       cvv: paymentMethodSelected?.cvv as string,
+  //       cardType: paymentMethodSelected?.cardtype as string,
+  //     });
+  //     formik.handleSubmit()
+  //   }
+  // }, [usingExistingPaymentMethod, ]);
 
   const paymentForms = ['Debit', 'Credit'];
 

@@ -24,57 +24,68 @@ type orderData = {
   total?: number;
   paymentMethod?: string;
   nameOnCard?: string;
-}
+};
 
 const OrderSummary = (props: OrderSummaryProps) => {
   const user = useUserStore();
-  const [orderDetails, setOrderDetails] = useState<orderData[]>([{ productName: '', quantity: 0, nameOnCard: '', paymentMethod: '' }]);
+  const [orderDetails, setOrderDetails] = useState<orderData[]>([
+    { productName: '', quantity: 0, nameOnCard: '', paymentMethod: '' },
+  ]);
   const { orderID } = useParams();
   console.log(orderID);
   const membershipCost = 10;
-  const total = props.type === 'membership'
-    ? membershipCost.toLocaleString('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    }) : orderDetails[0].total?.toLocaleString('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    })
+  const total =
+    props.type === 'membership'
+      ? membershipCost.toLocaleString('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        })
+      : orderDetails[0].total?.toLocaleString('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        });
 
-  // const { orderId } = useParams();
   function loyaltyMembershipNotification() {
-    toast.success('Congratulations! You have been awarded three free months of membership for your purchase!', {
-      position: 'bottom-right',
-      className: 'font-bold text-black',
-      duration: 4000,
-    });
+    toast.success(
+      'Congratulations! You have been awarded three free months of membership for your purchase!',
+      {
+        position: 'bottom-right',
+        className: 'font-bold text-black',
+        duration: 4000,
+      }
+    );
   }
 
   useEffect(() => {
     const fetchOrder = async () => {
       const data = {
         orderID: orderID,
-      }
+      };
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.post("https://shastamart-api-deploy.vercel.app/api/orders/orderDetail", data, { 
-          headers: { Authorization: `Bearer ${token}` } })
-        console.log(response.data);
+        const response = await axios.post(
+          'https://shastamart-api-deploy.vercel.app/api/orders/orderDetail',
+          data,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        console.log('Response: ', response.data);
         let orderData = await response.data;
         orderData.res[0].paymentMethod = orderData.res[0].paymentMethod.slice(0, 19);
         setOrderDetails(orderData.res);
         console.log(orderDetails);
-        if (orderData.membershipStatus === "From Order"){
-          user.setUserDetails({isMember: true});
+        if (orderData.membershipStatus === 'From Order') {
+          user.setUserDetails({ isMember: true });
           loyaltyMembershipNotification();
         }
         user.resetCart();
       } catch (error) {
         console.log(error);
       }
-    }
+    };
     fetchOrder();
-  }, [])
+  }, []);
 
   return (
     <>
@@ -126,13 +137,9 @@ const OrderSummary = (props: OrderSummaryProps) => {
             <tbody>
               <tr className="border-t-2 border-darkblue">
                 <td>
-                  <h3 className="pb-5 pl-5 pt-2 text-left text-xl font-bold">
-                    Total
-                  </h3>
+                  <h3 className="pb-5 pl-5 pt-2 text-left text-xl font-bold">Total</h3>
                 </td>
-                <td className="pr-5 text-right">
-                  {total}
-                </td>
+                <td className="pr-5 text-right">{total}</td>
               </tr>
             </tbody>
           </table>
@@ -141,9 +148,7 @@ const OrderSummary = (props: OrderSummaryProps) => {
         {/* Payment Information Section */}
         <section className="mt-6 flex h-auto w-[40rem] flex-col justify-between place-self-center rounded-2xl bg-cardwhite">
           <div className="">
-            <h3 className="ml-5 mt-3 text-2xl font-medium">
-              Payment Information
-            </h3>
+            <h3 className="ml-5 mt-3 text-2xl font-medium">Payment Information</h3>
             <table className="mb-5 mt-2 w-full">
               <thead>
                 <tr>
@@ -155,11 +160,10 @@ const OrderSummary = (props: OrderSummaryProps) => {
                   <td className="pl-5">
                     <p>{orderDetails[0]?.nameOnCard}</p>
                     <p>
-                    {orderDetails[0]?.paymentMethod &&
-                      orderDetails[0].paymentMethod
-                      .replace(/.(?=....)/g, match => (match === ' ' ? ' ' : '*'))
-                      .slice(0, -4) +
-                      orderDetails[0].paymentMethod.slice(-4)}
+                      {orderDetails[0]?.paymentMethod &&
+                        orderDetails[0].paymentMethod
+                          .replace(/.(?=....)/g, (match) => (match === ' ' ? ' ' : '*'))
+                          .slice(0, -4) + orderDetails[0].paymentMethod.slice(-4)}
                     </p>
                   </td>
                 </tr>
@@ -172,9 +176,7 @@ const OrderSummary = (props: OrderSummaryProps) => {
         {props.type === 'order' && (
           <section className="mt-6 flex h-auto w-[40rem] flex-col justify-between place-self-center rounded-2xl bg-cardwhite">
             <div className="">
-              <h3 className="ml-5 mt-3 text-2xl font-medium">
-                Shipping Information
-              </h3>
+              <h3 className="ml-5 mt-3 text-2xl font-medium">Shipping Information</h3>
               <table className="mb-5 mt-2 w-full">
                 <thead>
                   <tr>
