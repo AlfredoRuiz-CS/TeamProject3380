@@ -216,9 +216,27 @@ const payment = (props: paymentProps) => {
   console.log('Rendered Payment Page', props.type);
 
   const handlePaymentInputChange = (e: any) => {
-    formik.handleChange(e);
-    setUsingExistingPaymentMethod(false);
+    const { name, value } = e.target;
+    if (name === 'cardNumber') {
+      const formattedValue = formatCardNumber(value);
+      formik.setFieldValue(name, formattedValue);
+    } else {
+      formik.handleChange(e);
+      setUsingExistingPaymentMethod(false);
+    }
   };
+  // const handlePaymentInputChange = (e: any) => {
+  //   formik.handleChange(e);
+    
+  // };
+
+  const formatCardNumber = (value: string) => {
+    return value
+      .replace(/\s+/g, '')
+      .replace(/(\d{4})/g, '$1 ')
+      .trim()
+      .substring(0, 19);
+  }
 
   async function handleNewPayment(
     nameOnCard: string,
@@ -459,7 +477,7 @@ const payment = (props: paymentProps) => {
                       name="cardNumber"
                       onChange={handlePaymentInputChange}
                       value={formik.values.cardNumber}
-                      maxLength={16}
+                      maxLength={19}
                     />
                     <Select
                       defaultValue="Debit"
