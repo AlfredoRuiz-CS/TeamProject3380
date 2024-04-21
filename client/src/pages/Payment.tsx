@@ -23,7 +23,7 @@ import { useEffect, useState } from 'react';
 // import { Link } from 'react-router-dom';
 import useUserStore from '@/components/store';
 import { PaymentMethod } from '@/pages/Profile';
-import * as Yup from 'yup';
+// import * as Yup from 'yup';
 import { useFormik } from 'formik'; // error message removed from imports
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -49,26 +49,26 @@ const payment = (props: paymentProps) => {
   );
   const shipping = !store.isMember ? 10 : 0;
 
-  const validationSchema = Yup.object({
-    cardNumber: Yup.string()
-      .required('Card number is required')
-      .max(16)
-      .default(paymentMethodSelected?.cardnumber),
-    cardName: Yup.string()
-      .required('Name on card is required')
-      .default(paymentMethodSelected?.nameOnCard),
-    expirationDate: Yup.string()
-      .required('Expiration date is required')
-      .max(5)
-      .default(paymentMethodSelected?.expiration),
-    cvv: Yup.string()
-      .required('CVV is required')
-      .max(3)
-      .default(paymentMethodSelected?.cvv),
-    cardType: Yup.string()
-      .required('Card type is required')
-      .default(paymentMethodSelected?.cardtype),
-  });
+  // const validationSchema = Yup.object({
+  //   cardNumber: Yup.string()
+  //     .required('Card number is required')
+  //     .max(16)
+  //     .default(paymentMethodSelected?.cardnumber),
+  //   cardName: Yup.string()
+  //     .required('Name on card is required')
+  //     .default(paymentMethodSelected?.nameOnCard),
+  //   expirationDate: Yup.string()
+  //     .required('Expiration date is required')
+  //     .max(5)
+  //     .default(paymentMethodSelected?.expiration),
+  //   cvv: Yup.string()
+  //     .required('CVV is required')
+  //     .max(3)
+  //     .default(paymentMethodSelected?.cvv),
+  //   cardType: Yup.string()
+  //     .required('Card type is required')
+  //     .default(paymentMethodSelected?.cardtype),
+  // });
 
   const formik = useFormik({
     // Schema for form validation
@@ -79,7 +79,7 @@ const payment = (props: paymentProps) => {
       cvv: '',
       cardType: 'Debit',
     },
-    validationSchema: validationSchema,
+    // validationSchema: validationSchema,
     // Formik function to handle form submission
     onSubmit: async (values) => {
       console.log('Payment form submitted:', values);
