@@ -653,9 +653,7 @@ const payment = (props: paymentProps) => {
                     <Select
                       defaultValue="Debit"
                       name="cardType"
-                      onValueChange={(e: any) =>
-                        formik.setFieldValue('cardType', e.target.value)
-                      }>
+                      onValueChange={(e: any) => formik.setFieldValue('cardType', e)}>
                       <SelectTrigger className="mx-4 h-10 w-[10rem] max-w-md rounded-md border border-gray-300 bg-white px-4 focus:border-logoblue focus:ring-logoblue">
                         <SelectValue
                           placeholder={'Card Type'}

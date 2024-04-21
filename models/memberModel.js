@@ -44,7 +44,8 @@ async function createMembership(customerEmail,startDate,endDate,renewalDate,paym
         }
 
         const result = {
-            isMember: true
+            isMember: true,
+            paymentMethod: paymentMethod,
         }
 
         await connection.commit();
