@@ -64,7 +64,7 @@ async function getMembershipStatus(customerEmail) {
         const [rows] = await pool.query(`
         SELECT *
         FROM membership
-        WHERE customerEmail = ?, membershipStatus = 1`, [customerEmail]);
+        WHERE customerEmail = ? and membershipStatus = 1`, [customerEmail]);
         if (!rows) throw new Error("Couldn't find membership");
 
         let membershipStatus = "None";
