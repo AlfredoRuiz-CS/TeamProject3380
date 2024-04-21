@@ -68,8 +68,28 @@ const deleteProduct = async(req,res)=>{
         }
 }
 
+const deleteStock = async(req, res) => {
+    try {
+        const body = await getRequestBody(req);
+        const {productName, quantity} = body;
+        const result = await productModel.removeStock(productName, quantity);
+        if(!result){
+            res.writeHead(200, { 'Content-Type': 'text/plain' });
+            res.end("No product found with that name or it has been removed from the database");
+            return; //exits if empty
+        }
+
+        res.writeHead(200, { 'Content-Type' : 'application/json' });
+        res.end(JSON.stringify({"message": "Successfully removed stock from product"}));
+    } catch (error) {
+        res.writeHead(500, {'Content-Type': 'application/json' });
+        res.end(JSON.stringify({"status": "Could not remove stock", "error" : error.message }));
+    }
+}
+
 module.exports = {
     getAllProducts,
     insertProductInfo,
-    deleteProduct
+    deleteProduct,
+    deleteStock
 }

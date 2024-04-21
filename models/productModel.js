@@ -157,11 +157,26 @@ async function removeProduct(name){
     }
 }
 
+async function removeStock(name, quantity){
+    try {
+        const result = await pool.query(`
+        UPDATE product
+        set quantity=?
+        where productName=?`, [quantity,name]);
+
+        return result;
+    } catch (error) {
+        console.log(error);
+        throw error;
+    }
+}
+
 module.exports = {
     getAllProducts,
     insertProduct,
     insertNutritionFacts,
     insertShippingDetails,
     insertInventory,
-    removeProduct
+    removeProduct,
+    removeStock
 }
