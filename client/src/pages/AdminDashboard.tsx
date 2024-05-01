@@ -79,7 +79,7 @@ const AdminDashboard = () => {
           supplier: product.supplier,
           supplierStock: product.supplierStock,
           portion: product.portion,
-          supplierPrice: product.supplierPrice,
+          supplierPrice: !product.supplierPrice ? 0 : product.supplierPrice,
           nutritionFacts: {
             servingSize: product.servingSize,
             servingsPerContainer: product.servingsPerContainer,
